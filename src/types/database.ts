@@ -1,120 +1,58 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Property = {
+  id: string;
 
-export interface Database {
-  public: {
-    Tables: {
-      profiles: {
-        Row: {
-          id: string;
-          full_name: string;
-          role: 'admin' | 'agent';
-          country: 'albania' | 'greece' | null;
-          avatar_url: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id: string;
-          full_name?: string;
-          role?: 'admin' | 'agent';
-          country?: 'albania' | 'greece' | null;
-          avatar_url?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          full_name?: string;
-          role?: 'admin' | 'agent';
-          country?: 'albania' | 'greece' | null;
-          avatar_url?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      properties: {
-        Row: {
-          id: string;
-          title: string;
-          description: string | null;
-          typology: 'apartment' | 'house' | 'villa' | 'commercial' | 'land' | 'office' | 'studio';
-          transaction_type: 'sale' | 'rent';
-          price: number | null;
-          currency: 'EUR' | 'ALL';
-          area_sqm: number | null;
-          bedrooms: number | null;
-          bathrooms: number | null;
-          floor: number | null;
-          total_floors: number | null;
-          location_city: string;
-          location_area: string | null;
-          location_address: string | null;
-          country: 'albania' | 'greece';
-          owner_name: string;
-          owner_phone: string;
-          agent_id: string;
-          images: string[];
-          status: 'active' | 'sold' | 'rented' | 'inactive';
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          title: string;
-          description?: string | null;
-          typology: 'apartment' | 'house' | 'villa' | 'commercial' | 'land' | 'office' | 'studio';
-          transaction_type: 'sale' | 'rent';
-          price?: number | null;
-          currency?: 'EUR' | 'ALL';
-          area_sqm?: number | null;
-          bedrooms?: number | null;
-          bathrooms?: number | null;
-          floor?: number | null;
-          total_floors?: number | null;
-          location_city: string;
-          location_area?: string | null;
-          location_address?: string | null;
-          country: 'albania' | 'greece';
-          owner_name: string;
-          owner_phone: string;
-          agent_id: string;
-          images?: string[];
-          status?: 'active' | 'sold' | 'rented' | 'inactive';
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string;
-          description?: string | null;
-          typology?: 'apartment' | 'house' | 'villa' | 'commercial' | 'land' | 'office' | 'studio';
-          transaction_type?: 'sale' | 'rent';
-          price?: number | null;
-          currency?: 'EUR' | 'ALL';
-          area_sqm?: number | null;
-          bedrooms?: number | null;
-          bathrooms?: number | null;
-          floor?: number | null;
-          total_floors?: number | null;
-          location_city?: string;
-          location_area?: string | null;
-          location_address?: string | null;
-          country?: 'albania' | 'greece';
-          owner_name?: string;
-          owner_phone?: string;
-          agent_id?: string;
-          images?: string[];
-          status?: 'active' | 'sold' | 'rented' | 'inactive';
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-    };
-  };
-}
+  // Core
+  title: string;
+  description: string;
+  comments?: string;
+
+  // Classification
+  status: string;
+  mainType: string;
+  propertyType: string;
+  availability: string;
+  furnished: string;
+  division?: string;
+  zone?: string;
+
+  // Features
+  elevator: "yes" | "no";
+  beingLived: "yes" | "no";
+  parking: "yes" | "no";
+  documentation: "yes" | "no" | "in_progress";
+  communalCharger?: "yes" | "no";
+
+  // Business
+  businessType: "sale" | "rent";
+  exclusive: boolean;
+  publishToPortal: boolean;
+  portalsToPublish: string[];
+
+  // Location
+  country: string;
+  city: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  floor?: number;
+  publishGeoreference: boolean;
+
+  // Pricing
+  price: number;
+  priceForM2?: number;
+  priceUponRequest: boolean;
+
+  // Areas
+  interiorArea?: number;
+  grossArea?: number;
+  landArea?: number;
+  balconyArea?: number;
+  commonArea?: number;
+
+  // Timeline
+  yearOfConstruction?: number;
+  yearOfRenovation?: number;
+
+  // System
+  lastModifiedBy: string;
+};

@@ -1,6 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Building2, Eye, EyeOff, AlertCircle } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const { signIn } = useAuth();
@@ -9,15 +10,18 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     const { error } = await signIn(email, password);
+
     if (error) {
       setError("Invalid email or password. Please try again.");
+    } else {
+      navigate("/dashboard"); // ✅ REDIRECT HERE
     }
 
     setLoading(false);
