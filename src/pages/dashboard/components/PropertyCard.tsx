@@ -1,7 +1,7 @@
 import { BedDouble, Bath, Maximize2, MapPin, User, Eye } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { Property } from "../types/database";
-import { Button } from "./ui/button";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Property } from "../../../types/database";
+import { Button } from "../../../components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 interface PropertyCardProps {

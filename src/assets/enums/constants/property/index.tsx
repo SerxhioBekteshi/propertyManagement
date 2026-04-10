@@ -168,3 +168,36 @@ export const PROPERTY_DOCUMENTATION_OPTIONS: Option[] = [
   { value: "no", label: "No" },
   { value: "in_progress", label: "In Progress" },
 ];
+
+export const albanianCities = [
+  "Tirana",
+  "Durrës",
+  "Vlorë",
+  "Shkodër",
+  "Elbasan",
+  "Fier",
+  "Korçë",
+  "Berat",
+  "Sarandë",
+  "Lushnjë",
+  "Kavajë",
+  "Gjirokastër",
+  "Pogradec",
+  "Lezhë",
+];
+export const greekCities = [
+  "Athens",
+  "Thessaloniki",
+  "Patras",
+  "Heraklion",
+  "Larissa",
+  "Volos",
+  "Ioannina",
+  "Rhodes",
+  "Chania",
+  "Santorini",
+  "Mykonos",
+  "Corfu",
+  "Nafplio",
+  "Katerini",
+];

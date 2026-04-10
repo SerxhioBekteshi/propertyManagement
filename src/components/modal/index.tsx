@@ -65,9 +65,7 @@ const Modal = (props: ModalProps) => {
       }}
     >
       <DialogContent
-        className={`sm:max-w-[600px] ${
-          fitContentHeight ? "" : "h-[90vh]"
-        } flex flex-col p-0`}
+        className={` ${fitContentHeight ? "" : "h-[90vh]"} flex flex-col p-0`}
       >
         {/* Header - Fixed at top */}
         <div className="px-6 pt-6 pb-4 border-b">
@@ -80,10 +78,9 @@ const Modal = (props: ModalProps) => {
         </div>
 
         {/* Scrollable form content */}
-        <div className="overflow-hidden flex-1">
-          {/* <ScrollArea className="h-full px-6"> */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
+          {" "}
           {!descriptionUnderTitle ? description : children}
-          {/* </ScrollArea> */}
         </div>
 
         {/* Footer - Sticky at bottom */}

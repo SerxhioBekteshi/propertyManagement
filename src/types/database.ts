@@ -56,3 +56,5 @@ export type Property = {
   // System
   lastModifiedBy: string;
 };
+
+export type AddPropertyDTO = Omit<Property, "id" | "agent" | "lastModifiedBy">;

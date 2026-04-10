@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import PropertyFilters from "../../components/PropertyFilters";
-import PropertyCard from "../../components/PropertyCard";
-import PropertyDetailModal from "../../components/PropertyDetailModal";
-import UploadPropertyModal from "../../components/UploadPropertyModal";
+import PropertyFilters from "./components/PropertyFilters";
+import PropertyCard from "./components/PropertyCard";
 import { useProperties } from "../../hooks/useProperties";
 import { Building2, Loader2, Plus } from "lucide-react";
 import { Property } from "../../types/database";
+import { Button } from "../../components/ui/button";
+import ModalProperty from "./components/PropertyModal";
 
 const defaultFilters: Filters = {
   typology: "",
@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(
     null,
   );
-  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState<boolean>(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -55,13 +55,13 @@ export default function DashboardPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-semibold text-slate-900">Properties</h1>
 
-        <button
+        <Button
           onClick={() => setUploadOpen(true)}
           className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-xl transition-all"
         >
           <Plus className="w-4 h-4" />
           Add Property
-        </button>
+        </Button>
       </div>
 
       <PropertyFilters
@@ -133,18 +133,15 @@ export default function DashboardPage() {
         </>
       )}
 
-      {/* 🔲 MODALS */}
-      {selectedProperty && (
-        <PropertyDetailModal
-          property={selectedProperty}
-          onClose={() => setSelectedProperty(null)}
-        />
-      )}
-
       {uploadOpen && (
-        <UploadPropertyModal
+        <ModalProperty
           onClose={() => setUploadOpen(false)}
-          onSuccess={refresh}
+          open={uploadOpen}
+          setOpen={setUploadOpen}
+          onSave={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+          model={undefined}
         />
       )}
     </div>
