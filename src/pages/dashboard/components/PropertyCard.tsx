@@ -137,7 +137,7 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
             {property.lastModifiedBy}
           </div>
 
-          <Button
+          <button
             onClick={(e) => {
               e.stopPropagation();
               onClick();
@@ -148,7 +148,7 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
           >
             <Eye className="w-3 h-3" />
             Details
-          </Button>
+          </button>
         </div>
       </div>
     </article>
