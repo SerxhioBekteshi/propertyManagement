@@ -9,7 +9,7 @@ export default function BaseLayout({ children }: BaseLayoutProps) {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-screen-2xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
         {children}
       </main>
     </div>

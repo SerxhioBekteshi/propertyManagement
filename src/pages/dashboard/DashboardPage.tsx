@@ -3,26 +3,30 @@ import PropertyFilters from "./components/PropertyFilters";
 import PropertyCard from "./components/PropertyCard";
 import { useProperties } from "../../hooks/useProperties";
 import { Building2, Loader2, Plus } from "lucide-react";
-import { Property } from "../../types/database";
 import { Button } from "../../components/ui/button";
 import ModalProperty from "./components/PropertyModal";
+import { PropertyFiltersDTO } from "../../types/properties";
+import { PropertyResponseDTO } from "../../types/database";
 
-const defaultFilters: Filters = {
-  typology: "",
-  transaction_type: "",
-  country: "",
-  location_city: "",
-  status: "active",
-  min_price: "",
-  max_price: "",
+export const INITIAL_FILTERS: PropertyFiltersDTO = {
+  id: "",
+  businessType: "",
+  minPrice: "",
+  maxPrice: "",
   bedrooms: "",
+  bathrooms: "",
+  propertyType: "",
+  city: "",
+  zone: "",
+  availability: "",
+  agentId: "",
+  owner: "",
+  orderBy: "newest",
 };
-
 export default function DashboardPage() {
-  const [filters, setFilters] = useState<any>(defaultFilters);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
-    null,
-  );
+  const [filters, setFilters] = useState<PropertyFiltersDTO>(INITIAL_FILTERS);
+  const [selectedProperty, setSelectedProperty] =
+    useState<PropertyResponseDTO | null>(null);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -52,9 +56,8 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4 mb-6">
-      <div className="flex justify-between items-center">
+      <div className="sticky top-0 z-40 bg-white flex justify-between items-center py-3">
         <h1 className="text-lg font-semibold text-slate-900">Properties</h1>
-
         <Button
           onClick={() => setUploadOpen(true)}
           className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-xl transition-all"

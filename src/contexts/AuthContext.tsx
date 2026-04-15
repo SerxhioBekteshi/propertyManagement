@@ -1,20 +1,11 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-
-interface User {
-  id: string;
-  email: string;
-}
-
-interface Profile {
-  id: string;
-  email: string;
-  full_name?: string;
-  role?: string;
-}
+import { eLocalStorage } from "../assets/enums";
+import { useNavigate } from "react-router-dom";
+import { TUserResponse } from "../types/auth";
 
 interface AuthContextType {
-  user: User | null;
-  profile: Profile | null;
+  user: TUserResponse | null;
+  profile: any;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -24,9 +15,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [user, setUser] = useState<TUserResponse | null>(null);
+  const [profile, setProfile] = useState<any | null>(null);
+  const [loading, _setLoading] = useState(false);
 
   async function signIn(
     email: string,
@@ -35,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!email || !password) {
       return { error: new Error("Email and password are required.") };
     }
+    //  const res = await AuthenticationService.login({ email, password });
 
     setUser({ id: "mock-user-id", email });
     setProfile({
@@ -44,14 +37,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: "agent",
     });
 
-    // Navigation handled by the caller (LoginPage uses useNavigate directly)
     return { error: null };
   }
 
   async function signOut(): Promise<void> {
     setUser(null);
     setProfile(null);
-    // Navigation handled by the caller
+    localStorage.removeItem(eLocalStorage.AccessToken);
+    localStorage.removeItem(eLocalStorage.RefreshToken);
+    navigate("/");
   }
 
   async function refreshProfile(): Promise<void> {}

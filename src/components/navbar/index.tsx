@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Building2, LogOut, ChevronDown, User, Shield } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 
-const countryFlag: Record<string, string> = {
+export const countryFlags: Record<string, string> = {
   albania: "🇦🇱",
   greece: "🇬🇷",
 };
@@ -53,7 +53,7 @@ export default function Navbar() {
                     <>
                       <span className="text-slate-300">·</span>
                       <span className="text-xs text-slate-400">
-                        {countryFlag[profile.country]}{" "}
+                        {countryFlags[profile.country]}{" "}
                         {profile.country.charAt(0).toUpperCase() +
                           profile.country.slice(1)}
                       </span>

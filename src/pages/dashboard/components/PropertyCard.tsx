@@ -1,11 +1,10 @@
 import { BedDouble, Bath, Maximize2, MapPin, User, Eye } from "lucide-react";
 import { useAuth } from "../../../contexts/AuthContext";
-import { Property } from "../../../types/database";
-import { Button } from "../../../components/ui/button";
+import { PropertyResponseDTO } from "../../../types/database";
 import { useNavigate } from "react-router-dom";
 
 interface PropertyCardProps {
-  property: Property;
+  property: PropertyResponseDTO;
   onClick: () => void;
 }
 
@@ -19,18 +18,13 @@ const propertyTypeColors: Record<string, string> = {
   studio: "bg-rose-50 text-rose-700 border-rose-100",
 };
 
-const statusColors: Record<string, string> = {
+export const statusColors: Record<string, string> = {
   used: "bg-slate-500",
   new: "bg-emerald-500",
   under_construction: "bg-yellow-500",
   in_project: "bg-blue-400",
-  refurbished: "bg-green-500",
+  refurbished: "bg-green-500", // Your requested color
   for_refurbishment: "bg-orange-400",
-};
-
-const countryFlag: Record<string, string> = {
-  albania: "🇦🇱",
-  greece: "🇬🇷",
 };
 
 const placeholderImages = [
@@ -39,24 +33,27 @@ const placeholderImages = [
   "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg",
 ];
 
-function getPlaceholder(id: number) {
-  return placeholderImages[id % placeholderImages.length];
+function getPlaceholder(id: string | number) {
+  const numericId = typeof id === "string" ? id.length : id;
+  return placeholderImages[numericId % placeholderImages.length];
 }
 
 export default function PropertyCard({ property, onClick }: PropertyCardProps) {
   const { profile } = useAuth();
   const navigate = useNavigate();
 
-  const imageUrl = property.images?.[0] || getPlaceholder(property.id);
+  const imageUrl = getPlaceholder(property.id);
 
   const typeClass =
     propertyTypeColors[property.propertyType] ||
     "bg-slate-50 text-slate-700 border-slate-100";
 
+  const statusColorClass = statusColors[property.status] || "bg-slate-400";
+
   const price = property.price
     ? new Intl.NumberFormat("en-EU", {
         style: "currency",
-        currency: property.currency || "EUR",
+        currency: "EUR",
         maximumFractionDigits: 0,
       }).format(property.price)
     : "Price on request";
@@ -74,16 +71,26 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
         {/* BADGES */}
-        <div className="absolute top-3 left-3 flex gap-2">
-          <span className={`text-xs px-2 py-1 rounded ${typeClass}`}>
+        <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+          <span
+            className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border ${typeClass}`}
+          >
             {property.propertyType}
           </span>
 
-          <span className="text-xs px-2 py-1 rounded bg-black/70 text-white">
-            {property.businessType === "sale" ? "Sale" : "Rent"}
+          <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded bg-black/70 text-white">
+            {property.businessType === "sale" ? "For Sale" : "For Rent"}
+          </span>
+        </div>
+
+        {/* STATUS INDICATOR (TOP RIGHT) */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
+          <div className={`w-2 h-2 rounded-full ${statusColorClass}`} />
+          <span className="text-[10px] font-bold text-slate-700 capitalize">
+            {property.status.replace(/_/g, " ")}
           </span>
         </div>
 
@@ -96,57 +103,56 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
       {/* CONTENT */}
       <div className="p-4">
         {/* TITLE */}
-        <h3 className="font-semibold text-slate-900 text-sm line-clamp-1">
+        <h3 className="font-semibold text-slate-900 text-sm line-clamp-1 group-hover:text-blue-600 transition-colors">
           {property.title}
         </h3>
 
         {/* LOCATION */}
         <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
-          <MapPin className="w-3 h-3" />
-          {property.city}, {property.zone}
+          <MapPin className="w-3.5 h-3.5 text-slate-400" />
+          {property.city}
+          {property.zone ? `, ${property.zone}` : ""}
         </div>
 
         {/* FEATURES */}
-        <div className="flex gap-4 mt-3 text-xs text-slate-600">
-          {property.bedrooms != null && (
-            <span className="flex items-center gap-1">
-              <BedDouble className="w-3 h-3" />
-              {property.bedrooms}
-            </span>
-          )}
+        <div className="flex gap-4 mt-4 py-3 border-y border-slate-50 text-xs text-slate-600">
+          <span className="flex items-center gap-1.5">
+            <BedDouble className="w-4 h-4 text-slate-400" />
+            <span className="font-medium">{property.bedrooms || 0}</span>
+          </span>
 
-          {property.bathrooms != null && (
-            <span className="flex items-center gap-1">
-              <Bath className="w-3 h-3" />
-              {property.bathrooms}
-            </span>
-          )}
+          <span className="flex items-center gap-1.5">
+            <Bath className="w-4 h-4 text-slate-400" />
+            <span className="font-medium">{property.bathrooms || 0}</span>
+          </span>
 
           {property.interiorArea && (
-            <span className="flex items-center gap-1">
-              <Maximize2 className="w-3 h-3" />
-              {property.interiorArea}m²
+            <span className="flex items-center gap-1.5">
+              <Maximize2 className="w-4 h-4 text-slate-400" />
+              <span className="font-medium">{property.interiorArea}m²</span>
             </span>
           )}
         </div>
 
         {/* AGENT + CTA */}
         <div className="flex items-center justify-between mt-4">
-          <div className="flex items-center gap-1 text-xs text-slate-500">
-            <User className="w-3 h-3" />
-            {property.lastModifiedBy}
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+              <User className="w-3 h-3 text-slate-400" />
+            </div>
+            <span className="truncate max-w-[100px]">
+              {property.agentId || "Unassigned"}
+            </span>
           </div>
 
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onClick();
-              console.log(property.id);
               navigate(`/property/${property.id}/details`);
             }}
-            className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
+            className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
           >
-            <Eye className="w-3 h-3" />
+            <Eye className="w-3.5 h-3.5" />
             Details
           </button>
         </div>

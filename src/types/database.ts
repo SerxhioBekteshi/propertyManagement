@@ -1,43 +1,39 @@
-export type Property = {
-  id: string;
+export type PropertyResponseDTO = {
+  id: number;
 
   // Core
   title: string;
   description: string;
   comments?: string;
 
-  // Classification
+  // Classification, property information
   status: string;
   mainType: string;
-  propertyType: string;
   availability: string;
   furnished: string;
-  division?: string;
-  zone?: string;
+  exclusive: boolean;
+  publishToPortal: boolean;
 
-  // Features
+  propertyType: string;
   elevator: "yes" | "no";
   beingLived: "yes" | "no";
   parking: "yes" | "no";
-  documentation: "yes" | "no" | "in_progress";
-  communalCharger?: "yes" | "no";
-
-  // Business
-  businessType: "sale" | "rent";
-  exclusive: boolean;
-  publishToPortal: boolean;
   portalsToPublish: string[];
+  propertyOrientation: "North" | "South" | "East" | "West";
 
-  // Location
+  //Location
   country: string;
   city: string;
   address: string;
   latitude: number;
   longitude: number;
+  division?: string;
+  zone?: string;
   floor?: number;
   publishGeoreference: boolean;
 
-  // Pricing
+  //Price, business type
+  businessType: "sale" | "rent";
   price: number;
   priceForM2?: number;
   priceUponRequest: boolean;
@@ -49,12 +45,27 @@ export type Property = {
   balconyArea?: number;
   commonArea?: number;
 
-  // Timeline
+  // Divisions
+  bedrooms: number;
+  bathrooms: number;
+  otherRooms: number;
+  livingRoom: number;
+
+  //property Owner
+  owner: string;
+  agentId: string;
+  ownersTypology: string;
+
+  // Timeline and other Features
+  documentation: "yes" | "no" | "in_progress";
+  communalCharger?: "yes" | "no";
   yearOfConstruction?: number;
   yearOfRenovation?: number;
+
+  //surroundings
+  // withViewTo: string;
+  // equipment: string;
 
   // System
   lastModifiedBy: string;
 };
-
-export type AddPropertyDTO = Omit<Property, "id" | "agent" | "lastModifiedBy">;

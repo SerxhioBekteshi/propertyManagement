@@ -5,13 +5,14 @@ import { enqueueSnackbar } from "notistack";
 import PropertyForm from "./PropertyForm";
 import FormProvider from "../../../components/hook-form/form-provider";
 import Modal from "../../../components/modal";
-import { AddPropertyDTO, Property } from "../../../types/database";
+import { AddPropertyDTO } from "../../../types/properties";
+import { PropertyResponseDTO } from "../../../types/database";
 
 interface IModalPropertyProp {
   open: boolean;
   setOpen: (val: boolean) => void;
   onSave: () => void;
-  model: Property | null;
+  model: PropertyResponseDTO | null;
   onClose: () => void;
 }
 const ModalProperty = (props: IModalPropertyProp) => {

@@ -14,6 +14,11 @@ interface IApiError {
   Errors?: string;
 }
 
+export type TBaseResponse<T> = {
+  data: T;
+  result: boolean;
+};
+
 interface IAxiosRequestConfigRetry extends AxiosRequestConfig {
   _retry: boolean;
   _noAuth: boolean;
@@ -37,7 +42,7 @@ const refreshAccessToken = async () => {
     const response: {
       accessToken: string;
       refreshToken: string;
-    } = await axiosInstance.post(`${endpoints.token.refresh}`, {
+    } = await axiosInstance.post(`${ENDPOINTS.token.refresh}`, {
       accessToken: localStorage.getItem(eLocalStorage.AccessToken),
       refreshToken: refreshTokenLS,
     });
@@ -140,7 +145,7 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export const endpoints = {
+export const ENDPOINTS = {
   auth: {
     me: "Authentication/me",
     login: "Authentication/login",
@@ -148,20 +153,8 @@ export const endpoints = {
   token: {
     refresh: "token/refresh",
   },
-  reservations: {
-    list: "Reservation/get-all",
-    createReservation: `Reservation/create`,
-  },
-  companies: {
-    list: "Company/get-all",
-    create: "Company/create",
-    update: (companyId: number) => `Company/${companyId}/update`,
-    delete: (companyId: number) => `Company/${companyId}`,
-  },
-  services: {
-    list: "Service/get-all",
-    create: "Service/create",
-    update: (serviceId: number) => `Service/${serviceId}/update`,
-    delete: (serviceId: number) => `Service/${serviceId}`,
+  properties: {
+    list: "Properties/get-all",
+    create: `Properties/create`,
   },
 };

@@ -5,12 +5,14 @@ import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const { signIn } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");

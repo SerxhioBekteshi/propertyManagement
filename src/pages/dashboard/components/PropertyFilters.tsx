@@ -1,188 +1,236 @@
-import { X, SlidersHorizontal } from 'lucide-react';
-import type { PropertyFilters } from '../types';
+import { useState } from "react";
+import { Search } from "lucide-react";
+import {
+  albanianCities,
+  greekCities,
+  PROPERTY_AVAILABILITY_OPTIONS,
+  PROPERTY_BUSINESS_TYPE_OPTIONS,
+  PROPERTY_TYPE_OPTIONS,
+} from "../../../assets/enums/constants/property";
+import { PropertyFiltersDTO } from "../../../types/properties";
+import Modal from "../../../components/modal";
 
 interface PropertyFiltersProps {
-  filters: PropertyFilters;
-  onChange: (filters: PropertyFilters) => void;
+  filters: PropertyFiltersDTO;
+  onChange: (filters: PropertyFiltersDTO) => void;
   totalCount: number;
 }
 
-const typologyOptions = [
-  { value: '', label: 'All Types' },
-  { value: 'apartment', label: 'Apartment' },
-  { value: 'house', label: 'House' },
-  { value: 'villa', label: 'Villa' },
-  { value: 'studio', label: 'Studio' },
-  { value: 'office', label: 'Office' },
-  { value: 'commercial', label: 'Commercial' },
-  { value: 'land', label: 'Land' },
-];
+export default function PropertyFilters({
+  filters,
+  onChange,
+  totalCount,
+}: PropertyFiltersProps) {
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-const transactionOptions = [
-  { value: '', label: 'Sale & Rent' },
-  { value: 'sale', label: 'For Sale' },
-  { value: 'rent', label: 'For Rent' },
-];
-
-const countryOptions = [
-  { value: '', label: 'All Countries' },
-  { value: 'albania', label: '🇦🇱 Albania' },
-  { value: 'greece', label: '🇬🇷 Greece' },
-];
-
-const statusOptions = [
-  { value: 'active', label: 'Active' },
-  { value: '', label: 'All Status' },
-  { value: 'sold', label: 'Sold' },
-  { value: 'rented', label: 'Rented' },
-  { value: 'inactive', label: 'Inactive' },
-];
-
-const bedroomsOptions = [
-  { value: '', label: 'Any Beds' },
-  { value: '1', label: '1+' },
-  { value: '2', label: '2+' },
-  { value: '3', label: '3+' },
-  { value: '4', label: '4+' },
-];
-
-const empty: PropertyFilters = {
-  typology: '',
-  transaction_type: '',
-  country: '',
-  location_city: '',
-  status: 'active',
-  min_price: '',
-  max_price: '',
-  bedrooms: '',
-};
-
-function hasActiveFilters(filters: PropertyFilters) {
-  return (
-    filters.typology !== '' ||
-    filters.transaction_type !== '' ||
-    filters.country !== '' ||
-    filters.location_city !== '' ||
-    filters.status !== 'active' ||
-    filters.min_price !== '' ||
-    filters.max_price !== '' ||
-    filters.bedrooms !== ''
-  );
-}
-
-export default function PropertyFilters({ filters, onChange, totalCount }: PropertyFiltersProps) {
-  function update(key: keyof PropertyFilters, value: string) {
+  function update(key: keyof PropertyFiltersDTO, value: string) {
     onChange({ ...filters, [key]: value });
   }
 
-  function reset() {
-    onChange(empty);
-  }
+  const allCities = [...albanianCities, ...greekCities].sort();
 
-  const active = hasActiveFilters(filters);
+  const inputStyle =
+    "w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-slate-300 focus:bg-white transition-all placeholder:text-slate-400 shadow-sm";
+  const labelStyle =
+    "block text-[10px] uppercase tracking-wider font-semibold text-slate-500 mb-1";
+
+  // ✅ REUSABLE FILTER FIELDS
+  const filterFields = (
+    <>
+      <div>
+        <label className={labelStyle}>Business Type</label>
+        <select
+          value={filters.businessType}
+          onChange={(e) => update("businessType", e.target.value)}
+          className={inputStyle}
+        >
+          {PROPERTY_BUSINESS_TYPE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className={labelStyle}>Min Price</label>
+        <input
+          type="number"
+          placeholder="0"
+          value={filters.minPrice}
+          onChange={(e) => update("minPrice", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+
+      <div>
+        <label className={labelStyle}>Max Price</label>
+        <input
+          type="number"
+          placeholder="No limit"
+          value={filters.maxPrice}
+          onChange={(e) => update("maxPrice", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+
+      <div>
+        <label className={labelStyle}>Bedrooms</label>
+        <input
+          type="number"
+          value={filters.bedrooms}
+          onChange={(e) => update("bedrooms", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+
+      <div>
+        <label className={labelStyle}>Bathrooms</label>
+        <input
+          type="number"
+          value={filters.bathrooms}
+          onChange={(e) => update("bathrooms", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+
+      <div>
+        <label className={labelStyle}>Property Type</label>
+        <select
+          value={filters.propertyType}
+          onChange={(e) => update("propertyType", e.target.value)}
+          className={inputStyle}
+        >
+          {PROPERTY_TYPE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className={labelStyle}>City</label>
+        <select
+          value={filters.city}
+          onChange={(e) => update("city", e.target.value)}
+          className={inputStyle}
+        >
+          <option value="">— Select City —</option>
+          {allCities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className={labelStyle}>Zone</label>
+        <input
+          type="text"
+          value={filters.zone}
+          onChange={(e) => update("zone", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+
+      <div>
+        <label className={labelStyle}>Availability</label>
+        <select
+          value={filters.availability}
+          onChange={(e) => update("availability", e.target.value)}
+          className={inputStyle}
+        >
+          {PROPERTY_AVAILABILITY_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className={labelStyle}>Assigned To</label>
+        <input
+          type="text"
+          value={filters.agentId}
+          onChange={(e) => update("agentId", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+
+      <div>
+        <label className={labelStyle}>Owner</label>
+        <input
+          type="text"
+          value={filters.owner}
+          onChange={(e) => update("owner", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+    </>
+  );
 
   return (
-    <div className="bg-white border-b border-slate-200 sticky top-16 z-30">
-      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2 text-slate-500 shrink-0">
-            <SlidersHorizontal className="w-4 h-4" />
-            <span className="text-sm font-medium text-slate-700">
-              {totalCount.toLocaleString()} {totalCount === 1 ? 'listing' : 'listings'}
-            </span>
+    <div className=" bg-white/95 backdrop-blur-md py-6 shadow-sm border-b border-slate-200">
+      <div className="max-w-screen-2xl mx-auto">
+        {/* MOBILE FILTER BUTTON */}
+        <div className="md:hidden flex items-center mb-3">
+          <button
+            onClick={() => setFiltersOpen(true)}
+            className="w-full h-[38px] flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-sm"
+          >
+            <Search className="w-4 h-4" />
+            Filters
+          </button>
+        </div>
+
+        {/* DESKTOP GRID */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+          {filterFields}
+
+          {/* SEARCH BUTTON */}
+          <div className="flex items-end">
+            <button className="h-[38px] w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-all">
+              <Search className="w-4 h-4" />
+              Search
+            </button>
           </div>
+        </div>
 
-          <div className="w-px h-5 bg-slate-200 shrink-0" />
-
-          <div className="flex items-center gap-2 flex-wrap flex-1">
+        {/* ORDER BY */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col w-full sm:w-auto">
+            <label className="text-xs font-bold text-slate-800 uppercase mb-1">
+              Order By
+            </label>
             <select
-              value={filters.country}
-              onChange={(e) => update('country', e.target.value)}
-              className="text-xs font-medium bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
+              value={filters.orderBy}
+              onChange={(e) => update("orderBy", e.target.value)}
+              className="text-sm bg-white border border-slate-300 rounded-md px-3 py-2 min-w-[200px]"
             >
-              {countryOptions.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
+              <option value="newest">Newest listings</option>
+              <option value="oldest">Oldest listings</option>
+              <option value="price_asc">Price (Low to High)</option>
+              <option value="price_desc">Price (High to Low)</option>
             </select>
-
-            <select
-              value={filters.typology}
-              onChange={(e) => update('typology', e.target.value)}
-              className="text-xs font-medium bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
-            >
-              {typologyOptions.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-
-            <select
-              value={filters.transaction_type}
-              onChange={(e) => update('transaction_type', e.target.value)}
-              className="text-xs font-medium bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
-            >
-              {transactionOptions.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-
-            <select
-              value={filters.bedrooms}
-              onChange={(e) => update('bedrooms', e.target.value)}
-              className="text-xs font-medium bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
-            >
-              {bedroomsOptions.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-
-            <input
-              type="text"
-              value={filters.location_city}
-              onChange={(e) => update('location_city', e.target.value)}
-              placeholder="City or area..."
-              className="text-xs font-medium bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-900 w-36 placeholder-slate-400"
-            />
-
-            <div className="flex items-center gap-1.5">
-              <input
-                type="number"
-                value={filters.min_price}
-                onChange={(e) => update('min_price', e.target.value)}
-                placeholder="Min €"
-                className="text-xs font-medium bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-900 w-24 placeholder-slate-400"
-              />
-              <span className="text-slate-300 text-xs">—</span>
-              <input
-                type="number"
-                value={filters.max_price}
-                onChange={(e) => update('max_price', e.target.value)}
-                placeholder="Max €"
-                className="text-xs font-medium bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-900 w-24 placeholder-slate-400"
-              />
-            </div>
-
-            <select
-              value={filters.status}
-              onChange={(e) => update('status', e.target.value)}
-              className="text-xs font-medium bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
-            >
-              {statusOptions.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-
-            {active && (
-              <button
-                onClick={reset}
-                className="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-600 font-medium bg-red-50 hover:bg-red-100 border border-red-100 rounded-lg px-3 py-1.5 transition-colors"
-              >
-                <X className="w-3.5 h-3.5" />
-                Clear filters
-              </button>
-            )}
           </div>
         </div>
       </div>
+      {/* MOBILE MODAL (USING YOUR MODAL COMPONENT) */}
+      <Modal
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        onClose={() => setFiltersOpen(false)}
+        title="Filters"
+        description="Refine your property search"
+        submitTitle="Apply Filters"
+        onSave={() => setFiltersOpen(false)}
+        fitContentHeight={false}
+      >
+        <div className="grid grid-cols-1 gap-4">{filterFields}</div>
+      </Modal>
     </div>
   );
 }
