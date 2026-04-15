@@ -9,7 +9,6 @@ import {
   Bath,
   Maximize2,
   Layers,
-  Home,
   Info,
   User as UserIcon,
   CheckCircle2,

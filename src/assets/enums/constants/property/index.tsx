@@ -1,4 +1,4 @@
-export type Option<T extends string = string> = {
+export type IOption<T extends string = string> = {
   value: T;
   label: string;
 };
@@ -6,7 +6,7 @@ export type Option<T extends string = string> = {
 /**
  * DEFAULT "SELECT"
  */
-export const DEFAULT_SELECT_OPTION: Option<""> = {
+export const DEFAULT_SELECT_OPTION: IOption<""> = {
   value: "",
   label: "— Select an option —",
 };
@@ -15,15 +15,15 @@ export const DEFAULT_SELECT_OPTION: Option<""> = {
  * Helper to prepend default option
  */
 export const withDefault = <T extends string>(
-  options: Option<T>[],
-): Option<T | "">[] => {
+  options: IOption<T>[],
+): IOption<T | "">[] => {
   return [DEFAULT_SELECT_OPTION, ...options];
 };
 
 /**
  * BASE YES / NO
  */
-export const YES_NO_OPTIONS: Option[] = [
+export const YES_NO_OPTIONS: IOption[] = [
   { value: "yes", label: "Yes" },
   { value: "no", label: "No" },
 ];
@@ -31,7 +31,7 @@ export const YES_NO_OPTIONS: Option[] = [
 /**
  * EXTENDED YES / NO EXAMPLES
  */
-export const YES_NO_IN_PROGRESS_OPTIONS: Option[] = [
+export const YES_NO_IN_PROGRESS_OPTIONS: IOption[] = [
   ...YES_NO_OPTIONS,
   { value: "in_progress", label: "In Progress" },
 ];

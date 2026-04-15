@@ -1,11 +1,10 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-import { eLocalStorage } from "../assets/enums";
+import { eLocalStorage, ERoles } from "../assets/enums";
 import { useNavigate } from "react-router-dom";
 import { TUserResponse } from "../types/auth";
 
 interface AuthContextType {
   user: TUserResponse | null;
-  profile: any;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -17,8 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [user, setUser] = useState<TUserResponse | null>(null);
-  const [profile, setProfile] = useState<any | null>(null);
-  const [loading, _setLoading] = useState(false);
+  const [loading] = useState(false);
 
   async function signIn(
     email: string,
@@ -29,20 +27,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     //  const res = await AuthenticationService.login({ email, password });
 
-    setUser({ id: "mock-user-id", email });
-    setProfile({
-      id: "mock-user-id",
-      email,
-      full_name: "Mock Agent",
-      role: "agent",
+    setUser({
+      id: 1,
+      email: "test",
+      userName: "",
+      firstName: "test",
+      lastName: "",
+      role: ERoles.Admin,
+      country: "AL",
     });
-
     return { error: null };
   }
 
   async function signOut(): Promise<void> {
     setUser(null);
-    setProfile(null);
     localStorage.removeItem(eLocalStorage.AccessToken);
     localStorage.removeItem(eLocalStorage.RefreshToken);
     navigate("/");
@@ -52,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, profile, loading, signIn, signOut, refreshProfile }}
+      value={{ user, loading, signIn, signOut, refreshProfile }}
     >
       {children}
     </AuthContext.Provider>

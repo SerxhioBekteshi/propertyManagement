@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Building2, LogOut, ChevronDown, User, Shield } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 export const countryFlags: Record<string, string> = {
   albania: "🇦🇱",
@@ -8,7 +9,7 @@ export const countryFlags: Record<string, string> = {
 };
 
 export default function Navbar() {
-  const { profile, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -26,6 +27,38 @@ export default function Navbar() {
           </div>
         </div>
 
+        <div>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link
+              to="/countries"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              Countries
+            </Link>
+
+            <Link
+              to="/divisions"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              Divisions
+            </Link>
+
+            <Link
+              to="/cities"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              Cities
+            </Link>
+
+            <Link
+              to="/zones"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              Zones
+            </Link>
+          </nav>
+        </div>
+
         {/* RIGHT - USER */}
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -34,7 +67,7 @@ export default function Navbar() {
               className="flex items-center gap-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 transition-all"
             >
               <div className="w-7 h-7 bg-slate-200 rounded-lg flex items-center justify-center">
-                {profile?.role === "admin" ? (
+                {user?.role === "admin" ? (
                   <Shield className="w-3.5 h-3.5 text-slate-600" />
                 ) : (
                   <User className="w-3.5 h-3.5 text-slate-600" />
@@ -43,19 +76,19 @@ export default function Navbar() {
 
               <div className="hidden sm:block text-left">
                 <p className="text-xs font-medium text-slate-900 leading-none mb-0.5">
-                  {profile?.full_name || "User"}
+                  {user?.userName || "User"}
                 </p>
                 <div className="flex items-center gap-1">
                   <span className="text-xs text-slate-400 capitalize">
-                    {profile?.role}
+                    {user?.role}
                   </span>
-                  {profile?.country && (
+                  {user?.country && (
                     <>
                       <span className="text-slate-300">·</span>
                       <span className="text-xs text-slate-400">
-                        {countryFlags[profile.country]}{" "}
-                        {profile.country.charAt(0).toUpperCase() +
-                          profile.country.slice(1)}
+                        {countryFlags[user.country]}{" "}
+                        {user.country.charAt(0).toUpperCase() +
+                          user.country.slice(1)}
                       </span>
                     </>
                   )}
@@ -69,11 +102,11 @@ export default function Navbar() {
               <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl border border-slate-200 shadow-lg shadow-slate-200/50 py-2 z-50">
                 <div className="px-4 py-2.5 border-b border-slate-100 mb-1">
                   <p className="text-xs font-semibold text-slate-900">
-                    {profile?.full_name}
+                    {user?.userName}
                   </p>
                   <p className="text-xs text-slate-400 mt-0.5 capitalize">
-                    {profile?.role}
-                    {profile?.country && ` · ${profile.country}`}
+                    {user?.role}
+                    {user?.country && ` · ${user.country}`}
                   </p>
                 </div>
 

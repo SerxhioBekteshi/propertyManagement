@@ -6,6 +6,9 @@ import SplashScreen from "../components/splash-screen";
 
 const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
 const PropertyDetailsPage = lazy(() => import("../pages/propertyDetails"));
+const ZonesPage = lazy(() => import("../pages/zones/ZonesPage"));
+const CitiesPage = lazy(() => import("../pages/cities/CitiesPage"));
+const DivisionsPage = lazy(() => import("../pages/divisions/DivisionsPage"));
 
 export const dashboardRoutes = [
   {
@@ -23,6 +26,30 @@ export const dashboardRoutes = [
         element: (
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "zones",
+        element: (
+          <ProtectedRoute>
+            <ZonesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "cities",
+        element: (
+          <ProtectedRoute>
+            <CitiesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "divisions",
+        element: (
+          <ProtectedRoute>
+            <DivisionsPage />
           </ProtectedRoute>
         ),
       },
