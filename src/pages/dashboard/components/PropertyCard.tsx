@@ -1,7 +1,7 @@
 import { BedDouble, Bath, Maximize2, MapPin, User, Eye } from "lucide-react";
 import { useAuth } from "../../../contexts/AuthContext";
-import { PropertyResponseDTO } from "../../../types/database";
 import { useNavigate } from "react-router-dom";
+import { PropertyResponseDTO } from "../../../types/properties";
 
 interface PropertyCardProps {
   property: PropertyResponseDTO;
@@ -39,7 +39,7 @@ function getPlaceholder(id: string | number) {
 }
 
 export default function PropertyCard({ property, onClick }: PropertyCardProps) {
-  const { profile } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const imageUrl = getPlaceholder(property.id);

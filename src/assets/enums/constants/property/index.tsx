@@ -56,8 +56,6 @@ export const PROPERTY_MAIN_TYPE_OPTIONS = withDefault([
   { value: "residential", label: "Residential" },
   { value: "commercial", label: "Commercial" },
   { value: "land", label: "Land" },
-  { value: "industrial", label: "Industrial" },
-  { value: "business", label: "Business" },
 ]);
 
 /**
@@ -142,15 +140,6 @@ export const PROPERTY_ORIENTATION_OPTIONS = withDefault([
 ]);
 
 /**
- * 11. DIVISION
- */
-export const PROPERTY_DIVISION_OPTIONS = withDefault([
-  { value: "residential", label: "Residential" },
-  { value: "commercial", label: "Commercial" },
-  { value: "mixed", label: "Mixed" },
-]);
-
-/**
  * 12. BUSINESS TYPE
  */
 export const PROPERTY_BUSINESS_TYPE_OPTIONS = withDefault([
@@ -175,39 +164,96 @@ export const PROPERTY_DOCUMENTATION_OPTIONS = withDefault([
   { value: "in_progress", label: "In Progress" },
 ]);
 
-/**
- * CITIES
- */
-export const albanianCities = [
-  "Tirana",
-  "Durrës",
-  "Vlorë",
-  "Shkodër",
-  "Elbasan",
-  "Fier",
-  "Korçë",
-  "Berat",
-  "Sarandë",
-  "Lushnjë",
-  "Kavajë",
-  "Gjirokastër",
-  "Pogradec",
-  "Lezhë",
-];
+export const PROPERTY_VIEW_OPTIONS = withDefault([
+  { value: "sea", label: "Sea" },
+  { value: "lake", label: "Lake" },
+  { value: "mountains", label: "Mountains" },
+  { value: "river", label: "River" },
+  { value: "city", label: "City" },
+  { value: "beach", label: "Beach" },
+  { value: "countryside", label: "Countryside" },
+  { value: "garden", label: "Garden" },
+  { value: "dam", label: "Dam" },
+]);
 
-export const greekCities = [
-  "Athens",
-  "Thessaloniki",
-  "Patras",
-  "Heraklion",
-  "Larissa",
-  "Volos",
-  "Ioannina",
-  "Rhodes",
-  "Chania",
-  "Santorini",
-  "Mykonos",
-  "Corfu",
-  "Nafplio",
-  "Katerini",
-];
+export const PROPERTY_INFRASTRUCTURE_OPTIONS = withDefault([
+  { value: "terrace", label: "Terrace" },
+  { value: "garden", label: "Garden" },
+  { value: "games_room", label: "Games Room" },
+  { value: "gym", label: "Gym" },
+  { value: "swimming_pool", label: "Swimming Pool" },
+  { value: "private_pool", label: "Private Swimming Pool" },
+  { value: "shared_pool", label: "Shared Swimming Pool" },
+  { value: "tennis_court", label: "Tennis Court" },
+  { value: "garage", label: "Garage" },
+  { value: "outdoor_parking", label: "Outdoor Parking" },
+  { value: "indoor_parking", label: "Indoor Parking" },
+  { value: "storage_room", label: "Storage Room" },
+  { value: "wine_cellar", label: "Wine Cellar" },
+  { value: "cellar", label: "Cellar" },
+  { value: "wardrobes", label: "Wardrobes" },
+  { value: "bathtub", label: "Bathtub" },
+  { value: "dryer", label: "Dryer" },
+  { value: "assembly_room", label: "Assembly Room" },
+  { value: "roof_garden", label: "Roof Garden" },
+  { value: "disabled_access", label: "Disabled Access" },
+  { value: "covered_terrace", label: "Covered Terrace" },
+  { value: "playground", label: "Playground" },
+  { value: "public_lighting", label: "Public Lighting" },
+  { value: "none", label: "None" },
+]);
+
+export const PROPERTY_SURROUNDINGS_OPTIONS = withDefault([
+  { value: "airport", label: "Airport" },
+  { value: "city_center", label: "City Center" },
+  { value: "countryside", label: "Countryside" },
+  { value: "shopping_center", label: "Shopping Center" },
+  { value: "train_station", label: "Train Station" },
+  { value: "railway_station", label: "Railway Station" },
+  { value: "subway", label: "Subway" },
+  { value: "fire_station", label: "Fire Station" },
+  { value: "police", label: "Police Station" },
+  { value: "hospital", label: "Hospital" },
+  { value: "public_library", label: "Public Library" },
+  { value: "school", label: "School" },
+  { value: "public_transport", label: "Public Transport" },
+  { value: "supermarket", label: "Supermarket" },
+  { value: "pharmacy", label: "Pharmacy" },
+  { value: "green_areas", label: "Green Areas" },
+  { value: "highway", label: "Highway" },
+  { value: "market", label: "Market" },
+  { value: "bank", label: "Bank" },
+  { value: "commercial_area", label: "Commercial Area" },
+  { value: "gym", label: "Gym" },
+  { value: "playground", label: "Children's Playground" },
+  { value: "taxi_rank", label: "Taxi Rank" },
+  { value: "gas_station", label: "Gas Station" },
+  { value: "sports_court", label: "Sports Court" },
+  { value: "bicycle_stand", label: "Bicycle Stand" },
+  { value: "near_beach", label: "Near the Beach" },
+  { value: "swimming_pools", label: "Swimming Pools" },
+  { value: "plot", label: "Plot" },
+]);
+
+export const PROPERTY_EQUIPMENT_OPTIONS = withDefault([
+  { value: "air_conditioning", label: "Air Conditioning" },
+  { value: "heating", label: "Heating" },
+  { value: "central_heating", label: "Central Heating" },
+  { value: "underfloor_heating", label: "Underfloor Heating" },
+  { value: "fireplace", label: "Fireplace" },
+  { value: "solar_panels", label: "Solar Panels" },
+  { value: "double_glazing", label: "Double Glazing" },
+  { value: "shutters", label: "Shutters" },
+  { value: "security_door", label: "Security Door" },
+  { value: "alarm_system", label: "Alarm System" },
+  { value: "cctv", label: "CCTV" },
+  { value: "intercom", label: "Intercom" },
+  { value: "elevator", label: "Elevator" },
+  { value: "wifi", label: "Wi-Fi" },
+  { value: "tv", label: "TV" },
+  { value: "kitchen_appliances", label: "Kitchen Appliances" },
+  { value: "oven", label: "Oven" },
+  { value: "fridge", label: "Fridge" },
+  { value: "dishwasher", label: "Dishwasher" },
+  { value: "washing_machine", label: "Washing Machine" },
+]);

@@ -59,6 +59,9 @@ const TYPE_COLORS: Record<string, string> = {
   studio: "bg-rose-50 text-rose-700 border-rose-100",
 };
 
+const parseList = (val?: string) =>
+  val ? val.split(",").map((v) => v.trim()) : [];
+
 export default function PropertyDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -107,7 +110,7 @@ export default function PropertyDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* IMAGE CAROUSEL WITH SWIPE */}
-          <div className="relative h-[450px] rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900 group">
+          <div className="relative h-[520px] rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900 group">
             <AnimatePresence mode="wait">
               <motion.img
                 key={imgIndex}
@@ -363,6 +366,49 @@ export default function PropertyDetailsPage() {
               </div>
             </div>
           </Section>
+
+          <Section
+            icon={<Layers className="w-5 h-5 text-purple-500" />}
+            title="More Features"
+          >
+            <div className="space-y-4">
+              {/* VIEW TO */}
+              {property.withViewTo && (
+                <FeatureGroup
+                  label="View To"
+                  values={parseList(property.withViewTo)}
+                  color="blue"
+                />
+              )}
+
+              {/* EQUIPMENT */}
+              {property.equipment && (
+                <FeatureGroup
+                  label="Equipment"
+                  values={parseList(property.equipment)}
+                  color="emerald"
+                />
+              )}
+
+              {/* INFRASTRUCTURES */}
+              {property.infrastructues && (
+                <FeatureGroup
+                  label="Infrastructures"
+                  values={parseList(property.infrastructues)}
+                  color="amber"
+                />
+              )}
+
+              {/* SURROUNDINGS */}
+              {property.surroundings && (
+                <FeatureGroup
+                  label="Surroundings"
+                  values={parseList(property.surroundings)}
+                  color="indigo"
+                />
+              )}
+            </div>
+          </Section>
         </div>
       </div>
     </div>
@@ -526,6 +572,39 @@ function NotFound({ navigate }: any) {
         >
           Return to Dashboard
         </button>
+      </div>
+    </div>
+  );
+}
+
+function FeatureGroup({
+  label,
+  values,
+  color,
+}: {
+  label: string;
+  values: string[];
+  color: "blue" | "emerald" | "amber" | "indigo";
+}) {
+  const colorMap = {
+    blue: "bg-blue-50 text-blue-700 border-blue-100",
+    emerald: "bg-emerald-50 text-emerald-700 border-emerald-100",
+    amber: "bg-amber-50 text-amber-700 border-amber-100",
+    indigo: "bg-indigo-50 text-indigo-700 border-indigo-100",
+  };
+
+  return (
+    <div>
+      <p className="text-xs font-semibold text-slate-500 mb-2">{label}</p>
+      <div className="flex flex-wrap gap-2">
+        {values.map((v) => (
+          <span
+            key={v}
+            className={`text-[11px] font-medium px-2.5 py-1 rounded-lg border ${colorMap[color]}`}
+          >
+            {v.replace(/_/g, " ")}
+          </span>
+        ))}
       </div>
     </div>
   );

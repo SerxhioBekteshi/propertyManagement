@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import {
-  albanianCities,
-  greekCities,
   PROPERTY_AVAILABILITY_OPTIONS,
   PROPERTY_BUSINESS_TYPE_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
@@ -27,7 +25,7 @@ export default function PropertyFilters({
     onChange({ ...filters, [key]: value });
   }
 
-  const allCities = [...albanianCities, ...greekCities].sort();
+  const allCities = [].sort();
 
   const inputStyle =
     "w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-slate-300 focus:bg-white transition-all placeholder:text-slate-400 shadow-sm";

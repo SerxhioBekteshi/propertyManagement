@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { PropertyResponseDTO } from "../types/database";
+import { PropertyResponseDTO } from "../types/properties";
 
 const PAGE_SIZE = 12;
 
@@ -51,6 +51,11 @@ export const MOCK_PROPERTIES: PropertyResponseDTO[] = [
     yearOfConstruction: 2015,
     yearOfRenovation: 2023,
     lastModifiedBy: "agent_01",
+
+    withViewTo: "sea,city,garden",
+    equipment: "air_conditioning,heating,security_door,wifi,oven",
+    infrastructures: "swimming_pool,garage,terrace,roof_garden",
+    surroundings: "beach,restaurant,supermarket,pharmacy",
   },
   {
     id: 2,
@@ -99,6 +104,11 @@ export const MOCK_PROPERTIES: PropertyResponseDTO[] = [
     yearOfConstruction: 2020,
     yearOfRenovation: 2022,
     lastModifiedBy: "agent_02",
+
+    withViewTo: "sea,city,garden",
+    equipment: "air_conditioning,heating,security_door,wifi,oven",
+    infrastructures: "swimming_pool,garage,terrace,roof_garden",
+    surroundings: "beach,restaurant,supermarket,pharmacy",
   },
   {
     id: 3,
@@ -147,6 +157,11 @@ export const MOCK_PROPERTIES: PropertyResponseDTO[] = [
     yearOfConstruction: 1998,
     yearOfRenovation: 2010,
     lastModifiedBy: "agent_01",
+
+    withViewTo: "sea,city,garden",
+    equipment: "air_conditioning,heating,security_door,wifi,oven",
+    infrastructures: "swimming_pool,garage,terrace,roof_garden",
+    surroundings: "beach,restaurant,supermarket,pharmacy",
   },
   {
     id: 4,
@@ -194,6 +209,11 @@ export const MOCK_PROPERTIES: PropertyResponseDTO[] = [
     yearOfConstruction: 2005,
     yearOfRenovation: 2021,
     lastModifiedBy: "agent_03",
+
+    withViewTo: "sea,city,garden",
+    equipment: "air_conditioning,heating,security_door,wifi,oven",
+    infrastructures: "swimming_pool,garage,terrace,roof_garden",
+    surroundings: "beach,restaurant,supermarket,pharmacy",
   },
   {
     id: 5,
@@ -241,6 +261,11 @@ export const MOCK_PROPERTIES: PropertyResponseDTO[] = [
     yearOfConstruction: 1900,
     yearOfRenovation: 2018,
     lastModifiedBy: "agent_02",
+
+    withViewTo: "city",
+    equipment: "air_conditioning,wifi,washing_machine",
+    infrastructures: "elevator,indoor_parking",
+    surroundings: "city_center,school,public_transport,bank",
   },
 ];
 

@@ -5,19 +5,21 @@ import {
   PROPERTY_AVAILABILITY_OPTIONS,
   PROPERTY_BEING_LIVED_OPTIONS,
   PROPERTY_BUSINESS_TYPE_OPTIONS,
-  PROPERTY_DIVISION_OPTIONS,
   PROPERTY_DOCUMENTATION_OPTIONS,
   PROPERTY_ELEVATOR_OPTIONS,
+  PROPERTY_EQUIPMENT_OPTIONS,
   PROPERTY_FURNISHED_OPTIONS,
+  PROPERTY_INFRASTRUCTURE_OPTIONS,
   PROPERTY_MAIN_TYPE_OPTIONS,
   PROPERTY_ORIENTATION_OPTIONS,
   PROPERTY_OWNER_TYPOLOGY_OPTIONS,
   PROPERTY_PARKING_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
+  PROPERTY_SURROUNDINGS_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
-  albanianCities,
-  greekCities,
+  PROPERTY_VIEW_OPTIONS,
 } from "../../../assets/enums/constants/property";
+import { MultiSelect } from "../../../components/multi-select";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -29,12 +31,7 @@ const PropertyForm = () => {
   const { control, watch } = useFormContext();
   const selectedCountry = watch("country");
 
-  const cityOptions =
-    selectedCountry === "Albania"
-      ? albanianCities
-      : selectedCountry === "Greece"
-        ? greekCities
-        : [];
+  const cityOptions = [];
 
   return (
     <div className="space-y-8">
@@ -73,7 +70,6 @@ const PropertyForm = () => {
           />
         </div>
       </Section>
-
       {/* ===================== TWO-COLUMN BODY ===================== */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* ──────────── LEFT COLUMN ──────────── */}
@@ -373,7 +369,7 @@ const PropertyForm = () => {
                   {cityOptions.length > 0 ? (
                     <select {...field} className={inputClass}>
                       <option value="">— Select —</option>
-                      {cityOptions.map((c) => (
+                      {[].map((c) => (
                         <option key={c} value={c}>
                           {c}
                         </option>
@@ -403,7 +399,7 @@ const PropertyForm = () => {
             />
           </div>
 
-          <div>
+          {/* <div>
             <Controller
               control={control}
               name="division"
@@ -411,7 +407,7 @@ const PropertyForm = () => {
                 <>
                   <Label>Division</Label>
                   <select {...field} className={inputClass}>
-                    {PROPERTY_DIVISION_OPTIONS.map((v, i) => (
+                    {[].map((v, i) => (
                       <option key={i} value={v.value}>
                         {v.label}
                       </option>
@@ -420,7 +416,7 @@ const PropertyForm = () => {
                 </>
               )}
             />
-          </div>
+          </div> */}
           <div>
             <Controller
               control={control}
@@ -522,7 +518,6 @@ const PropertyForm = () => {
           </div>
         </div>
       </Section>
-
       {/* Property Price */}
       <Section title="Property Price" className="mt-6">
         <div className="grid lg:grid-cols-2 gap-6">
@@ -607,7 +602,6 @@ const PropertyForm = () => {
           </div>
         </div>
       </Section>
-
       <Section title="Property Area">
         <div className="grid lg:grid-cols-2 gap-6">
           {(
@@ -643,7 +637,6 @@ const PropertyForm = () => {
           ))}
         </div>
       </Section>
-
       <Section title="Property Division">
         <div className="grid lg:grid-cols-2 gap-6">
           {" "}
@@ -676,7 +669,6 @@ const PropertyForm = () => {
           ))}
         </div>
       </Section>
-
       {/* Owner */}
       <Section title="Property Owner">
         <div className="grid lg:grid-cols-2 gap-6">
@@ -717,7 +709,6 @@ const PropertyForm = () => {
           </div>
         </div>
       </Section>
-
       {/* Owner */}
       <Section title="Property Other">
         <div className="grid lg:grid-cols-2 gap-6">
@@ -804,9 +795,73 @@ const PropertyForm = () => {
           </div>
         </div>
       </Section>
+      <Section title="More Features">
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* View To */}
+          <Controller
+            control={control}
+            name="withViewTo"
+            render={({ field }) => (
+              <div>
+                <Label>View To</Label>
+                <MultiSelect
+                  options={PROPERTY_VIEW_OPTIONS}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </div>
+            )}
+          />
 
-      {/* ===================== PORTALS (full width) ===================== */}
-      <Section title="Property Features">awd</Section>
+          {/* Equipment */}
+          <Controller
+            control={control}
+            name="equipment"
+            render={({ field }) => (
+              <div>
+                <Label>Equipment</Label>
+                <MultiSelect
+                  options={PROPERTY_EQUIPMENT_OPTIONS}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </div>
+            )}
+          />
+
+          {/* Infrastructures */}
+          <Controller
+            control={control}
+            name="infrastructures"
+            render={({ field }) => (
+              <div>
+                <Label>Infrastructures</Label>
+                <MultiSelect
+                  options={PROPERTY_INFRASTRUCTURE_OPTIONS}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </div>
+            )}
+          />
+
+          {/* Surroundings */}
+          <Controller
+            control={control}
+            name="surroundings"
+            render={({ field }) => (
+              <div>
+                <Label>Surroundings</Label>
+                <MultiSelect
+                  options={PROPERTY_SURROUNDINGS_OPTIONS}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </div>
+            )}
+          />
+        </div>
+      </Section>
     </div>
   );
 };

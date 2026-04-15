@@ -88,9 +88,11 @@ export type PropertyResponseDTO = {
   yearOfConstruction?: number;
   yearOfRenovation?: number;
 
-  //surroundings
-  // withViewTo: string;
-  // equipment: string;
+  //More Features
+  withViewTo: string;
+  equipment: string;
+  infrastructues: string;
+  surroundings: string;
 
   // System
   lastModifiedBy: string;
