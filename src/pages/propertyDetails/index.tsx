@@ -18,6 +18,8 @@ import {
   Construction,
   ChevronLeft,
   ChevronRight,
+  Square,
+  TreeDeciduous,
 } from "lucide-react";
 import { MOCK_PROPERTIES } from "../../hooks/useProperties";
 import { statusColors } from "../dashboard/components/PropertyCard";
@@ -193,7 +195,7 @@ export default function PropertyDetailsPage() {
           </div>
 
           {/* QUICK STATS BAR */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <Stat
               icon={<BedDouble className="w-5 h-5" />}
               label="Bedrooms"
@@ -216,6 +218,19 @@ export default function PropertyDetailsPage() {
               icon={<Layers className="w-5 h-5" />}
               label="Gross Area"
               value={`${property.grossArea} m²`}
+              color="slate"
+            />
+            <Stat
+              icon={<TreeDeciduous className="w-5 h-5" />}
+              label="Land Area"
+              value={`${property.landArea} m²`}
+              color="emerald"
+            />
+
+            <Stat
+              icon={<Square className="w-5 h-5" />}
+              label="Balcony Area"
+              value={`${property.balconyArea} m²`}
               color="slate"
             />
           </div>
