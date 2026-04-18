@@ -20,6 +20,7 @@ import {
   PROPERTY_VIEW_OPTIONS,
 } from "../../../assets/enums/constants/property";
 import { MultiSelect } from "../../../components/multi-select";
+import { ImageUploader } from "../../../components/upload-file";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -28,10 +29,7 @@ const checkboxClass =
   "h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer";
 
 const PropertyForm = () => {
-  const { control, watch } = useFormContext();
-  const selectedCountry = watch("country");
-
-  const cityOptions = [];
+  const { control } = useFormContext();
 
   return (
     <div className="space-y-8">
@@ -60,6 +58,17 @@ const PropertyForm = () => {
           />
           <Controller
             control={control}
+            name="images"
+            render={({ field }) => (
+              <ImageUploader
+                value={field.value ?? []}
+                onChange={field.onChange}
+                maxFiles={20}
+              />
+            )}
+          />
+          <Controller
+            control={control}
             name="comments"
             render={({ field }) => (
               <div>
@@ -70,6 +79,7 @@ const PropertyForm = () => {
           />
         </div>
       </Section>
+
       {/* ===================== TWO-COLUMN BODY ===================== */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* ──────────── LEFT COLUMN ──────────── */}
@@ -366,7 +376,7 @@ const PropertyForm = () => {
               render={({ field }) => (
                 <>
                   <Label>City</Label>
-                  {cityOptions.length > 0 ? (
+                  {[].length > 0 ? (
                     <select {...field} className={inputClass}>
                       <option value="">— Select —</option>
                       {[].map((c) => (

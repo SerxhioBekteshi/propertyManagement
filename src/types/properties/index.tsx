@@ -33,36 +33,36 @@ export type PropertyResponseDTO = {
   comments?: string;
 
   // Classification, property information
-  status: string;
-  mainType: string;
-  availability: string;
-  furnished: string;
-  exclusive: boolean;
-  publishToPortal: boolean;
+  status?: string;
+  mainType?: string;
+  availability?: string;
+  furnished?: string;
+  exclusive?: boolean;
+  publishToPortal?: boolean;
 
-  propertyType: string;
-  elevator: "yes" | "no";
-  beingLived: "yes" | "no";
-  parking: "yes" | "no";
-  portalsToPublish: string[];
-  propertyOrientation: "North" | "South" | "East" | "West";
+  propertyType?: string;
+  elevator?: "yes" | "no";
+  beingLived?: "yes" | "no";
+  parking?: "yes" | "no";
+  portalsToPublish: string;
+  propertyOrientation?: "North" | "South" | "East" | "West";
 
   //Location
-  country: string;
-  city: string;
-  address: string;
-  latitude: number;
-  longitude: number;
+  country?: string;
+  city?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
   division?: string;
   zone?: string;
   floor?: number;
-  publishGeoreference: boolean;
+  publishGeoreference?: boolean;
 
   //Price, business type
   businessType: "sale" | "rent";
   price: number;
   priceForM2?: number;
-  priceUponRequest: boolean;
+  priceUponRequest?: boolean;
 
   // Areas
   interiorArea?: number;
@@ -72,27 +72,27 @@ export type PropertyResponseDTO = {
   commonArea?: number;
 
   // Divisions
-  bedrooms: number;
-  bathrooms: number;
-  otherRooms: number;
-  livingRoom: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  otherRooms?: number;
+  livingRoom?: number;
 
   //property Owner
-  owner: string;
-  agentId: string;
-  ownersTypology: string;
+  owner?: string;
+  agentId: number;
+  ownersTypology?: string;
 
   // Timeline and other Features
-  documentation: "yes" | "no" | "in_progress";
+  documentation?: "yes" | "no" | "in_progress";
   communalCharger?: "yes" | "no";
   yearOfConstruction?: number;
   yearOfRenovation?: number;
 
   //More Features
-  withViewTo: string;
-  equipment: string;
-  infrastructues: string;
-  surroundings: string;
+  withViewTo?: string;
+  equipment?: string;
+  infrastructues?: string;
+  surroundings?: string;
 
   // System
   lastModifiedBy: string;

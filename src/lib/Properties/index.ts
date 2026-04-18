@@ -1,15 +1,12 @@
-import { PropertyResponseDTO } from "../../types/database";
-import { AddPropertyDTO } from "../../types/properties";
+import { AddPropertyDTO, PropertyResponseDTO } from "../../types/properties";
 import { axiosInstance, ENDPOINTS, TBaseResponse } from "../axios";
 
 export const PropertiesService = {
   async getProperties(): Promise<TBaseResponse<PropertyResponseDTO[]>> {
-    const res = await axiosInstance.get(ENDPOINTS.properties.list);
-    return res.data;
+    return await axiosInstance.get(ENDPOINTS.properties.getAll);
   },
 
-  async createStory(row: AddPropertyDTO): Promise<boolean> {
-    const res = await axiosInstance.post(ENDPOINTS.properties.create, row);
-    return res.data;
+  async createProperty(row: AddPropertyDTO): Promise<TBaseResponse<boolean>> {
+    return await axiosInstance.post(ENDPOINTS.properties.create, row);
   },
 };

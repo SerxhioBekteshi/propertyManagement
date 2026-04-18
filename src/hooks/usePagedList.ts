@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { PropertyResponseDTO } from "../types/properties";
-
-const PAGE_SIZE = 12;
+import { BaseTableService } from "../lib/Table";
+import { LookupFilterDTO, LookupRepositoryDTO } from "../types";
 
 export const MOCK_PROPERTIES: PropertyResponseDTO[] = [
   {
@@ -269,86 +269,134 @@ export const MOCK_PROPERTIES: PropertyResponseDTO[] = [
   },
 ];
 
-// function applyFilters(
-//   properties: PropertyWithAgent[],
-//   filters: PropertyFilters,
-// ): PropertyWithAgent[] {
-//   return properties.filter((p) => {
-//     if (filters.typology && p.typology !== filters.typology) return false;
-//     if (
-//       filters.transaction_type &&
-//       p.transaction_type !== filters.transaction_type
-//     )
-//       return false;
-//     if (filters.country && p.country !== filters.country) return false;
-//     if (filters.status && p.status !== filters.status) return false;
-//     if (filters.bedrooms && p.bedrooms < Number(filters.bedrooms)) return false;
-//     if (filters.min_price && p.price < Number(filters.min_price)) return false;
-//     if (filters.max_price && p.price > Number(filters.max_price)) return false;
-//     if (filters.location_city) {
-//       const q = filters.location_city.toLowerCase();
-//       const cityMatch = p.location_city?.toLowerCase().includes(q);
-//       const areaMatch = p.location_area?.toLowerCase().includes(q);
-//       if (!cityMatch && !areaMatch) return false;
-//     }
-//     return true;
-//   });
-// }
+const PAGE_SIZE = 12;
 
-export function useProperties() {
-  const [properties, setProperties] = useState<PropertyResponseDTO[]>([]);
-  const [loading, setLoading] = useState(true);
+interface UsePagedListOptions<TFilters> {
+  controller: string;
+  filters?: TFilters;
+  filterMappings?: {
+    key: keyof TFilters;
+    column: string;
+    operation: LookupFilterDTO["operation"];
+  }[];
+}
+
+export function usePagedList<T, TFilters = Record<string, unknown>>(
+  options: UsePagedListOptions<TFilters>,
+) {
+  const { controller, filters, filterMappings } = options;
+
+  const [items, setItems] = useState<T[]>([]);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const pageRef = useRef(0);
 
-  const loadInitial = useCallback(() => {
-    setLoading(true);
-    pageRef.current = 0;
+  const buildFilters = useCallback(
+    (currentFilters?: TFilters): LookupFilterDTO[] => {
+      if (!filterMappings?.length || !currentFilters) return [];
 
-    setTimeout(() => {
-      const page = MOCK_PROPERTIES.slice(0, PAGE_SIZE);
+      return filterMappings
+        .filter((f) => {
+          const val = currentFilters[f.key];
+          return val !== undefined && val !== null && val !== "";
+        })
+        .map((f) => ({
+          columnName: f.column,
+          value: currentFilters[f.key],
+          operation: f.operation,
+        }));
+    },
+    [filterMappings],
+  );
 
-      setProperties(page);
-      setTotalCount(MOCK_PROPERTIES.length);
-      setHasMore(MOCK_PROPERTIES.length > PAGE_SIZE);
+  const buildBody = useCallback(
+    (
+      page: number,
+      term: string,
+      currentFilters?: TFilters,
+    ): LookupRepositoryDTO => ({
+      searchTerm: term,
+      pageNumber: page,
+      pageSize: PAGE_SIZE,
+      filters: buildFilters(currentFilters),
+      sorting: [],
+    }),
+    [buildFilters],
+  );
 
-      pageRef.current = 1;
-      setLoading(false);
-    }, 300);
-  }, []);
+  const loadInitial = useCallback(
+    async (term = searchTerm, currentFilters = filters) => {
+      try {
+        setLoading(true);
+        setError(null);
+        pageRef.current = 0;
 
-  const loadMore = useCallback(() => {
+        const body = buildBody(0, term, currentFilters);
+        const result = await BaseTableService.getAllItems<T>(controller, body);
+
+        setItems(result.items);
+        setTotalCount(result.totalCount);
+        setHasMore(result.hasNext);
+        pageRef.current = 1;
+      } catch {
+        setError("Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [controller, searchTerm, filters, buildBody],
+  );
+
+  const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
 
-    setLoadingMore(true);
+    try {
+      setLoadingMore(true);
 
-    setTimeout(() => {
-      const from = pageRef.current * PAGE_SIZE;
-      const page = MOCK_PROPERTIES.slice(from, from + PAGE_SIZE);
+      const body = buildBody(pageRef.current, searchTerm, filters);
+      const result = await BaseTableService.getAllItems<T>(controller, body);
 
-      setProperties((prev) => [...prev, ...page]);
-
+      setItems((prev) => [...prev, ...result.items]);
+      setHasMore(result.hasNext);
       pageRef.current += 1;
-      setHasMore(from + PAGE_SIZE < MOCK_PROPERTIES.length);
-
+    } catch {
+      setError("Failed to load more");
+    } finally {
       setLoadingMore(false);
-    }, 300);
-  }, [loadingMore, hasMore]);
+    }
+  }, [loadingMore, hasMore, controller, searchTerm, filters, buildBody]);
 
-  useEffect(() => {
-    loadInitial();
-  }, [loadInitial]);
+  const search = useCallback(
+    (term: string) => {
+      setSearchTerm(term);
+      loadInitial(term, filters);
+    },
+    [filters, loadInitial],
+  );
+
+  const applyFilters = useCallback(
+    (newFilters: TFilters) => {
+      loadInitial(searchTerm, newFilters);
+    },
+    [searchTerm, loadInitial],
+  );
 
   return {
-    properties,
+    items,
     loading,
     loadingMore,
     hasMore,
     totalCount,
+    error,
+    searchTerm,
     loadMore,
-    refresh: loadInitial,
+    refresh: () => loadInitial(),
+    search,
+    applyFilters,
   };
 }

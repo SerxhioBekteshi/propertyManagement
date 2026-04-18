@@ -21,7 +21,7 @@ import {
   Square,
   TreeDeciduous,
 } from "lucide-react";
-import { MOCK_PROPERTIES } from "../../hooks/useProperties";
+import { MOCK_PROPERTIES } from "../../hooks/usePagedList";
 import { statusColors } from "../dashboard/components/PropertyCard";
 import { countryFlags } from "../../components/navbar";
 

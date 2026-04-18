@@ -154,8 +154,8 @@ export const ENDPOINTS = {
     refresh: "token/refresh",
   },
   properties: {
-    list: "Properties/get-all",
-    create: `Properties/create`,
+    getAll: "Property/get-all",
+    create: `Property/create`,
   },
   locationConfigurationList: {
     cities(divisionId?: number) {

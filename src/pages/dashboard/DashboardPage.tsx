@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import PropertyFilters from "./components/PropertyFilters";
 import PropertyCard from "./components/PropertyCard";
-import { useProperties } from "../../hooks/useProperties";
 import { Building2, Loader2, Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import ModalProperty from "./components/PropertyModal";
-import { PropertyFiltersDTO } from "../../types/properties";
+import {
+  PropertyFiltersDTO,
+  PropertyResponseDTO,
+} from "../../types/properties";
+import { usePagedList } from "../../hooks/usePagedList";
+import { ENDPOINTS } from "../../lib/axios";
 
 export const INITIAL_FILTERS: PropertyFiltersDTO = {
-  id: "",
   businessType: "",
   minPrice: "",
   maxPrice: "",
@@ -28,9 +31,38 @@ export default function DashboardPage() {
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const { properties, loading, loadingMore, hasMore, totalCount, loadMore } =
-    useProperties();
+  const {
+    items: properties,
+    loading,
+    loadingMore,
+    hasMore,
+    totalCount,
+    loadMore,
+    refresh,
+    applyFilters,
+  } = usePagedList<PropertyResponseDTO, PropertyFiltersDTO>({
+    controller: ENDPOINTS.properties.getAll,
+    filterMappings: [
+      { key: "businessType", column: "BusinessType", operation: "Equals" },
+      { key: "minPrice", column: "Price", operation: "MoreOrEquals" },
+      { key: "maxPrice", column: "Price", operation: "LessOrEquals" },
+      { key: "bedrooms", column: "Bedrooms", operation: "MoreOrEquals" },
+      { key: "bathrooms", column: "Bathrooms", operation: "MoreOrEquals" },
+      { key: "propertyType", column: "PropertyType", operation: "Equals" },
+      { key: "city", column: "City", operation: "Equals" },
+      { key: "zone", column: "Zone", operation: "Equals" },
+      { key: "availability", column: "Availability", operation: "Equals" },
+      { key: "agentId", column: "AgentId", operation: "Equals" },
+      { key: "owner", column: "Owner", operation: "Contains" },
+    ],
+  });
 
+  // initial load
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  // infinite scroll
   useEffect(() => {
     if (!sentinelRef.current) return;
     const observer = new IntersectionObserver(
@@ -60,7 +92,10 @@ export default function DashboardPage() {
 
       <PropertyFilters
         filters={filters}
-        onChange={setFilters}
+        onChange={(newFilters) => {
+          setFilters(newFilters);
+          applyFilters(newFilters);
+        }}
         totalCount={totalCount}
       />
 
@@ -117,7 +152,6 @@ export default function DashboardPage() {
                 <span className="text-sm">Loading more...</span>
               </div>
             )}
-
             {!hasMore && properties.length > 0 && (
               <p className="text-sm text-slate-400">
                 All {totalCount} listings loaded
@@ -131,11 +165,11 @@ export default function DashboardPage() {
         <ModalProperty
           onClose={() => setUploadOpen(false)}
           open={uploadOpen}
-          setOpen={setUploadOpen}
-          onSave={function (): void {
-            throw new Error("Function not implemented.");
+          onSave={() => {
+            setUploadOpen(false);
+            refresh();
           }}
-          model={undefined}
+          model={null}
         />
       )}
     </div>
