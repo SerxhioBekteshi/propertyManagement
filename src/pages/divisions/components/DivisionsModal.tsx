@@ -11,6 +11,7 @@ import FormProvider from "../../../components/hook-form/form-provider";
 import DivisionsForm, { divionsSchema } from "./DivisionsForm";
 import { LocationConfigurationService } from "../../../lib/LocationConfiguration";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { enqueueSnackbar } from "notistack";
 
 interface DivisionsModalProps {
   open: boolean;
@@ -40,15 +41,13 @@ const DivisionsModal = (props: DivisionsModalProps) => {
 
     try {
       const res = await LocationConfigurationService.addDivision(data);
-
+      console.log(res, "DIVIO");
       if (res.result) {
         onSave();
-        // enqueueSnackbar({
-        //   variant: "success",
-        //   message: `Payment type was ${
-        //     updatedCall ? "updated" : "saved"
-        //   } successfully`,
-        // });
+        enqueueSnackbar({
+          variant: "success",
+          message: `Division was added`,
+        });
       }
     } finally {
       setIsSubmitting(false);

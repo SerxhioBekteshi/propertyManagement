@@ -32,6 +32,15 @@ const TablePagination = <T,>(props: TablePaginationProps<T>) => {
   const startIndex = currentPage * itemsPerPage;
   const isTablet = useIsTablet();
 
+  // Build a window of up to 3 page indices centered around currentPage
+  const pageWindow = Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+    const start = Math.min(
+      Math.max(0, currentPage - 1),
+      Math.max(0, totalPages - 3),
+    );
+    return start + i;
+  });
+
   return (
     !loading &&
     !error &&
@@ -44,8 +53,9 @@ const TablePagination = <T,>(props: TablePaginationProps<T>) => {
               {Math.min(startIndex + itemsPerPage, totalRows)} of {totalRows}{" "}
               results
             </span>
+            {/* +1 for human-readable display */}
             <span className="xs:hidden">
-              {currentPage} of {totalPages}
+              {currentPage + 1} of {totalPages}
             </span>
           </div>
 
@@ -54,8 +64,8 @@ const TablePagination = <T,>(props: TablePaginationProps<T>) => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1 || loading}
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage === 0 || loading}
                 aria-label="First page"
               >
                 <ArrowLeftCircle className="h-4 w-4" />
@@ -65,8 +75,8 @@ const TablePagination = <T,>(props: TablePaginationProps<T>) => {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1 || loading}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+              disabled={currentPage === 0 || loading}
               aria-label="Previous page"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -74,36 +84,32 @@ const TablePagination = <T,>(props: TablePaginationProps<T>) => {
 
             <div className="flex gap-1 items-center">
               {!isTablet &&
-                Array.from({ length: Math.min(3, totalPages) }, (_, index) => {
-                  const page = index + Math.max(1, currentPage - 1);
-                  if (page > totalPages) return null;
-
-                  return (
-                    <Button
-                      key={page}
-                      className={`px-3 py-1 rounded-md text-sm transition-colors ${
-                        page === currentPage
-                          ? "border border-yellow-300 bg-[#FFD700] text-gray-900 hover:bg-[#F6C700]"
-                          : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                      }`}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      disabled={loading}
-                      aria-label={`Go to page ${page}`}
-                    >
-                      {page}
-                    </Button>
-                  );
-                })}
+                pageWindow.map((page) => (
+                  <Button
+                    key={page}
+                    className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                      page === currentPage
+                        ? "border border-yellow-300 bg-[#FFD700] text-gray-900 hover:bg-[#F6C700]"
+                        : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                    }`}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    disabled={loading}
+                    aria-label={`Go to page ${page + 1}`}
+                  >
+                    {/* +1 so buttons show 1-based numbers to the user */}
+                    {page + 1}
+                  </Button>
+                ))}
             </div>
 
             <Button
               variant="outline"
               size="icon"
               onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
               }
-              disabled={currentPage === totalPages || loading}
+              disabled={currentPage === totalPages - 1 || loading}
               aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />
@@ -113,8 +119,8 @@ const TablePagination = <T,>(props: TablePaginationProps<T>) => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages || loading}
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage === totalPages - 1 || loading}
                 aria-label="Last page"
               >
                 <ArrowRightCircle className="h-4 w-4" />

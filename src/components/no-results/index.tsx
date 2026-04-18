@@ -33,11 +33,7 @@ const NoResults = (props: NoResultsProps) => {
         )}
       </div>
       {titleButton && (
-        <Button
-          onClick={onAddClick}
-          size="sm"
-          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
+        <Button onClick={onAddClick} size="sm">
           <Plus size={16} />
           {titleButton}
         </Button>

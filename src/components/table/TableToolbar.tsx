@@ -10,7 +10,7 @@ interface TableToolbarProps {
   customFilterComponent?: React.ReactNode;
   customFilterComponentPosition?: "bottom" | "right";
   addButton?: React.ReactNode;
-  setToolbarHeight: (val: number) => void;
+  setToolbarHeight?: (val: number) => void;
   onSearchChange: (val: string) => void;
   searchValue: string;
   onFiltersSubmit: () => void;
@@ -22,7 +22,6 @@ interface TableToolbarProps {
 }
 
 const TableToolbar = (props: TableToolbarProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const componentRef = useRef<any>(null);
   const isTablet = useIsTablet();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -46,7 +45,7 @@ const TableToolbar = (props: TableToolbarProps) => {
   useEffect(() => {
     const updateHeight = () => {
       if (componentRef.current) {
-        setToolbarHeight(componentRef.current.offsetHeight);
+        setToolbarHeight?.(componentRef.current.offsetHeight);
       }
     };
 
@@ -110,7 +109,7 @@ const TableToolbar = (props: TableToolbarProps) => {
   return (
     <>
       <div
-        className="flex flex-col gap-3 border-b border-gray-200 bg-white px-4 py-4"
+        className="flex flex-col gap-3 border-b border-gray-200 bg-white py-4"
         ref={componentRef}
       >
         <div

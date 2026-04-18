@@ -117,7 +117,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
         setLoading(false);
       }
     },
-    [controller, currentPage, searchTerm, filters],
+    [controller, currentPage, searchTerm],
   );
   useEffect(() => {
     fetchData(filters);
@@ -149,7 +149,6 @@ const BaseTableComponent = <T extends Record<string, any>>(
         searchValue={immediateValue}
         onSearchChange={updateSearch}
         addButton={addButton}
-        setToolbarHeight={(val) => console.log(val, "VAL")}
         onFiltersSubmit={function (): void {
           throw new Error("Function not implemented.");
         }}

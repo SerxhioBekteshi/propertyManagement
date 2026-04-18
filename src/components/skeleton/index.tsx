@@ -7,13 +7,15 @@ function Skeleton({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-muted", className)}
+      className={cn(
+        "animate-pulse rounded-md bg-gray-200 dark:bg-gray-700",
+        className,
+      )}
       {...props}
     />
   );
 }
 
-// Add a TableSkeleton component for consistent table loading states
 function TableSkeleton({
   columns,
   rows = 5,
@@ -26,14 +28,14 @@ function TableSkeleton({
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <tr
           key={`skeleton-row-${rowIndex}`}
-          className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+          className="border-b border-gray-100 dark:border-gray-800"
         >
           {Array.from({ length: columns }).map((_, colIndex) => (
             <td
               key={`skeleton-cell-${rowIndex}-${colIndex}`}
               className="p-4 align-middle"
             >
-              <Skeleton className="h-5 w-full max-w-[120px]" />
+              <Skeleton className="h-7 w-full max-w-[180px]" />
             </td>
           ))}
         </tr>

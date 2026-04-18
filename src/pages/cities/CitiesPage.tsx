@@ -32,7 +32,6 @@ export default function CitiesPage() {
         ref={tableRef}
         controller={ENDPOINTS.cities.getAll}
         columns={columns}
-        filterMappings={[]}
         onAddClick={onAddClick}
         addButton={
           <Button

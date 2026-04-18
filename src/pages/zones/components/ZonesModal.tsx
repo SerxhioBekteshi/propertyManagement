@@ -33,13 +33,15 @@ const ZonesModal = (props: ZonesModalProps) => {
     try {
       setIsLoading(true);
       const res = await LocationConfigurationService.getCities();
+      console.log(res, "RES");
       if (res.result) {
         setCities(res.data);
+      } else {
+        enqueueSnackbar({
+          variant: "error",
+          message: "Failed to fetch cities list",
+        });
       }
-      enqueueSnackbar({
-        variant: "error",
-        message: "Failed to fetch cities list",
-      });
     } finally {
       setIsLoading(false);
     }
@@ -69,12 +71,10 @@ const ZonesModal = (props: ZonesModalProps) => {
 
       if (res.result) {
         onSave();
-        // enqueueSnackbar({
-        //   variant: "success",
-        //   message: `Payment type was ${
-        //     updatedCall ? "updated" : "saved"
-        //   } successfully`,
-        // });
+        enqueueSnackbar({
+          variant: "success",
+          message: `Zone added`,
+        });
       }
     } finally {
       setIsSubmitting(false);

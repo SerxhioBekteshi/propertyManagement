@@ -1,6 +1,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 import * as yup from "yup";
 import { IOption } from "../../../assets/enums/constants/property";
+import ErrorMessage from "../../../components/hook-form/error-message";
 
 interface CitiesFormProps {
   divisions: IOption<number>[];
@@ -27,10 +28,15 @@ const CitiesForm = ({ divisions }: CitiesFormProps) => {
       <Controller
         control={control}
         name="name"
-        render={({ field }) => (
+        render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
             <label className="block text-sm font-medium mb-1">Name</label>
-            <input {...field} className={inputClass} />
+            <input
+              value={value}
+              onChange={onChange}
+              className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
+            />
+            <ErrorMessage message={error?.message} />
           </div>
         )}
       />
@@ -39,10 +45,14 @@ const CitiesForm = ({ divisions }: CitiesFormProps) => {
       <Controller
         control={control}
         name="divisionId"
-        render={({ field }) => (
+        render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
             <label className="block text-sm font-medium mb-1">Division</label>
-            <select {...field} className={inputClass}>
+            <select
+              value={value}
+              onChange={onChange}
+              className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
+            >
               <option value="">Select division</option>
               {divisions.map((d) => (
                 <option key={d.value} value={d.value}>
@@ -50,6 +60,7 @@ const CitiesForm = ({ divisions }: CitiesFormProps) => {
                 </option>
               ))}
             </select>
+            <ErrorMessage message={error?.message} />
           </div>
         )}
       />

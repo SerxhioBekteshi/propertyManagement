@@ -56,11 +56,10 @@ const CitiesModal = (props: CitiesModalProps) => {
 
   const onSubmit = handleSubmit(async (data) => {
     setIsSubmitting(true);
-    let res = null;
 
     try {
-      res = await LocationConfigurationService.addCity(data);
-
+      const res = await LocationConfigurationService.addCity(data);
+      console.log(res, "RES HERE");
       if (res.result) {
         onSave();
         enqueueSnackbar({

@@ -33,7 +33,6 @@ export default function ZonesPage() {
         onAddClick={onAddClick}
         controller={ENDPOINTS.zones.getAll}
         columns={columns}
-        filterMappings={[]}
         addButton={
           <Button
             onClick={onAddClick}
