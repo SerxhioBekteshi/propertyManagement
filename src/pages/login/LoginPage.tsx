@@ -1,32 +1,21 @@
 import { useState, FormEvent } from "react";
-import { Building2, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Building2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-  const { signIn } = useAuth();
+  const { signIn, loading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [country, setCountry] = useState("");
   const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    const { error } = await signIn(email, password);
-
-    if (error) {
-      setError("Invalid email or password. Please try again.");
-    } else {
-      navigate("/dashboard"); // ✅ REDIRECT HERE
-    }
-
-    setLoading(false);
+    await signIn(email, password, country);
+    navigate("/dashboard");
   }
 
   return (
@@ -130,12 +119,12 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {error && (
+            {/* {error && (
               <div className="flex items-center gap-2.5 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
                 <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
                 <p className="text-red-600 text-sm">{error}</p>
               </div>
-            )}
+            )} */}
 
             <button
               type="submit"
@@ -160,20 +149,47 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3">
-            <div className="bg-white border border-slate-200 rounded-xl p-4 text-center">
-              <div className="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-2">
-                <span className="text-xs">🇦🇱</span>
+            {/* ALBANIA */}
+            <button
+              type="button"
+              onClick={() => setCountry("AL")}
+              className={`border rounded-xl p-4 text-center transition ${
+                country === "AL"
+                  ? "border-slate-900 bg-slate-50"
+                  : "border-slate-200"
+              }`}
+            >
+              <div className="w-7 h-7 mx-auto mb-2">
+                <img
+                  src="/images/flags/albanian.jpg"
+                  alt="Albania"
+                  className="w-6 h-5 object-cover rounded-sm mx-auto"
+                />
               </div>
               <p className="text-xs font-medium text-slate-700">Albania</p>
               <p className="text-xs text-slate-400">Operations</p>
-            </div>
-            <div className="bg-white border border-slate-200 rounded-xl p-4 text-center">
-              <div className="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-2">
-                <span className="text-xs">🇬🇷</span>
+            </button>
+
+            {/* GREECE */}
+            <button
+              type="button"
+              onClick={() => setCountry("GR")}
+              className={`border rounded-xl p-4 text-center transition ${
+                country === "GR"
+                  ? "border-slate-900 bg-slate-50"
+                  : "border-slate-200"
+              }`}
+            >
+              <div className="w-7 h-7 mx-auto mb-2">
+                <img
+                  src="/images/flags/greece.jpg"
+                  alt="Greece"
+                  className="w-6 h-5 object-cover rounded-sm mx-auto"
+                />
               </div>
               <p className="text-xs font-medium text-slate-700">Greece</p>
               <p className="text-xs text-slate-400">Operations</p>
-            </div>
+            </button>
           </div>
         </div>
       </div>

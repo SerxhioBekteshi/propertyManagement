@@ -6,7 +6,6 @@ import { Building2, Loader2, Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import ModalProperty from "./components/PropertyModal";
 import { PropertyFiltersDTO } from "../../types/properties";
-import { PropertyResponseDTO } from "../../types/database";
 
 export const INITIAL_FILTERS: PropertyFiltersDTO = {
   id: "",
@@ -23,22 +22,14 @@ export const INITIAL_FILTERS: PropertyFiltersDTO = {
   owner: "",
   orderBy: "newest",
 };
+
 export default function DashboardPage() {
   const [filters, setFilters] = useState<PropertyFiltersDTO>(INITIAL_FILTERS);
-  const [selectedProperty, setSelectedProperty] =
-    useState<PropertyResponseDTO | null>(null);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const {
-    properties,
-    loading,
-    loadingMore,
-    hasMore,
-    totalCount,
-    loadMore,
-    refresh,
-  } = useProperties();
+  const { properties, loading, loadingMore, hasMore, totalCount, loadMore } =
+    useProperties();
 
   useEffect(() => {
     if (!sentinelRef.current) return;
@@ -111,7 +102,7 @@ export default function DashboardPage() {
               <PropertyCard
                 key={property.id}
                 property={property}
-                onClick={() => setSelectedProperty(property)}
+                onClick={() => console.log(property)}
               />
             ))}
           </div>

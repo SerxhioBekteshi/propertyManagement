@@ -1,12 +1,24 @@
-import { createContext, useContext, useState, ReactNode } from "react";
-import { eLocalStorage, ERoles } from "../assets/enums";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
+import { eLocalStorage } from "../assets/enums";
 import { useNavigate } from "react-router-dom";
 import { TUserResponse } from "../types/auth";
+import { AuthenticationService } from "../lib/Authentication";
 
 interface AuthContextType {
   user: TUserResponse | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signIn: (
+    email: string,
+    password: string,
+    country: string | "",
+  ) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -15,28 +27,47 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  const [user, setUser] = useState<TUserResponse | null>(null);
-  const [loading] = useState(false);
 
+  const [user, setUser] = useState<TUserResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // 🔐 LOGIN
   async function signIn(
     email: string,
     password: string,
+    country: string | "",
   ): Promise<{ error: Error | null }> {
     if (!email || !password) {
       return { error: new Error("Email and password are required.") };
     }
-    //  const res = await AuthenticationService.login({ email, password });
 
-    setUser({
-      id: 1,
-      email: "test",
-      userName: "",
-      firstName: "test",
-      lastName: "",
-      role: ERoles.Admin,
-      country: "AL",
-    });
+    const res = await AuthenticationService.login({ email, password, country });
+    if (!res.accessToken) {
+      return { error: new Error("Login failed") };
+    }
+
+    localStorage.setItem(eLocalStorage.AccessToken, res.accessToken);
+    localStorage.setItem(eLocalStorage.RefreshToken, res.refreshToken);
+
+    // 👇 fetch real user after login
+    await refreshProfile();
+
     return { error: null };
+  }
+
+  // 👤 GET CURRENT USER
+  async function refreshProfile(): Promise<void> {
+    try {
+      const token = localStorage.getItem(eLocalStorage.AccessToken);
+      if (!token) return;
+
+      const profile = await AuthenticationService.getMe();
+      setUser(profile);
+    } catch (err) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function signOut(): Promise<void> {
@@ -46,7 +77,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate("/");
   }
 
-  async function refreshProfile(): Promise<void> {}
+  useEffect(() => {
+    const token = localStorage.getItem(eLocalStorage.AccessToken);
+    if (token) {
+      refreshProfile();
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   return (
     <AuthContext.Provider

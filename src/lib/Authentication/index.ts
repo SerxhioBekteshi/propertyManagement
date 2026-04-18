@@ -3,12 +3,10 @@ import { axiosInstance, ENDPOINTS } from "../axios";
 
 export const AuthenticationService = {
   async login(params: TLoginPayload): Promise<TLoginResponse> {
-    const res = await axiosInstance.post(ENDPOINTS.auth.login, params);
-    return res.data;
+    return axiosInstance.post(ENDPOINTS.auth.login, params);
   },
 
   async getMe(): Promise<TUserResponse> {
-    const res = await axiosInstance.get(ENDPOINTS.auth.me);
-    return res.data;
+    return axiosInstance.get(ENDPOINTS.auth.me);
   },
 };

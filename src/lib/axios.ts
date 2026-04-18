@@ -6,7 +6,6 @@ import Axios, {
 } from "axios";
 import { eHttpResponse, eLocalStorage } from "../assets/enums";
 import { enqueueSnackbar } from "notistack";
-// import { enqueueSnackbar } from "notistack";
 
 interface IApiError {
   Result?: boolean;
@@ -121,6 +120,7 @@ axiosInstance.interceptors.response.use(
         }
       } else {
         const statusCode = error.response?.status;
+        console.log(statusCode);
         if (statusCode === eHttpResponse.InternalServerError)
           enqueueSnackbar({
             variant: "error",
@@ -158,16 +158,19 @@ export const ENDPOINTS = {
     create: `Properties/create`,
   },
   locationConfigurationList: {
-    cities: "list/cities",
-    divisions: `list/division`,
+    cities: "List/cities",
+    divisions: `List/division`,
   },
   cities: {
     create: "Cities/create",
+    getAll: "Cities/get-all",
   },
   zones: {
     create: "Zones/create",
+    getAll: "Zones/get-all",
   },
   division: {
     create: "Divisions/create",
+    getAll: "Divisions/get-all",
   },
 };

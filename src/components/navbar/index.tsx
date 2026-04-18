@@ -4,8 +4,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 
 export const countryFlags: Record<string, string> = {
-  albania: "🇦🇱",
-  greece: "🇬🇷",
+  AL: "/images/flags/albanian.jpg",
+  GR: "/images/flags/greece.jpg",
 };
 
 export default function Navbar() {
@@ -15,120 +15,120 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* LEFT - BRAND */}
+        {/* LEFT */}
         <div className="flex items-center gap-3 shrink-0">
           <div className="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center">
             <Building2 className="w-4 h-4 text-white" />
           </div>
-          <div className="hidden sm:block">
-            <span className="text-base font-semibold text-slate-900 tracking-tight">
-              EstateFlow
-            </span>
-          </div>
+          <span className="hidden sm:block text-base font-semibold text-slate-900">
+            EstateFlow
+          </span>
         </div>
 
-        <div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link
-              to="/countries"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Countries
-            </Link>
+        {/* NAV */}
+        <nav className="hidden md:flex items-center gap-6">
+          <Link
+            to="/countries"
+            className="text-sm text-slate-600 hover:text-slate-900"
+          >
+            Countries
+          </Link>
+          <Link
+            to="/divisions"
+            className="text-sm text-slate-600 hover:text-slate-900"
+          >
+            Divisions
+          </Link>
+          <Link
+            to="/cities"
+            className="text-sm text-slate-600 hover:text-slate-900"
+          >
+            Cities
+          </Link>
+          <Link
+            to="/zones"
+            className="text-sm text-slate-600 hover:text-slate-900"
+          >
+            Zones
+          </Link>
+        </nav>
 
-            <Link
-              to="/divisions"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Divisions
-            </Link>
+        {/* USER */}
+        <div className="relative flex items-center gap-3">
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-3 py-2"
+          >
+            <div className="w-7 h-7 bg-slate-200 rounded-lg flex items-center justify-center">
+              {user?.role === "admin" ? (
+                <Shield className="w-3.5 h-3.5 text-slate-600" />
+              ) : (
+                <User className="w-3.5 h-3.5 text-slate-600" />
+              )}
+            </div>
 
-            <Link
-              to="/cities"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Cities
-            </Link>
+            <div className="hidden sm:block text-left">
+              <p className="text-xs font-medium text-slate-900">
+                {user?.userName || "User"}
+              </p>
 
-            <Link
-              to="/zones"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Zones
-            </Link>
-          </nav>
-        </div>
+              <div className="flex items-center gap-1 text-xs text-slate-400">
+                <span className="capitalize">{user?.role}</span>
 
-        {/* RIGHT - USER */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="flex items-center gap-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 transition-all"
-            >
-              <div className="w-7 h-7 bg-slate-200 rounded-lg flex items-center justify-center">
-                {user?.role === "admin" ? (
-                  <Shield className="w-3.5 h-3.5 text-slate-600" />
-                ) : (
-                  <User className="w-3.5 h-3.5 text-slate-600" />
+                {user?.country && countryFlags[user.country] && (
+                  <img
+                    src={countryFlags[user.country]}
+                    alt={user.country}
+                    className="w-5 h-4 object-cover rounded-sm"
+                  />
                 )}
               </div>
+            </div>
 
-              <div className="hidden sm:block text-left">
-                <p className="text-xs font-medium text-slate-900 leading-none mb-0.5">
-                  {user?.userName || "User"}
-                </p>
-                <div className="flex items-center gap-1">
-                  <span className="text-xs text-slate-400 capitalize">
-                    {user?.role}
-                  </span>
-                  {user?.country && (
-                    <>
-                      <span className="text-slate-300">·</span>
-                      <span className="text-xs text-slate-400">
-                        {countryFlags[user.country]}{" "}
-                        {user.country.charAt(0).toUpperCase() +
-                          user.country.slice(1)}
-                      </span>
-                    </>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+          </button>
+
+          {/* DROPDOWN (FIXED OVERLAY ISSUE) */}
+          {menuOpen && (
+            <div className="fixed right-4 top-16 w-52 bg-white rounded-2xl border border-slate-200 shadow-lg py-2 z-[99999]">
+              {/* USER INFO */}
+              <div className="px-4 py-2.5 border-b border-slate-100">
+                <p className="text-xs font-semibold text-slate-900 flex items-center gap-2">
+                  {user?.firstName} {user?.lastName}
+                  {user?.country && countryFlags[user.country] && (
+                    <img
+                      src={countryFlags[user.country]}
+                      alt={user.country}
+                      className="w-5 h-4 object-cover rounded-sm"
+                    />
                   )}
-                </div>
+                </p>
+
+                <p className="text-xs text-slate-400 capitalize">
+                  {user?.role}
+                </p>
               </div>
 
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-
-            {menuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl border border-slate-200 shadow-lg shadow-slate-200/50 py-2 z-50">
-                <div className="px-4 py-2.5 border-b border-slate-100 mb-1">
-                  <p className="text-xs font-semibold text-slate-900">
-                    {user?.userName}
-                  </p>
-                  <p className="text-xs text-slate-400 mt-0.5 capitalize">
-                    {user?.role}
-                    {user?.country && ` · ${user.country}`}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    signOut();
-                  }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign out
-                </button>
-              </div>
-            )}
-          </div>
+              {/* SIGN OUT */}
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  signOut();
+                }}
+                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* BACKDROP */}
       {menuOpen && (
         <div
-          className="fixed inset-0 z-30"
+          className="fixed inset-0 z-[99990]"
           onClick={() => setMenuOpen(false)}
         />
       )}

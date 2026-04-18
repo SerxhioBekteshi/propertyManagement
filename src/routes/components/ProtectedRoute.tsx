@@ -9,7 +9,6 @@ const ProtectedRoute = (props: TProtectedRoute) => {
   const { children } = props;
 
   const { user, loading } = useAuth();
-
   const hasAccess = user;
 
   if (loading) {
