@@ -7,32 +7,31 @@ import {
 import { axiosInstance, ENDPOINTS, TBaseResponse } from "../axios";
 
 export const LocationConfigurationService = {
-  async getCities(): Promise<TBaseResponse<IOption[]>> {
-    const res = await axiosInstance.get(
-      ENDPOINTS.locationConfigurationList.cities,
+  async getCities(
+    divisionId?: number,
+  ): Promise<TBaseResponse<IOption<number>[]>> {
+    return axiosInstance.get(
+      ENDPOINTS.locationConfigurationList.cities(divisionId),
     );
-    return res.data;
   },
 
-  async getDivisions(): Promise<TBaseResponse<IOption[]>> {
-    const res = await axiosInstance.get(
-      ENDPOINTS.locationConfigurationList.divisions,
+  async getDivisions(
+    country?: string,
+  ): Promise<TBaseResponse<IOption<number>[]>> {
+    return axiosInstance.get(
+      ENDPOINTS.locationConfigurationList.divisions(country),
     );
-    return res.data;
   },
 
   async addCity(payload: CreateCityDTO): Promise<TBaseResponse<boolean>> {
-    const res = await axiosInstance.post(ENDPOINTS.cities.create, payload);
-    return res.data;
+    return axiosInstance.post(ENDPOINTS.cities.create, payload);
   },
 
   async addZone(payload: CreateZoneDTO): Promise<TBaseResponse<boolean>> {
-    const res = await axiosInstance.post(ENDPOINTS.zones.create, payload);
-    return res.data;
+    return axiosInstance.post(ENDPOINTS.zones.create, payload);
   },
 
   async addDivision(payload: CreateDivionDTO): Promise<TBaseResponse<boolean>> {
-    const res = await axiosInstance.post(ENDPOINTS.division.create, payload);
-    return res.data;
+    return axiosInstance.post(ENDPOINTS.division.create, payload);
   },
 };

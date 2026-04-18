@@ -158,19 +158,24 @@ export const ENDPOINTS = {
     create: `Properties/create`,
   },
   locationConfigurationList: {
-    cities: "List/cities",
-    divisions: `List/division`,
+    cities(divisionId?: number) {
+      return `List/cities/${divisionId ?? ""}`;
+    },
+    divisions(country?: string) {
+      return `List/divisions/${country ?? ""}`;
+    },
+    zones: `List/zones`,
   },
   cities: {
-    create: "Cities/create",
-    getAll: "Cities/get-all",
+    create: "City/create",
+    getAll: "City/get-all",
   },
   zones: {
     create: "Zones/create",
     getAll: "Zones/get-all",
   },
   division: {
-    create: "Divisions/create",
-    getAll: "Divisions/get-all",
+    create: "Division/create",
+    getAll: "Division/get-all",
   },
 };

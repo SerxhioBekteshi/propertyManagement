@@ -29,7 +29,7 @@ const TablePagination = <T,>(props: TablePaginationProps<T>) => {
     totalPages,
   } = props;
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  const startIndex = currentPage * itemsPerPage;
   const isTablet = useIsTablet();
 
   return (

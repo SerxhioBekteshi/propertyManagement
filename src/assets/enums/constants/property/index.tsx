@@ -1,4 +1,4 @@
-export type IOption<T extends string = string> = {
+export type IOption<T> = {
   value: T;
   label: string;
 };
@@ -23,7 +23,7 @@ export const withDefault = <T extends string>(
 /**
  * BASE YES / NO
  */
-export const YES_NO_OPTIONS: IOption[] = [
+export const YES_NO_OPTIONS: IOption<string>[] = [
   { value: "yes", label: "Yes" },
   { value: "no", label: "No" },
 ];
@@ -31,7 +31,7 @@ export const YES_NO_OPTIONS: IOption[] = [
 /**
  * EXTENDED YES / NO EXAMPLES
  */
-export const YES_NO_IN_PROGRESS_OPTIONS: IOption[] = [
+export const YES_NO_IN_PROGRESS_OPTIONS: IOption<string>[] = [
   ...YES_NO_OPTIONS,
   { value: "in_progress", label: "In Progress" },
 ];

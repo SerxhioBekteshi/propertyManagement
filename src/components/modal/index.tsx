@@ -8,6 +8,8 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 
+type ModalSize = "sm" | "md" | "lg" | "xl" | "2xl" | "4xl" | "6xl" | "full";
+
 interface ModalProps {
   open: boolean;
   onClose: () => void;
@@ -32,6 +34,8 @@ interface ModalProps {
     | null;
   disabledSubmitButton?: boolean;
   isDeleteDialog?: boolean;
+
+  size?: ModalSize; // ✅ NEW
 }
 
 const Modal = (props: ModalProps) => {
@@ -52,6 +56,7 @@ const Modal = (props: ModalProps) => {
     submitVariant = "default",
     disabledSubmitButton,
     isDeleteDialog = false,
+    size = "6xl", // ✅ default size
   } = props;
 
   return (
@@ -65,65 +70,59 @@ const Modal = (props: ModalProps) => {
       }}
     >
       <DialogContent
-        className={` ${fitContentHeight ? "" : "h-[90vh]"} flex flex-col p-0`}
+        size={size}
+        className={`${
+          fitContentHeight ? "" : "max-h-[90vh]"
+        } flex flex-col p-0`}
       >
-        {/* Header - Fixed at top */}
+        {/* Header */}
         <div className="px-6 pt-6 pb-4 border-b">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            {descriptionUnderTitle && (
+            {descriptionUnderTitle && description && (
               <DialogDescription>{description}</DialogDescription>
             )}
           </DialogHeader>
         </div>
 
-        {/* Scrollable form content */}
+        {/* Content */}
         <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
-          {" "}
-          {!descriptionUnderTitle ? description : children}
+          {!descriptionUnderTitle && description ? description : children}
         </div>
 
-        {/* Footer - Sticky at bottom */}
+        {/* Footer */}
         {!removeDefaultActions && (
-          <div
-            className="px-6 py-4 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60"
-            style={{
-              marginTop: "unset",
-            }}
-          >
-            <DialogFooter className="flex flex-row justify-end gap-2 ">
+          <div className="px-6 py-4 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <DialogFooter className="flex flex-row justify-end gap-2">
               {footerActions}
 
-              <>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-fit"
-                  onClick={() => {
-                    onClose();
-                  }}
-                  disabled={isSubmitLoading}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitLoading || disabledSubmitButton}
-                  variant={isDeleteDialog ? "destructive" : submitVariant}
-                  className="w-fit"
-                  onClick={() => {
-                    if (onSave) onSave();
-                  }}
-                >
-                  {isSubmitLoading
-                    ? isDeleteDialog
-                      ? "Deleting..."
-                      : "Saving..."
-                    : isDeleteDialog
-                      ? "Delete"
-                      : submitTitle}
-                </Button>
-              </>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-fit"
+                onClick={onClose}
+                disabled={isSubmitLoading}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                type="submit"
+                disabled={isSubmitLoading || disabledSubmitButton}
+                variant={isDeleteDialog ? "destructive" : submitVariant}
+                className="w-fit"
+                onClick={() => {
+                  if (onSave) onSave();
+                }}
+              >
+                {isSubmitLoading
+                  ? isDeleteDialog
+                    ? "Deleting..."
+                    : "Saving..."
+                  : isDeleteDialog
+                    ? "Delete"
+                    : submitTitle}
+              </Button>
             </DialogFooter>
           </div>
         )}

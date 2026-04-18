@@ -27,7 +27,7 @@ const CitiesModal = (props: CitiesModalProps) => {
   const { open, onOpenChange, defaultValues, onSave, formMode } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [divisions, setDivisions] = useState<IOption[]>([]);
+  const [divisions, setDivisions] = useState<IOption<number>[]>([]);
 
   const fetchDivisionsList = async () => {
     try {
@@ -40,8 +40,8 @@ const CitiesModal = (props: CitiesModalProps) => {
   };
 
   useEffect(() => {
-    fetchDivisionsList();
-  }, []);
+    if (open) fetchDivisionsList();
+  }, [open]);
 
   const methods = useForm<CreateCityDTO>({
     resolver: yupResolver(citiesSchema),
@@ -86,9 +86,10 @@ const CitiesModal = (props: CitiesModalProps) => {
       onOpenChange={onOpenChange}
       isSubmitLoading={isSubmitting}
       onSave={onSubmit}
-      title={"Add new division"}
-      description="Configure new division"
+      title={"Add new city"}
+      description="Configure new city"
       disabledSubmitButton={!isDirty}
+      size="2xl"
     >
       {isLoading ? (
         <>

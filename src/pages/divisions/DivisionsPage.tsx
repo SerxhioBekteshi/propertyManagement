@@ -5,18 +5,15 @@ import { Plus } from "lucide-react";
 import { EFormMode } from "../../assets/enums";
 import { DivisionsResponseDTO } from "../../types/main-location-configuration";
 import DivisionsModal from "./components/DivisionsModal";
-
-export interface PaymentsFiltersInterface {
-  paymentCategory: string;
-  status: string;
-  dateFrom: string;
-  dateTo: string;
-}
+import { ENDPOINTS } from "../../lib/axios";
 
 const columns = [
-  { key: "id", header: "ID" },
   { key: "name", header: "Division" },
   { key: "country", header: "Country" },
+  { key: "createdDateTime", header: "Created At" },
+  { key: "createdBy", header: "Created By" },
+  { key: "modifiedDateTime", header: "Modified At" },
+  { key: "modifiedBy", header: "Modified By" },
 ];
 
 export default function DivisionsPage() {
@@ -24,20 +21,21 @@ export default function DivisionsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const tableRef = useRef<BaseTableRef<DivisionsResponseDTO>>(null);
 
+  const onAddClick = () => {
+    setDialogOpen(true);
+    setFormMode(EFormMode.Create);
+  };
+
   return (
     <>
       <BaseTable<DivisionsResponseDTO>
         ref={tableRef}
-        controller="Zones"
+        controller={ENDPOINTS.division.getAll}
         columns={columns}
-        filterMappings={[]}
-        showFiltersButton={false}
+        onAddClick={onAddClick}
         addButton={
           <Button
-            onClick={() => {
-              setDialogOpen(true);
-              setFormMode(EFormMode.Create);
-            }}
+            onClick={onAddClick}
             style={{
               width: "fit-content",
             }}

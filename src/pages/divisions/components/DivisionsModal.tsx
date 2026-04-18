@@ -71,6 +71,7 @@ const DivisionsModal = (props: DivisionsModalProps) => {
       title={"Add new division"}
       description="Configure new division"
       disabledSubmitButton={!isDirty}
+      size="2xl"
     >
       <FormProvider methods={methods}>
         <DivisionsForm />

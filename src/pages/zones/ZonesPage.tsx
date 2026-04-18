@@ -5,18 +5,15 @@ import { Plus } from "lucide-react";
 import { EFormMode } from "../../assets/enums";
 import ZonesModal from "./components/ZonesModal";
 import { ZonesResponseDTO } from "../../types/main-location-configuration";
-
-export interface PaymentsFiltersInterface {
-  paymentCategory: string;
-  status: string;
-  dateFrom: string;
-  dateTo: string;
-}
+import { ENDPOINTS } from "../../lib/axios";
 
 const columns = [
-  { key: "id", header: "ID" },
   { key: "name", header: "Zone" },
   { key: "city", header: "City" },
+  { key: "createdDateTime", header: "Created At" },
+  { key: "createdBy", header: "Created By" },
+  { key: "modifiedDateTime", header: "Modified At" },
+  { key: "modifiedBy", header: "Modified By" },
 ];
 
 export default function ZonesPage() {
@@ -24,21 +21,22 @@ export default function ZonesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const tableRef = useRef<BaseTableRef<ZonesResponseDTO>>(null);
 
+  const onAddClick = () => {
+    setDialogOpen(true);
+    setFormMode(EFormMode.Create);
+  };
+
   return (
     <>
       <BaseTable<ZonesResponseDTO>
         ref={tableRef}
-        controller="Zones"
+        onAddClick={onAddClick}
+        controller={ENDPOINTS.zones.getAll}
         columns={columns}
         filterMappings={[]}
-        showFiltersButton={false}
         addButton={
           <Button
-            onClick={() => {
-              setDialogOpen(true);
-
-              setFormMode(EFormMode.Create);
-            }}
+            onClick={onAddClick}
             style={{
               width: "fit-content",
             }}

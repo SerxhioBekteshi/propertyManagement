@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { enqueueSnackbar } from "notistack";
 import PropertyForm from "./PropertyForm";
 import FormProvider from "../../../components/hook-form/form-provider";
 import Modal from "../../../components/modal";
-import { AddPropertyDTO } from "../../../types/properties";
-import { PropertyResponseDTO } from "../../../types/database";
+import { AddPropertyDTO, PropertyResponseDTO } from "../../../types/properties";
 
 interface IModalPropertyProp {
   open: boolean;

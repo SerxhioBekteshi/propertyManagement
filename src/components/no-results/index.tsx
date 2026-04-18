@@ -22,7 +22,7 @@ const NoResults = (props: NoResultsProps) => {
     <div className="w-full flex-col flex items-center justify-center p-6">
       <div className="flex flex-col items-center gap-3 text-center  rounded-lg bg-white p-8 max-w-md">
         <img
-          src={!isSingle ? "/noRecordsFound.png" : "/noDataFound.png"}
+          src={!isSingle ? "/images/notFound.webp" : "/images/notFound.webp"}
           alt="No results"
           width={120}
           height={120}

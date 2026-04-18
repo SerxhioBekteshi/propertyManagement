@@ -1,13 +1,9 @@
 import { Controller, useFormContext } from "react-hook-form";
 import * as yup from "yup";
-
-type Option<T extends string = string> = {
-  value: T;
-  label: string;
-};
+import { IOption } from "../../../assets/enums/constants/property";
 
 interface CitiesFormProps {
-  divisions: Option[];
+  divisions: IOption<number>[];
 }
 
 const inputClass =
@@ -19,7 +15,6 @@ export const citiesSchema = yup.object({
     .required("Name is required")
     .trim()
     .min(2, "Name must be at least 2 characters"),
-
   divisionId: yup.number().required("Division is required"),
 });
 

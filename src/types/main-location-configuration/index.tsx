@@ -1,18 +1,18 @@
-export interface ZonesResponseDTO {
+import { BaseAuditableDTO } from "..";
+
+export interface ZonesResponseDTO extends BaseAuditableDTO {
   id: number;
   name: string;
   city: string;
-  cityId: number;
 }
 
-export interface CitiesResponseDTO {
+export interface CitiesResponseDTO extends BaseAuditableDTO {
   id: number;
   name: string;
   division: string;
-  divisionId: number;
 }
 
-export interface DivisionsResponseDTO {
+export interface DivisionsResponseDTO extends BaseAuditableDTO {
   id: number;
   name: string;
   country: string;

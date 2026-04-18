@@ -1,17 +1,13 @@
 import { Controller, useFormContext } from "react-hook-form";
 
-type Option<T extends string = string> = {
-  value: T;
-  label: string;
-};
-
 interface ZonesFormProps {
-  cities: Option[];
+  cities: IOption<number>[];
 }
 
 const inputClass =
   "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
 import * as yup from "yup";
+import { IOption } from "../../../assets/enums/constants/property";
 
 export const zonesSchema = yup.object({
   name: yup

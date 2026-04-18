@@ -13,6 +13,7 @@ import { IOption } from "../../../assets/enums/constants/property";
 import ZonesForm, { zonesSchema } from "./ZonesForm";
 import { Spinner } from "../../../components/spinner";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { enqueueSnackbar } from "notistack";
 
 interface ZonesModalProps {
   open: boolean;
@@ -26,21 +27,27 @@ const ZonesModal = (props: ZonesModalProps) => {
   const { open, onOpenChange, defaultValues, onSave, formMode } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [cities, setCities] = useState<IOption[]>([]);
+  const [cities, setCities] = useState<IOption<number>[]>([]);
 
   const fetchCitiesList = async () => {
     try {
       setIsLoading(true);
       const res = await LocationConfigurationService.getCities();
-      setCities(res.data);
+      if (res.result) {
+        setCities(res.data);
+      }
+      enqueueSnackbar({
+        variant: "error",
+        message: "Failed to fetch cities list",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCitiesList();
-  }, []);
+    if (open) fetchCitiesList();
+  }, [open]);
 
   const methods = useForm<CreateZoneDTO>({
     resolver: yupResolver(zonesSchema),
@@ -87,9 +94,10 @@ const ZonesModal = (props: ZonesModalProps) => {
       onOpenChange={onOpenChange}
       isSubmitLoading={isSubmitting}
       onSave={onSubmit}
-      title={"Add new division"}
-      description="Configure new division"
+      title={"Add new zone"}
+      description="Configure new zone"
       disabledSubmitButton={!isDirty}
+      size="2xl"
     >
       {isLoading ? (
         <>
