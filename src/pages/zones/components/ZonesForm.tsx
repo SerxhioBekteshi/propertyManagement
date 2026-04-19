@@ -1,4 +1,7 @@
 import { Controller, useFormContext } from "react-hook-form";
+import * as yup from "yup";
+import ErrorMessage from "../../../components/hook-form/error-message";
+import { IOption } from "../../../types";
 
 interface ZonesFormProps {
   cities: IOption<number>[];
@@ -6,9 +9,6 @@ interface ZonesFormProps {
 
 const inputClass =
   "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
-import * as yup from "yup";
-import { IOption } from "../../../assets/enums/constants/property";
-import ErrorMessage from "../../../components/hook-form/error-message";
 
 export const zonesSchema = yup.object({
   name: yup

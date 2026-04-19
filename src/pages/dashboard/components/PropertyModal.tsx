@@ -37,10 +37,7 @@ const ModalProperty = (props: IModalPropertyProp) => {
     try {
       const res = await PropertiesService.createProperty(data);
       if (res.result) {
-        enqueueSnackbar({
-          variant: "success",
-          message: "Property added!",
-        });
+        enqueueSnackbar({ variant: "success", message: "Property added!" });
         onSave();
       }
     } finally {
@@ -49,6 +46,7 @@ const ModalProperty = (props: IModalPropertyProp) => {
       onClose();
     }
   });
+
   const handleClose = (innerOpen?: boolean) => {
     if (innerOpen == null || innerOpen == false) {
       reset({});

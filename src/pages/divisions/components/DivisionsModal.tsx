@@ -22,7 +22,7 @@ interface DivisionsModalProps {
 }
 
 const DivisionsModal = (props: DivisionsModalProps) => {
-  const { open, onOpenChange, defaultValues, onSave, formMode } = props;
+  const { open, onOpenChange, onSave } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const methods = useForm<CreateDivionDTO>({

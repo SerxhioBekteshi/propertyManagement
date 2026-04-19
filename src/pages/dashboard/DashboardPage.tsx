@@ -10,26 +10,19 @@ import {
 } from "../../types/properties";
 import { usePagedList } from "../../hooks/usePagedList";
 import { ENDPOINTS } from "../../lib/axios";
-
-export const INITIAL_FILTERS: PropertyFiltersDTO = {
-  businessType: "",
-  minPrice: "",
-  maxPrice: "",
-  bedrooms: "",
-  bathrooms: "",
-  propertyType: "",
-  city: "",
-  zone: "",
-  availability: "",
-  agentId: "",
-  owner: "",
-  orderBy: "newest",
-};
+import { LocationConfigurationService } from "../../lib/LocationConfiguration";
+import { IOption } from "../../types";
+import { filterMappings, INITIAL_FILTERS } from "./components/filterMappings";
 
 export default function DashboardPage() {
   const [filters, setFilters] = useState<PropertyFiltersDTO>(INITIAL_FILTERS);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const [cities, setCities] = useState<IOption<number>[]>([]);
+  const [agents, setAgents] = useState<IOption<number>[]>([]);
+  const [zones, setZones] = useState<IOption<number>[]>([]);
+
+  const [filterLoading, setFilterLoading] = useState(false);
 
   const {
     items: properties,
@@ -42,24 +35,29 @@ export default function DashboardPage() {
     applyFilters,
   } = usePagedList<PropertyResponseDTO, PropertyFiltersDTO>({
     controller: ENDPOINTS.properties.getAll,
-    filterMappings: [
-      { key: "businessType", column: "BusinessType", operation: "Equals" },
-      { key: "minPrice", column: "Price", operation: "MoreOrEquals" },
-      { key: "maxPrice", column: "Price", operation: "LessOrEquals" },
-      { key: "bedrooms", column: "Bedrooms", operation: "MoreOrEquals" },
-      { key: "bathrooms", column: "Bathrooms", operation: "MoreOrEquals" },
-      { key: "propertyType", column: "PropertyType", operation: "Equals" },
-      { key: "city", column: "City", operation: "Equals" },
-      { key: "zone", column: "Zone", operation: "Equals" },
-      { key: "availability", column: "Availability", operation: "Equals" },
-      { key: "agentId", column: "AgentId", operation: "Equals" },
-      { key: "owner", column: "Owner", operation: "Contains" },
-    ],
+    filterMappings: filterMappings,
   });
 
-  // initial load
+  const fetchAgentsAndCities = async () => {
+    setFilterLoading(true);
+    try {
+      const [res, resAgents, resZones] = await Promise.all([
+        LocationConfigurationService.getCities(),
+        LocationConfigurationService.getAgents(),
+        LocationConfigurationService.getZones(),
+      ]);
+
+      setCities(res.data);
+      setAgents(resAgents.data);
+      setZones(resZones.data);
+    } catch (err) {
+      console.log("Error fetching filters:", err);
+    } finally {
+      setFilterLoading(false);
+    }
+  };
   useEffect(() => {
-    refresh();
+    fetchAgentsAndCities();
   }, []);
 
   // infinite scroll
@@ -96,7 +94,10 @@ export default function DashboardPage() {
           setFilters(newFilters);
           applyFilters(newFilters);
         }}
-        totalCount={totalCount}
+        zones={zones}
+        cities={cities}
+        agents={agents}
+        loading={filterLoading}
       />
 
       {loading ? (

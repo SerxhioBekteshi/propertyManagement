@@ -102,42 +102,37 @@ axiosInstance.interceptors.response.use(
     if (originalRequest._noAuth) {
       throw error.response;
     }
+
     if (error.response) {
+      const statusCode = error.response?.status;
+
       if (
-        error.response &&
-        error.response.status === eHttpResponse.Unauthorized &&
+        statusCode === eHttpResponse.Unauthorized &&
         !originalRequest._retry
-        //  &&  !originalRequest.url?.includes("/oauth/token")
       ) {
         originalRequest._retry = true;
-
         try {
           await refreshAccessToken();
           return axiosInstance(originalRequest);
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_error) {
-          clearSession();
+          clearSession(); // only clears on actual 401 + failed refresh
+          return Promise.reject(_error);
         }
-      } else {
-        const statusCode = error.response?.status;
-        console.log(statusCode);
-        if (statusCode === eHttpResponse.InternalServerError)
-          enqueueSnackbar({
-            variant: "error",
-            message: "Something went wrong. Please try again later",
-          });
-        else if (statusCode === eHttpResponse.NotFound)
-          enqueueSnackbar({
-            variant: "error",
-            message: "Not Found",
-          });
-        else {
-          enqueueSnackbar({
-            variant: "error",
-            message:
-              (error.response?.data as IApiError)?.Errors ?? error.message,
-          });
-        }
+      }
+
+      // Handle other errors — just show snackbar, no logout
+      if (statusCode === eHttpResponse.InternalServerError) {
+        enqueueSnackbar({
+          variant: "error",
+          message: "Something went wrong. Please try again later",
+        });
+      } else if (statusCode === eHttpResponse.NotFound) {
+        enqueueSnackbar({ variant: "error", message: "Not Found" });
+      } else if (statusCode !== eHttpResponse.Unauthorized) {
+        enqueueSnackbar({
+          variant: "error",
+          message: (error.response?.data as IApiError)?.Errors ?? error.message,
+        });
       }
     }
 
@@ -156,6 +151,7 @@ export const ENDPOINTS = {
   properties: {
     getAll: "Property/get-all",
     create: `Property/create`,
+    getById: (id: number) => `Property/${id}`,
   },
   locationConfigurationList: {
     cities(divisionId?: number) {
@@ -164,7 +160,10 @@ export const ENDPOINTS = {
     divisions(country?: string) {
       return `List/divisions/${country ?? ""}`;
     },
-    zones: `List/zones`,
+    zones(cityId?: number) {
+      return `List/zones/${cityId ?? ""}`;
+    },
+    agents: "/List/agents",
   },
   cities: {
     create: "City/create",

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -21,9 +21,11 @@ import {
   Square,
   TreeDeciduous,
 } from "lucide-react";
-import { MOCK_PROPERTIES } from "../../hooks/usePagedList";
 import { statusColors } from "../dashboard/components/PropertyCard";
 import { countryFlags } from "../../components/navbar";
+import { PropertyResponseDTO } from "../../types/properties";
+import { PropertiesService } from "../../lib/Properties";
+import { useAuth } from "../../contexts/AuthContext";
 
 const AVAILABILITY_STYLES: Record<string, string> = {
   available: "bg-emerald-100 text-emerald-700 border-emerald-200",
@@ -62,21 +64,66 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 const parseList = (val?: string) =>
-  val ? val.split(",").map((v) => v.trim()) : [];
+  val
+    ? val
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean)
+    : [];
+
+const formatDate = (val?: string) => {
+  if (!val) return "—";
+  return new Date(val).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const property = MOCK_PROPERTIES.find((p) => String(p.id) === id);
+  const { user } = useAuth();
 
-  // Carousel State
+  const [property, setProperty] = useState<PropertyResponseDTO>();
+  const [isLoading, setIsLoading] = useState(true); // ✅ ADDED
+
+  const getPropertyDetails = async () => {
+    setIsLoading(true);
+    const res = await PropertiesService.getPropertyById(Number(id));
+    if (res.data) {
+      setProperty(res.data);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    getPropertyDetails();
+  }, [id]);
+
   const [imgIndex, setImgIndex] = useState(0);
-  const images = property?.images?.length
-    ? property.images
+  console.log(property);
+  const images: string[] = property?.imageUrls?.length
+    ? property.imageUrls
     : [
         "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
         "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
       ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin" />
+          <p className="text-sm text-slate-500 font-medium">
+            Loading property...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!property) return <NotFound navigate={navigate} />;
 
@@ -85,7 +132,7 @@ export default function PropertyDetailsPage() {
     setImgIndex((prev) => (prev - 1 + images.length) % images.length);
 
   return (
-    <div className="mx-auto pb-20 space-y-6">
+    <div className="mx-auto pb-20 space-y-6 mt-4">
       {/* HEADER NAVIGATION */}
       <div className="flex items-center justify-between">
         <button
@@ -98,25 +145,26 @@ export default function PropertyDetailsPage() {
         <div className="flex gap-2">
           <span
             className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${
-              statusColors[property.status] || "bg-slate-100 border-slate-200"
+              statusColors[property.status ?? ""] ||
+              "bg-slate-100 border-slate-200"
             }`}
           >
-            {property.status?.replace(/_/g, " ")}
+            {property.status?.replace(/_/g, " ") ?? "—"}
           </span>
           <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-900 text-white">
-            {property.businessType}
+            {property.businessType ?? "—"}
           </span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* IMAGE CAROUSEL WITH SWIPE */}
+          {/* IMAGE CAROUSEL */}
           <div className="relative h-[520px] rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900 group">
             <AnimatePresence mode="wait">
               <motion.img
                 key={imgIndex}
-                src={images[imgIndex]}
+                src={`${import.meta.env.VITE_APP_BACKEND_API_URL}/${images[imgIndex]}`}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
@@ -131,18 +179,17 @@ export default function PropertyDetailsPage() {
               />
             </AnimatePresence>
 
-            {/* Carousel Controls */}
             {images.length > 1 && (
               <>
                 <button
                   onClick={prevImg}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/20 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <ChevronLeft />
                 </button>
                 <button
                   onClick={nextImg}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/20 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <ChevronRight />
                 </button>
@@ -150,7 +197,9 @@ export default function PropertyDetailsPage() {
                   {images.map((_, i) => (
                     <div
                       key={i}
-                      className={`h-1.5 rounded-full transition-all ${i === imgIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"}`}
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === imgIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"
+                      }`}
                     />
                   ))}
                 </div>
@@ -158,17 +207,18 @@ export default function PropertyDetailsPage() {
             )}
 
             {/* Floating Info Card */}
-            <div className="absolute bottom-4 left-4 right-4  p-4 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl flex justify-between items-center">
+            <div className="absolute bottom-4 left-4 right-4 p-4 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl flex justify-between items-center">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
-                  {property.title}
+                  {property.title ?? "—"}
                 </h1>
                 <div className="flex items-center gap-1 text-slate-500 text-sm mt-1 font-medium">
                   <MapPin className="w-4 h-4 text-blue-500" />
-                  {property.address}, {property.city}
+                  {[property.address, property.cityName]
+                    .filter(Boolean)
+                    .join(", ") || "—"}
                 </div>
               </div>
-              {/* PRICING BLOCK */}
               <div className="flex flex-col items-end border-l border-slate-100 pl-6 gap-1">
                 <div className="text-right">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block leading-none mb-1">
@@ -177,11 +227,11 @@ export default function PropertyDetailsPage() {
                   <p className="text-3xl font-black text-slate-900 leading-none">
                     {property.priceUponRequest
                       ? "Price on Request"
-                      : `€${property.price?.toLocaleString()}`}
+                      : property.price
+                        ? `€${property.price.toLocaleString()}`
+                        : "—"}
                   </p>
                 </div>
-
-                {/* VISIBLE PRICE/m2 BUT SUBTLE SCALE */}
                 {property.priceForM2 && !property.priceUponRequest && (
                   <div className="flex items-center gap-1.5 mt-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg border border-blue-100/50">
                     <Maximize2 className="w-3 h-3" />
@@ -199,38 +249,39 @@ export default function PropertyDetailsPage() {
             <Stat
               icon={<BedDouble className="w-5 h-5" />}
               label="Bedrooms"
-              value={property.bedrooms}
+              value={property.bedrooms ?? "—"}
               color="blue"
             />
             <Stat
               icon={<Bath className="w-5 h-5" />}
               label="Bathrooms"
-              value={property.bathrooms}
+              value={property.bathrooms ?? "—"}
               color="indigo"
             />
             <Stat
               icon={<Maximize2 className="w-5 h-5" />}
               label="Interior"
-              value={`${property.interiorArea} m²`}
+              value={
+                property.interiorArea ? `${property.interiorArea} m²` : "—"
+              }
               color="emerald"
             />
             <Stat
               icon={<Layers className="w-5 h-5" />}
               label="Gross Area"
-              value={`${property.grossArea} m²`}
+              value={property.grossArea ? `${property.grossArea} m²` : "—"}
               color="slate"
             />
             <Stat
               icon={<TreeDeciduous className="w-5 h-5" />}
               label="Land Area"
-              value={`${property.landArea} m²`}
+              value={property.landArea ? `${property.landArea} m²` : "—"}
               color="emerald"
             />
-
             <Stat
               icon={<Square className="w-5 h-5" />}
               label="Balcony Area"
-              value={`${property.balconyArea} m²`}
+              value={property.balconyArea ? `${property.balconyArea} m²` : "—"}
               color="slate"
             />
           </div>
@@ -256,22 +307,7 @@ export default function PropertyDetailsPage() {
                   value={property.propertyType}
                   capitalize
                 />
-
-                {/* Updated Availability with Badge logic */}
-                <div className="flex justify-between items-center py-1 border-b border-slate-50 last:border-0">
-                  <span className="text-slate-500 text-xs font-medium">
-                    Availability
-                  </span>
-                  <span
-                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                      AVAILABILITY_STYLES[property.availability] ||
-                      "bg-slate-50 text-slate-600"
-                    }`}
-                  >
-                    {property.availability?.replace(/_/g, " ")}
-                  </span>
-                </div>
-
+                <Item label="Availability" value={property.availability} />
                 <Item
                   label="Furnished"
                   value={property.furnished?.replace(/_/g, " ")}
@@ -308,7 +344,7 @@ export default function PropertyDetailsPage() {
           </div>
         </div>
 
-        {/* SIDEBAR CONTENT */}
+        {/* SIDEBAR */}
         <div className="space-y-6">
           <Section
             icon={<MapPin className="w-5 h-5 text-red-500" />}
@@ -316,14 +352,16 @@ export default function PropertyDetailsPage() {
           >
             <div className="space-y-3">
               <Item label="Country" value={property.country} capitalize />
-              <Item label="Zone" value={property.zone} />
-              <Item label="Floor" value={property.floor || "0"} />
+              <Item label="Division" value={property.divisionName} capitalize />
+              <Item label="City" value={property.cityName} />
+              <Item label="Zone" value={property.zoneName} />
+              <Item label="Floor" value={property.floor ?? "—"} />
               <div className="mt-4 h-32 bg-slate-100 rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-slate-200">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                   Georeference
                 </p>
                 <p className="text-xs text-slate-500 font-mono">
-                  {property.latitude}, {property.longitude}
+                  {property.latitude ?? "—"}, {property.longitude ?? "—"}
                 </p>
               </div>
             </div>
@@ -340,18 +378,42 @@ export default function PropertyDetailsPage() {
                 value={property.ownersTypology}
                 capitalize
               />
+
+              <Item
+                label="Owner's Phone Number"
+                value={
+                  user?.id == property.agentId
+                    ? property.ownersPhoneNumber
+                    : "---"
+                }
+              />
+
               <div className="pt-4 mt-4 border-t border-slate-100">
                 <Item
                   label="Assigned Agent"
                   value={property.agentId}
                   highlight
                 />
-                <Item
-                  label="Documentation"
-                  value={property.documentation}
-                  highlight
-                  capitalize
-                />
+                <div className="flex justify-between items-center py-1 border-b border-slate-50 last:border-0">
+                  <span className="text-slate-500 text-xs font-medium">
+                    Documentation
+                  </span>
+                  <div className="flex gap-2 flex-wrap">
+                    <span
+                      className={`px-3 py-1 text-xs font-bold rounded-full border ${
+                        property.documentation === "yes"
+                          ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                          : property.documentation === "no"
+                            ? "bg-rose-100 text-rose-700 border-rose-200"
+                            : property.documentation === "in_progress"
+                              ? "bg-amber-100 text-amber-700 border-amber-200"
+                              : "bg-slate-100 text-slate-500 border-slate-200"
+                      }`}
+                    >
+                      {property.documentation?.replace(/_/g, " ") ?? "—"}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </Section>
@@ -367,7 +429,7 @@ export default function PropertyDetailsPage() {
                 isBoolean
               />
               <div className="flex flex-wrap gap-1 mt-2">
-                {property.portalsToPublish?.map((p: string) => (
+                {parseList(property.portalsToPublish).map((p: string) => (
                   <span
                     key={p}
                     className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold uppercase border border-blue-100"
@@ -376,8 +438,31 @@ export default function PropertyDetailsPage() {
                   </span>
                 ))}
               </div>
-              <div className="pt-4 mt-4 border-t border-slate-100 text-[10px] text-slate-400 font-medium">
-                LAST MODIFIED BY: {property.lastModifiedBy}
+              <div className="pt-4 mt-4 border-t border-slate-100 space-y-2">
+                <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                  <span>CREATED BY</span>
+                  <span className="text-slate-600">
+                    {property.createdBy ?? "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                  <span>CREATED AT</span>
+                  <span className="text-slate-600">
+                    {formatDate(property.createdDateTime)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                  <span>MODIFIED BY</span>
+                  <span className="text-slate-600">
+                    {property.modifiedBy ?? "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                  <span>MODIFIED AT</span>
+                  <span className="text-slate-600">
+                    {formatDate(property.modifiedDateTime)}
+                  </span>
+                </div>
               </div>
             </div>
           </Section>
@@ -387,7 +472,6 @@ export default function PropertyDetailsPage() {
             title="More Features"
           >
             <div className="space-y-4">
-              {/* VIEW TO */}
               {property.withViewTo && (
                 <FeatureGroup
                   label="View To"
@@ -395,8 +479,6 @@ export default function PropertyDetailsPage() {
                   color="blue"
                 />
               )}
-
-              {/* EQUIPMENT */}
               {property.equipment && (
                 <FeatureGroup
                   label="Equipment"
@@ -404,17 +486,13 @@ export default function PropertyDetailsPage() {
                   color="emerald"
                 />
               )}
-
-              {/* INFRASTRUCTURES */}
-              {property.infrastructues && (
+              {property.infrastructures && (
                 <FeatureGroup
                   label="Infrastructures"
-                  values={parseList(property.infrastructues)}
+                  values={parseList(property.infrastructures)}
                   color="amber"
                 />
               )}
-
-              {/* SURROUNDINGS */}
               {property.surroundings && (
                 <FeatureGroup
                   label="Surroundings"
@@ -430,8 +508,7 @@ export default function PropertyDetailsPage() {
   );
 }
 
-// Reusable Sub-components (Stat, Section, Item, Grid, NotFound) remain largely same as your previous snippet
-// but ensure Item and Stat use the consistent typography.
+/* ALL YOUR COMPONENTS BELOW EXACTLY SAME */
 
 function Section({ title, icon, children }: any) {
   return (
@@ -458,20 +535,18 @@ function Item({
   isYesNo,
   capitalize,
   highlight,
-  type, // Use this to trigger specific styles (e.g., "availability", "country")
 }: any) {
   if (value == null)
     return (
       <div className="flex justify-between items-center py-1 border-b border-slate-50 last:border-0">
         <span className="text-slate-500 text-xs font-medium">{label}</span>
-        <span className="text-slate-300">-</span>
+        <span className="text-slate-300">—</span>
       </div>
     );
 
   let displayValue: React.ReactNode = value;
   const lowerValue = String(value).toLowerCase();
 
-  // 1. COUNTRY FLAGS
   if (label.toLowerCase() === "country") {
     displayValue = (
       <span className="flex items-center gap-2">
@@ -479,20 +554,14 @@ function Item({
         <span className="capitalize">{value}</span>
       </span>
     );
-  }
-
-  // 2. FURNISHED ICONS
-  else if (label.toLowerCase() === "furnished") {
+  } else if (label.toLowerCase() === "furnished") {
     displayValue = (
       <span className="flex items-center gap-2">
         <span>{FURNISHED_ICONS[lowerValue] || "🏠"}</span>
         <span className="capitalize">{value.replace(/_/g, " ")}</span>
       </span>
     );
-  }
-
-  // 3. ORIENTATION ICONS
-  else if (label.toLowerCase().includes("orientation")) {
+  } else if (label.toLowerCase().includes("orientation")) {
     displayValue = (
       <span className="flex items-center gap-2">
         <span className="text-blue-500 font-bold">
@@ -501,10 +570,7 @@ function Item({
         <span className="capitalize">{value.replace(/_/g, " ")}</span>
       </span>
     );
-  }
-
-  // 4. PROPERTY & MAIN TYPE BADGES
-  else if (label.toLowerCase().includes("type")) {
+  } else if (label.toLowerCase().includes("type")) {
     const colorClass =
       TYPE_COLORS[lowerValue] || "bg-slate-50 text-slate-600 border-slate-100";
     displayValue = (
@@ -514,23 +580,15 @@ function Item({
         {value.replace(/_/g, " ")}
       </span>
     );
-  }
-
-  // 5. AVAILABILITY STYLING
-  else if (label.toLowerCase() === "availability") {
+  } else if (label.toLowerCase() === "availability") {
     displayValue = (
       <span
-        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
-          AVAILABILITY_STYLES[lowerValue] || "bg-slate-50 border-slate-200"
-        }`}
+        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${AVAILABILITY_STYLES[lowerValue] || "bg-slate-50 border-slate-200"}`}
       >
         {value.replace(/_/g, " ")}
       </span>
     );
-  }
-
-  // 6. BOOLEANS / YES-NO
-  else if (isBoolean) {
+  } else if (isBoolean) {
     displayValue = value ? (
       <CheckCircle2 className="w-4 h-4 text-emerald-500" />
     ) : (
@@ -538,10 +596,12 @@ function Item({
     );
   } else if (isYesNo) {
     displayValue =
-      value === "yes" ? (
-        <span className="text-emerald-600 font-bold">Yes</span>
+      value === true ? (
+        <span className="text-emerald-600 font-bold text-xs">Yes</span>
+      ) : value === false ? (
+        <span className="text-slate-400 text-xs">No</span>
       ) : (
-        <span className="text-slate-400">No</span>
+        <span className="text-slate-300">—</span>
       );
   }
 
@@ -549,13 +609,14 @@ function Item({
     <div className="flex justify-between items-center py-1 border-b border-slate-50 last:border-0">
       <span className="text-slate-500 text-xs font-medium">{label}</span>
       <span
-        className={`font-semibold text-slate-900 ${capitalize && !type ? "capitalize" : ""} ${highlight ? "text-blue-600" : ""}`}
+        className={`font-semibold text-slate-900 ${capitalize ? "capitalize" : ""} ${highlight ? "text-blue-600" : ""}`}
       >
         {displayValue}
       </span>
     </div>
   );
 }
+
 function Stat({ icon, label, value, color }: any) {
   const colors: any = {
     blue: "bg-blue-50 text-blue-600",
@@ -563,6 +624,7 @@ function Stat({ icon, label, value, color }: any) {
     indigo: "bg-indigo-50 text-indigo-600",
     slate: "bg-slate-50 text-slate-600",
   };
+
   return (
     <div
       className={`p-4 rounded-2xl ${colors[color]} flex flex-col items-center text-center gap-1`}
@@ -571,7 +633,7 @@ function Stat({ icon, label, value, color }: any) {
       <p className="text-[10px] font-bold uppercase opacity-70 tracking-tighter">
         {label}
       </p>
-      <p className="text-lg font-black">{value ?? "-"}</p>
+      <p className="text-lg font-black">{value}</p>
     </div>
   );
 }

@@ -148,48 +148,67 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            {/* ALBANIA */}
-            <button
-              type="button"
-              onClick={() => setCountry("AL")}
-              className={`border rounded-xl p-4 text-center transition ${
-                country === "AL"
-                  ? "border-slate-900 bg-slate-50"
-                  : "border-slate-200"
-              }`}
-            >
-              <div className="w-7 h-7 mx-auto mb-2">
+          <div className="mt-6">
+            <p className="text-xs font-medium text-slate-500 mb-3 text-center uppercase tracking-wider">
+              Select your operation
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {/* ALBANIA */}
+              <button
+                type="button"
+                onClick={() => setCountry("AL")}
+                className={`relative flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 ${
+                  country === "AL"
+                    ? "border-blue-600 bg-blue-50 ring-2 ring-blue-600/20"
+                    : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+                }`}
+              >
                 <img
                   src="/images/flags/albanian.jpg"
                   alt="Albania"
-                  className="w-6 h-5 object-cover rounded-sm mx-auto"
+                  className="w-8 h-6 object-cover rounded shadow-sm shrink-0"
                 />
-              </div>
-              <p className="text-xs font-medium text-slate-700">Albania</p>
-              <p className="text-xs text-slate-400">Operations</p>
-            </button>
+                <div className="text-left">
+                  <p
+                    className={`text-sm font-semibold ${country === "AL" ? "text-blue-700" : "text-slate-700"}`}
+                  >
+                    Albania
+                  </p>
+                  <p className="text-xs text-slate-400">Operations</p>
+                </div>
+                {country === "AL" && (
+                  <div className="ml-auto w-2 h-2 rounded-full bg-blue-600" />
+                )}
+              </button>
 
-            {/* GREECE */}
-            <button
-              type="button"
-              onClick={() => setCountry("GR")}
-              className={`border rounded-xl p-4 text-center transition ${
-                country === "GR"
-                  ? "border-slate-900 bg-slate-50"
-                  : "border-slate-200"
-              }`}
-            >
-              <div className="w-7 h-7 mx-auto mb-2">
+              {/* GREECE */}
+              <button
+                type="button"
+                onClick={() => setCountry("GR")}
+                className={`relative flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 ${
+                  country === "GR"
+                    ? "border-blue-600 bg-blue-50 ring-2 ring-blue-600/20"
+                    : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+                }`}
+              >
                 <img
                   src="/images/flags/greece.jpg"
                   alt="Greece"
-                  className="w-6 h-5 object-cover rounded-sm mx-auto"
+                  className="w-8 h-6 object-cover rounded shadow-sm shrink-0"
                 />
-              </div>
-              <p className="text-xs font-medium text-slate-700">Greece</p>
-              <p className="text-xs text-slate-400">Operations</p>
-            </button>
+                <div className="text-left">
+                  <p
+                    className={`text-sm font-semibold ${country === "GR" ? "text-blue-700" : "text-slate-700"}`}
+                  >
+                    Greece
+                  </p>
+                  <p className="text-xs text-slate-400">Operations</p>
+                </div>
+                {country === "GR" && (
+                  <div className="ml-auto w-2 h-2 rounded-full bg-blue-600" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -9,11 +9,11 @@ import { EFormMode } from "../../../assets/enums";
 import Modal from "../../../components/modal";
 import FormProvider from "../../../components/hook-form/form-provider";
 import { LocationConfigurationService } from "../../../lib/LocationConfiguration";
-import { IOption } from "../../../assets/enums/constants/property";
 import { Spinner } from "../../../components/spinner";
 import CitiesForm, { citiesSchema } from "./CitiesForm";
 import { enqueueSnackbar } from "notistack";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { IOption } from "../../../types";
 
 interface CitiesModalProps {
   open: boolean;
@@ -24,7 +24,7 @@ interface CitiesModalProps {
 }
 
 const CitiesModal = (props: CitiesModalProps) => {
-  const { open, onOpenChange, defaultValues, onSave, formMode } = props;
+  const { open, onOpenChange, onSave } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [divisions, setDivisions] = useState<IOption<number>[]>([]);

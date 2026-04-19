@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { IOption } from "../../assets/enums/constants/property";
+import { IOption } from "../../types";
 
 type MultiSelectProps = {
-  options: IOption[];
+  options: IOption<string>[];
   value?: string[];
   onChange: (val: string[]) => void;
   placeholder?: string;

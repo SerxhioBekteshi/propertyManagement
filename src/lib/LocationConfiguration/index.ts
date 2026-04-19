@@ -1,4 +1,4 @@
-import { IOption } from "../../assets/enums/constants/property";
+import { IOption } from "../../types";
 import {
   CreateCityDTO,
   CreateDivionDTO,
@@ -21,6 +21,14 @@ export const LocationConfigurationService = {
     return axiosInstance.get(
       ENDPOINTS.locationConfigurationList.divisions(country),
     );
+  },
+
+  async getZones(cityId?: number): Promise<TBaseResponse<IOption<number>[]>> {
+    return axiosInstance.get(ENDPOINTS.locationConfigurationList.zones(cityId));
+  },
+
+  async getAgents(): Promise<TBaseResponse<IOption<number>[]>> {
+    return axiosInstance.get(ENDPOINTS.locationConfigurationList.agents);
   },
 
   async addCity(payload: CreateCityDTO): Promise<TBaseResponse<boolean>> {

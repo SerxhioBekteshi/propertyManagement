@@ -1,11 +1,11 @@
-import { IOption } from "../../assets/enums/constants/property";
+import { IOption } from "../../types";
 
 export function SingleSelect({
   options,
   value,
   onChange,
 }: {
-  options: IOption[];
+  options: IOption<string>[];
   value?: string;
   onChange: (val: string) => void;
 }) {

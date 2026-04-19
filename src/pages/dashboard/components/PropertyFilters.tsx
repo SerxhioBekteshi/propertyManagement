@@ -7,17 +7,25 @@ import {
 } from "../../../assets/enums/constants/property";
 import { PropertyFiltersDTO } from "../../../types/properties";
 import Modal from "../../../components/modal";
+import { IOption } from "../../../types";
 
 interface PropertyFiltersProps {
   filters: PropertyFiltersDTO;
   onChange: (filters: PropertyFiltersDTO) => void;
-  totalCount: number;
+  cities: IOption<number>[];
+  agents: IOption<number>[];
+  zones: IOption<number>[];
+
+  loading: boolean;
 }
 
 export default function PropertyFilters({
   filters,
   onChange,
-  totalCount,
+  zones,
+  cities,
+  agents,
+  loading,
 }: PropertyFiltersProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -25,7 +33,25 @@ export default function PropertyFilters({
     onChange({ ...filters, [key]: value });
   }
 
-  const allCities = [].sort();
+  const countActiveFilters = () => {
+    return Object.entries(filters).filter(([key, value]) => {
+      if (value === "" || value === null || value === undefined) return false;
+      if (key === "orderBy") return false; // ignore sorting
+      return true;
+    }).length;
+  };
+
+  const clearFilters = () => {
+    onChange({
+      ...filters,
+      businessType: "",
+      propertyType: "",
+      cityId: 0,
+      zoneId: 0,
+      availability: "",
+      owner: "",
+    });
+  };
 
   const inputStyle =
     "w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-slate-300 focus:bg-white transition-all placeholder:text-slate-400 shadow-sm";
@@ -110,14 +136,15 @@ export default function PropertyFilters({
       <div>
         <label className={labelStyle}>City</label>
         <select
-          value={filters.city}
-          onChange={(e) => update("city", e.target.value)}
+          disabled={loading}
+          value={filters.cityId}
+          onChange={(e) => update("cityId", e.target.value)}
           className={inputStyle}
         >
           <option value="">— Select City —</option>
-          {allCities.map((city) => (
-            <option key={city} value={city}>
-              {city}
+          {cities.map((city, index) => (
+            <option key={index} value={city.value}>
+              {city.label}
             </option>
           ))}
         </select>
@@ -125,12 +152,19 @@ export default function PropertyFilters({
 
       <div>
         <label className={labelStyle}>Zone</label>
-        <input
-          type="text"
-          value={filters.zone}
-          onChange={(e) => update("zone", e.target.value)}
+        <select
+          disabled={loading}
+          value={filters.zoneId}
+          onChange={(e) => update("zoneId", e.target.value)}
           className={inputStyle}
-        />
+        >
+          <option value="">— Select zone —</option>
+          {zones.map((zone, index) => (
+            <option key={index} value={zone.value}>
+              {zone.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>
@@ -150,12 +184,19 @@ export default function PropertyFilters({
 
       <div>
         <label className={labelStyle}>Assigned To</label>
-        <input
-          type="text"
+        <select
+          disabled={loading}
           value={filters.agentId}
           onChange={(e) => update("agentId", e.target.value)}
           className={inputStyle}
-        />
+        >
+          <option value="">— Select agent —</option>
+          {agents.map((city, index) => (
+            <option key={index} value={city.value}>
+              {city.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>
@@ -188,11 +229,25 @@ export default function PropertyFilters({
         <div className="hidden md:grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           {filterFields}
 
-          {/* SEARCH BUTTON */}
-          <div className="flex items-end">
-            <button className="h-[38px] w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-all">
+          <div className="flex items-end gap-2">
+            {/* SEARCH (kept as placeholder / no action) */}
+            {/* <button className="h-[38px] w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-all">
               <Search className="w-4 h-4" />
               Search
+            </button> */}
+
+            {/* CLEAR WITH BADGE */}
+            <button
+              onClick={clearFilters}
+              className="relative h-[38px] px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
+            >
+              Clear
+              {/* BADGE */}
+              {countActiveFilters() > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
+                  {countActiveFilters()}
+                </span>
+              )}
             </button>
           </div>
         </div>

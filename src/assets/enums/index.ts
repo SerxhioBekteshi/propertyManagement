@@ -36,3 +36,22 @@ export enum ERoles {
   Admin = "Admin",
   Agent = "Agent",
 }
+
+export enum LookupFilterOperation {
+  Contains,
+  StartsWith,
+  EndsWith,
+  Equals,
+  Less,
+  LessOrEquals,
+  More,
+  MoreOrEquals,
+  RangeDate,
+  NotEqual,
+  In,
+}
+
+export enum LookupSortingDirection {
+  Asc,
+  Desc,
+}

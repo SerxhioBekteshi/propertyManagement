@@ -1,4 +1,4 @@
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import Label from "../../../components/label";
 import Section from "../../../components/section";
 import {
@@ -21,6 +21,10 @@ import {
 } from "../../../assets/enums/constants/property";
 import { MultiSelect } from "../../../components/multi-select";
 import { ImageUploader } from "../../../components/upload-file";
+import { useEffect, useState } from "react";
+import { LocationConfigurationService } from "../../../lib/LocationConfiguration";
+import BooleanSelect from "../../../components/boolean-select";
+import { IOption } from "../../../types";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -29,7 +33,94 @@ const checkboxClass =
   "h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer";
 
 const PropertyForm = () => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
+
+  const selectedCountry = useWatch({ control, name: "country" });
+  const selectedDivisionId = useWatch({ control, name: "divisionId" });
+  const selectedCityId = useWatch({ control, name: "cityId" });
+
+  const [divisions, setDivisions] = useState<IOption<number>[]>([]);
+  const [cities, setCities] = useState<IOption<number>[]>([]);
+  const [zones, setZones] = useState<IOption<number>[]>([]);
+
+  const [loadingDivisions, setLoadingDivisions] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
+  const [loadingZones, setLoadingZones] = useState(false);
+
+  // Fetch divisions when country changes
+  // Fetch divisions when country changes
+  useEffect(() => {
+    if (!selectedCountry) {
+      setDivisions([]);
+      setCities([]);
+      setZones([]);
+      return;
+    }
+
+    const fetch = async () => {
+      setLoadingDivisions(true);
+      setValue("divisionId", undefined);
+      setValue("cityId", undefined);
+      setValue("zone", undefined);
+      setCities([]);
+      setZones([]);
+      try {
+        const res =
+          await LocationConfigurationService.getDivisions(selectedCountry);
+        setDivisions(res.data ?? []);
+      } finally {
+        setLoadingDivisions(false);
+      }
+    };
+
+    fetch();
+  }, [selectedCountry]);
+
+  // Fetch cities when division changes
+  useEffect(() => {
+    if (!selectedDivisionId) {
+      setCities([]);
+      setZones([]);
+      return;
+    }
+
+    const fetch = async () => {
+      setLoadingCities(true);
+      setValue("cityId", undefined);
+      setValue("zone", undefined);
+      setZones([]);
+      try {
+        const res =
+          await LocationConfigurationService.getCities(selectedDivisionId);
+        setCities(res.data ?? []);
+      } finally {
+        setLoadingCities(false);
+      }
+    };
+
+    fetch();
+  }, [selectedDivisionId]);
+
+  // Fetch zones when city changes
+  useEffect(() => {
+    if (!selectedCityId) {
+      setZones([]);
+      return;
+    }
+
+    const fetch = async () => {
+      setLoadingZones(true);
+      setValue("zone", undefined);
+      try {
+        const res = await LocationConfigurationService.getZones(selectedCityId);
+        setZones(res.data ?? []);
+      } finally {
+        setLoadingZones(false);
+      }
+    };
+
+    fetch();
+  }, [selectedCityId]);
 
   return (
     <div className="space-y-8">
@@ -85,7 +176,6 @@ const PropertyForm = () => {
         {/* ──────────── LEFT COLUMN ──────────── */}
         <div className="space-y-6">
           <Section title="Classification" className="space-y-4">
-            {/* Main Type */}
             <div>
               <Label>Main Type</Label>
               <Controller
@@ -102,8 +192,6 @@ const PropertyForm = () => {
                 )}
               />
             </div>
-
-            {/* Status */}
             <div>
               <Label>Status</Label>
               <Controller
@@ -120,8 +208,6 @@ const PropertyForm = () => {
                 )}
               />
             </div>
-
-            {/* Availability */}
             <div>
               <Label>Availability</Label>
               <Controller
@@ -138,8 +224,6 @@ const PropertyForm = () => {
                 )}
               />
             </div>
-
-            {/* Furnished */}
             <div>
               <Label>Furnished</Label>
               <Controller
@@ -156,8 +240,6 @@ const PropertyForm = () => {
                 )}
               />
             </div>
-
-            {/* Publish to Portal */}
             <div>
               <Label>Publish to Portal</Label>
               <div className="flex items-center h-[40px]">
@@ -175,8 +257,6 @@ const PropertyForm = () => {
                 />
               </div>
             </div>
-
-            {/* Exclusive */}
             <div>
               <Label>Exclusive</Label>
               <div className="flex items-center h-[40px]">
@@ -200,7 +280,6 @@ const PropertyForm = () => {
         {/* ──────────── RIGHT COLUMN ──────────── */}
         <div className="space-y-6">
           <Section title="Property Information" className="space-y-4">
-            {/* Property Type */}
             <div>
               <Label>Property Type</Label>
               <Controller
@@ -217,62 +296,47 @@ const PropertyForm = () => {
                 )}
               />
             </div>
-
-            {/* Elevator */}
             <div>
               <Label>Elevator</Label>
               <Controller
                 control={control}
                 name="elevator"
                 render={({ field }) => (
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_ELEVATOR_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <BooleanSelect
+                    field={field}
+                    options={PROPERTY_ELEVATOR_OPTIONS}
+                  />
                 )}
               />
             </div>
 
-            {/* Parking */}
             <div>
               <Label>Parking</Label>
               <Controller
                 control={control}
                 name="parking"
                 render={({ field }) => (
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_PARKING_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <BooleanSelect
+                    field={field}
+                    options={PROPERTY_PARKING_OPTIONS}
+                  />
                 )}
               />
             </div>
 
-            {/* Being Lived */}
             <div>
               <Label>Being Lived</Label>
               <Controller
                 control={control}
                 name="beingLived"
                 render={({ field }) => (
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_BEING_LIVED_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <BooleanSelect
+                    field={field}
+                    options={PROPERTY_BEING_LIVED_OPTIONS}
+                  />
                 )}
               />
             </div>
-
-            {/* Portals (Tag Input) */}
             <div>
               <Label>Portals</Label>
               <Controller
@@ -280,18 +344,14 @@ const PropertyForm = () => {
                 name="portalsToPublish"
                 render={({ field }) => {
                   const values: string[] = field.value ?? [];
-
                   const addValue = (val: string) => {
                     const trimmed = val.trim();
-                    if (!trimmed) return;
-                    if (values.includes(trimmed)) return;
+                    if (!trimmed || values.includes(trimmed)) return;
                     field.onChange([...values, trimmed]);
                   };
-
                   const removeValue = (val: string) => {
                     field.onChange(values.filter((v) => v !== val));
                   };
-
                   return (
                     <div className="border rounded-md p-2 min-h-[40px]">
                       <div className="flex flex-wrap gap-2 mb-2">
@@ -311,7 +371,6 @@ const PropertyForm = () => {
                           </span>
                         ))}
                       </div>
-
                       <input
                         type="text"
                         placeholder="Type domain and press Enter..."
@@ -329,8 +388,6 @@ const PropertyForm = () => {
                 }}
               />
             </div>
-
-            {/* Orientation */}
             <div>
               <Label>Orientation</Label>
               <Controller
@@ -350,9 +407,11 @@ const PropertyForm = () => {
           </Section>
         </div>
       </div>
+
       {/* ===================== LOCATION (full width) ===================== */}
       <Section title="Property Location">
         <div className="grid lg:grid-cols-2 gap-6">
+          {/* Country */}
           <div>
             <Controller
               control={control}
@@ -362,40 +421,109 @@ const PropertyForm = () => {
                   <Label>Country</Label>
                   <select {...field} className={inputClass}>
                     <option value="">— Select —</option>
-                    <option value="Albania">Albania</option>
-                    <option value="Greece">Greece</option>
+                    <option value="AL">Albania</option>
+                    <option value="GR">Greece</option>
                   </select>
                 </>
               )}
             />
           </div>
+
+          {/* Division */}
           <div>
             <Controller
               control={control}
-              name="city"
+              name="divisionId"
               render={({ field }) => (
                 <>
-                  <Label>City</Label>
-                  {[].length > 0 ? (
-                    <select {...field} className={inputClass}>
-                      <option value="">— Select —</option>
-                      {[].map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      {...field}
-                      placeholder="Enter city"
-                      className={inputClass}
-                    />
-                  )}
+                  <Label>Division</Label>
+                  <select
+                    {...field}
+                    disabled={!selectedCountry || loadingDivisions}
+                    className={inputClass}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : undefined,
+                      )
+                    }
+                  >
+                    <option value="">
+                      {loadingDivisions ? "Loading..." : "— Select —"}
+                    </option>
+                    {divisions.map((d) => (
+                      <option key={d.value} value={d.value}>
+                        {d.label}
+                      </option>
+                    ))}
+                  </select>
                 </>
               )}
             />
           </div>
+
+          {/* City */}
+          <div>
+            <Controller
+              control={control}
+              name="cityId"
+              render={({ field }) => (
+                <>
+                  <Label>City</Label>
+                  <select
+                    {...field}
+                    disabled={!selectedDivisionId || loadingCities}
+                    className={inputClass}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : undefined,
+                      )
+                    }
+                  >
+                    <option value="">
+                      {loadingCities ? "Loading..." : "— Select —"}
+                    </option>
+                    {cities.map((c) => (
+                      <option key={c.value} value={c.value}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+            />
+          </div>
+
+          {/* Zone */}
+          <div>
+            <Controller
+              control={control}
+              name="zone"
+              render={({ field }) => (
+                <>
+                  <Label>Zone</Label>
+                  <select
+                    {...field}
+                    disabled={!selectedCityId || loadingZones}
+                    className={inputClass}
+                    onChange={(e) =>
+                      field.onChange(e.target.value || undefined)
+                    }
+                  >
+                    <option value="">
+                      {loadingZones ? "Loading..." : "— Select —"}
+                    </option>
+                    {zones.map((z) => (
+                      <option key={z.value} value={z.value}>
+                        {z.label}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+            />
+          </div>
+
+          {/* Address */}
           <div>
             <Controller
               control={control}
@@ -409,40 +537,7 @@ const PropertyForm = () => {
             />
           </div>
 
-          {/* <div>
-            <Controller
-              control={control}
-              name="division"
-              render={({ field }) => (
-                <>
-                  <Label>Division</Label>
-                  <select {...field} className={inputClass}>
-                    {[].map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              )}
-            />
-          </div> */}
-          <div>
-            <Controller
-              control={control}
-              name="zone"
-              render={({ field }) => (
-                <>
-                  <Label>Zone</Label>
-                  <input
-                    {...field}
-                    placeholder="e.g. Zone 3"
-                    className={inputClass}
-                  />
-                </>
-              )}
-            />
-          </div>
+          {/* Floor */}
           <div>
             <Controller
               control={control}
@@ -465,6 +560,7 @@ const PropertyForm = () => {
             />
           </div>
 
+          {/* Latitude */}
           <div>
             <Controller
               control={control}
@@ -484,6 +580,8 @@ const PropertyForm = () => {
               )}
             />
           </div>
+
+          {/* Longitude */}
           <div>
             <Controller
               control={control}
@@ -503,6 +601,8 @@ const PropertyForm = () => {
               )}
             />
           </div>
+
+          {/* Publish Georeference */}
           <div className="flex items-center">
             <Controller
               control={control}
@@ -528,6 +628,7 @@ const PropertyForm = () => {
           </div>
         </div>
       </Section>
+
       {/* Property Price */}
       <Section title="Property Price" className="mt-6">
         <div className="grid lg:grid-cols-2 gap-6">
@@ -612,6 +713,8 @@ const PropertyForm = () => {
           </div>
         </div>
       </Section>
+
+      {/* Property Area */}
       <Section title="Property Area">
         <div className="grid lg:grid-cols-2 gap-6">
           {(
@@ -647,9 +750,10 @@ const PropertyForm = () => {
           ))}
         </div>
       </Section>
+
+      {/* Property Division */}
       <Section title="Property Division">
         <div className="grid lg:grid-cols-2 gap-6">
-          {" "}
           {(
             [
               { name: "bedrooms", label: "Bedrooms" },
@@ -679,6 +783,7 @@ const PropertyForm = () => {
           ))}
         </div>
       </Section>
+
       {/* Owner */}
       <Section title="Property Owner">
         <div className="grid lg:grid-cols-2 gap-6">
@@ -717,9 +822,27 @@ const PropertyForm = () => {
               )}
             />
           </div>
+
+          <div>
+            <Controller
+              control={control}
+              name="ownersPhoneNumber"
+              render={({ field }) => (
+                <>
+                  <Label>Owner's Phone Number</Label>
+                  <input
+                    {...field}
+                    placeholder="Owner phone number"
+                    className={inputClass}
+                  />
+                </>
+              )}
+            />
+          </div>
         </div>
       </Section>
-      {/* Owner */}
+
+      {/* Other */}
       <Section title="Property Other">
         <div className="grid lg:grid-cols-2 gap-6">
           <div>
@@ -728,17 +851,14 @@ const PropertyForm = () => {
               name="communalCharger"
               render={({ field }) => (
                 <>
-                  <Label>Communal Charger</Label>
-                  <select {...field} className={inputClass}>
-                    <option value="">— Select —</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                  </select>
+                  <BooleanSelect
+                    field={field}
+                    options={PROPERTY_ELEVATOR_OPTIONS}
+                  />
                 </>
               )}
             />
           </div>
-
           <div>
             <Controller
               control={control}
@@ -757,7 +877,6 @@ const PropertyForm = () => {
               )}
             />
           </div>
-
           <div>
             <Controller
               control={control}
@@ -780,7 +899,6 @@ const PropertyForm = () => {
               )}
             />
           </div>
-
           <div>
             <Controller
               control={control}
@@ -805,9 +923,10 @@ const PropertyForm = () => {
           </div>
         </div>
       </Section>
+
+      {/* More Features */}
       <Section title="More Features">
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* View To */}
           <Controller
             control={control}
             name="withViewTo"
@@ -822,8 +941,6 @@ const PropertyForm = () => {
               </div>
             )}
           />
-
-          {/* Equipment */}
           <Controller
             control={control}
             name="equipment"
@@ -838,8 +955,6 @@ const PropertyForm = () => {
               </div>
             )}
           />
-
-          {/* Infrastructures */}
           <Controller
             control={control}
             name="infrastructures"
@@ -854,8 +969,6 @@ const PropertyForm = () => {
               </div>
             )}
           />
-
-          {/* Surroundings */}
           <Controller
             control={control}
             name="surroundings"

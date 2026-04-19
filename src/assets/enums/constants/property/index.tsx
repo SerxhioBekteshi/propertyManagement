@@ -1,7 +1,4 @@
-export type IOption<T> = {
-  value: T;
-  label: string;
-};
+import { IOption } from "../../../../types";
 
 /**
  * DEFAULT "SELECT"

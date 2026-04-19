@@ -1,7 +1,3 @@
-"use client";
-
-import * as React from "react";
-
 type SpinnerProps = {
   size?: "sm" | "md" | "lg";
   fullScreen?: boolean;

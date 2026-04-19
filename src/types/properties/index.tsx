@@ -1,19 +1,19 @@
+import { BaseAuditableDTO } from "..";
+
 export interface PropertyFiltersDTO {
-  // Row 1 in Image
-  id?: string; // Label: "Reference" (Maps to Property ID)
-  businessType: string; // Label: "Business Type" (Options: Sale/Rent)
-  minPrice: string; // Label: "Min Price"
-  maxPrice: string; // Label: "Max Price"
-  bedrooms: string; // Label: "Bedrooms"
-  bathrooms: string; // Label: "Bathrooms"
+  businessType?: string; // Label: "Business Type" (Options: Sale/Rent)
+  minPrice?: number; // Label: "Min Price"
+  maxPrice?: number; // Label: "Max Price"
+  bedrooms?: number; // Label: "Bedrooms"
+  bathrooms?: number; // Label: "Bathrooms"
 
   // Row 2 in Image
-  propertyType: string; // Label: "Property Type"
-  city: string; // Label: "City"
-  zone: string; // Label: "Zone"
-  availability: string; // Label: "Availability"
-  agentId: string; // Label: "Assigned To" (Maps to DTO agentId)
-  owner: string; // Label: "Owner"
+  propertyType?: string; // Label: "Property Type"
+  cityId?: number; // Label: "City"
+  zoneId?: number; // Label: "Zone"
+  availability?: string; // Label: "Availability"
+  agentId?: number; // Label: "Assigned To" (Maps to DTO agentId)
+  owner?: string; // Label: "Owner"
 
   // Sort Logic
   orderBy: "newest" | "oldest" | "price_asc" | "price_desc";
@@ -21,10 +21,22 @@ export interface PropertyFiltersDTO {
 
 export type AddPropertyDTO = Omit<
   PropertyResponseDTO,
-  "id" | "agentId" | "lastModifiedBy"
->;
+  | "id"
+  | "agentId"
+  | "createdDateTime"
+  | "createdBy"
+  | "modifiedDateTime"
+  | "modifiedBy"
+  | "zone"
+  | "division"
+  | "city"
+  | "imageUrls"
+  | "mainImage"
+> & {
+  images?: File[];
+};
 
-export type PropertyResponseDTO = {
+export type PropertyResponseDTO = BaseAuditableDTO & {
   id: number;
 
   // Core
@@ -41,20 +53,23 @@ export type PropertyResponseDTO = {
   publishToPortal?: boolean;
 
   propertyType?: string;
-  elevator?: "yes" | "no";
-  beingLived?: "yes" | "no";
-  parking?: "yes" | "no";
-  portalsToPublish: string;
+  elevator?: boolean;
+  beingLived?: boolean;
+  parking?: boolean;
+  portalsToPublish?: string;
   propertyOrientation?: "North" | "South" | "East" | "West";
 
   //Location
   country?: string;
-  city?: string;
+  cityId?: number;
+  cityName?: string;
   address?: string;
   latitude?: number;
   longitude?: number;
-  division?: string;
-  zone?: string;
+  divisionId?: number;
+  divisionName?: string;
+  zoneId?: number;
+  zoneName?: string;
   floor?: number;
   publishGeoreference?: boolean;
 
@@ -79,21 +94,22 @@ export type PropertyResponseDTO = {
 
   //property Owner
   owner?: string;
-  agentId: number;
+  agentId?: number;
+  agent?: string;
   ownersTypology?: string;
-
+  ownersPhoneNumber?: string;
   // Timeline and other Features
   documentation?: "yes" | "no" | "in_progress";
-  communalCharger?: "yes" | "no";
+  communalCharger?: boolean;
   yearOfConstruction?: number;
   yearOfRenovation?: number;
 
   //More Features
   withViewTo?: string;
   equipment?: string;
-  infrastructues?: string;
+  infrastructures?: string;
   surroundings?: string;
 
-  // System
-  lastModifiedBy: string;
+  imageUrls?: string[];
+  mainImage?: string;
 };

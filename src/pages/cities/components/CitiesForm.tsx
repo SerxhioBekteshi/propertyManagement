@@ -1,7 +1,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 import * as yup from "yup";
-import { IOption } from "../../../assets/enums/constants/property";
 import ErrorMessage from "../../../components/hook-form/error-message";
+import { IOption } from "../../../types";
 
 interface CitiesFormProps {
   divisions: IOption<number>[];

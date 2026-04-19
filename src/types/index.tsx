@@ -1,3 +1,5 @@
+import { LookupFilterOperation, LookupSortingDirection } from "../assets/enums";
+
 export interface BaseAuditableDTO {
   createdDateTime?: string;
   createdBy?: string;
@@ -5,18 +7,10 @@ export interface BaseAuditableDTO {
   modifiedBy?: string;
 }
 
-export type LookupFilterOperation =
-  | "Contains"
-  | "StartsWith"
-  | "EndsWith"
-  | "Equals"
-  | "Less"
-  | "LessOrEquals"
-  | "More"
-  | "MoreOrEquals"
-  | "RangeDate"
-  | "NotEqual"
-  | "In";
+export type IOption<T> = {
+  value: T;
+  label: string;
+};
 
 export interface LookupFilterDTO {
   columnName: string;
@@ -27,7 +21,7 @@ export interface LookupFilterDTO {
 
 export interface LookupSortingDTO {
   columnName: string;
-  direction: "asc" | "desc";
+  direction: LookupSortingDirection;
 }
 
 export interface LookupRepositoryDTO {

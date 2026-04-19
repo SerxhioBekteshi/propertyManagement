@@ -1,5 +1,4 @@
 import { BedDouble, Bath, Maximize2, MapPin, User, Eye } from "lucide-react";
-import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { PropertyResponseDTO } from "../../../types/properties";
 
@@ -23,32 +22,25 @@ export const statusColors: Record<string, string> = {
   new: "bg-emerald-500",
   under_construction: "bg-yellow-500",
   in_project: "bg-blue-400",
-  refurbished: "bg-green-500", // Your requested color
+  refurbished: "bg-green-500",
   for_refurbishment: "bg-orange-400",
 };
 
-const placeholderImages = [
-  "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
-  "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
-  "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg",
-];
-
-function getPlaceholder(id: string | number) {
-  const numericId = typeof id === "string" ? id.length : id;
-  return placeholderImages[numericId % placeholderImages.length];
-}
+// const placeholderImages = [
+//   "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
+//   "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+//   "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg",
+// ];
 
 export default function PropertyCard({ property, onClick }: PropertyCardProps) {
-  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const imageUrl = getPlaceholder(property.id);
-
   const typeClass =
-    propertyTypeColors[property.propertyType] ||
+    propertyTypeColors[property.propertyType ?? ""] ||
     "bg-slate-50 text-slate-700 border-slate-100";
 
-  const statusColorClass = statusColors[property.status] || "bg-slate-400";
+  const statusColorClass =
+    statusColors[property.status ?? ""] || "bg-slate-400";
 
   const price = property.price
     ? new Intl.NumberFormat("en-EU", {
@@ -66,8 +58,8 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
       {/* IMAGE */}
       <div className="relative h-52 overflow-hidden">
         <img
-          src={imageUrl}
-          alt={property.title}
+          src={`${import.meta.env.VITE_APP_BACKEND_API_URL}/${property.mainImage}`}
+          alt={property.title ?? "Property"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
 
@@ -78,19 +70,23 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
           <span
             className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border ${typeClass}`}
           >
-            {property.propertyType}
+            {property.propertyType ?? "—"}
           </span>
 
           <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded bg-black/70 text-white">
-            {property.businessType === "sale" ? "For Sale" : "For Rent"}
+            {property.businessType === "sale"
+              ? "For Sale"
+              : property.businessType === "rent"
+                ? "For Rent"
+                : "—"}
           </span>
         </div>
 
-        {/* STATUS INDICATOR (TOP RIGHT) */}
+        {/* STATUS INDICATOR */}
         <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
           <div className={`w-2 h-2 rounded-full ${statusColorClass}`} />
           <span className="text-[10px] font-bold text-slate-700 capitalize">
-            {property.status.replace(/_/g, " ")}
+            {property.status?.replace(/_/g, " ") ?? "—"}
           </span>
         </div>
 
@@ -104,34 +100,34 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
       <div className="p-4">
         {/* TITLE */}
         <h3 className="font-semibold text-slate-900 text-sm line-clamp-1 group-hover:text-blue-600 transition-colors">
-          {property.title}
+          {property.title ?? "—"}
         </h3>
 
         {/* LOCATION */}
         <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
           <MapPin className="w-3.5 h-3.5 text-slate-400" />
-          {property.city}
-          {property.zone ? `, ${property.zone}` : ""}
+          {property.cityName ?? "—"}
+          {property.zoneName ? `, ${property.zoneName}` : ""}
         </div>
 
         {/* FEATURES */}
         <div className="flex gap-4 mt-4 py-3 border-y border-slate-50 text-xs text-slate-600">
           <span className="flex items-center gap-1.5">
             <BedDouble className="w-4 h-4 text-slate-400" />
-            <span className="font-medium">{property.bedrooms || 0}</span>
+            <span className="font-medium">{property.bedrooms ?? "—"}</span>
           </span>
 
           <span className="flex items-center gap-1.5">
             <Bath className="w-4 h-4 text-slate-400" />
-            <span className="font-medium">{property.bathrooms || 0}</span>
+            <span className="font-medium">{property.bathrooms ?? "—"}</span>
           </span>
 
-          {property.interiorArea && (
-            <span className="flex items-center gap-1.5">
-              <Maximize2 className="w-4 h-4 text-slate-400" />
-              <span className="font-medium">{property.interiorArea}m²</span>
+          <span className="flex items-center gap-1.5">
+            <Maximize2 className="w-4 h-4 text-slate-400" />
+            <span className="font-medium">
+              {property.interiorArea ? `${property.interiorArea}m²` : "—"}
             </span>
-          )}
+          </span>
         </div>
 
         {/* AGENT + CTA */}
@@ -141,7 +137,7 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
               <User className="w-3 h-3 text-slate-400" />
             </div>
             <span className="truncate max-w-[100px]">
-              {property.agentId || "Unassigned"}
+              {property.agent ?? "Unassigned"}
             </span>
           </div>
 

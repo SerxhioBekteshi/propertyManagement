@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   createContext,
   useContext,
@@ -29,9 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
   const [user, setUser] = useState<TUserResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // ✅ start true
 
-  // 🔐 LOGIN
   async function signIn(
     email: string,
     password: string,
@@ -41,32 +40,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: new Error("Email and password are required.") };
     }
 
-    const res = await AuthenticationService.login({ email, password, country });
+    setLoading(true);
+
+    const res = await AuthenticationService.login({
+      email,
+      password,
+      country,
+    });
+
     if (!res.accessToken) {
+      setLoading(false);
       return { error: new Error("Login failed") };
     }
 
     localStorage.setItem(eLocalStorage.AccessToken, res.accessToken);
     localStorage.setItem(eLocalStorage.RefreshToken, res.refreshToken);
 
-    // 👇 fetch real user after login
     await refreshProfile();
 
+    setLoading(false);
     return { error: null };
   }
 
-  // 👤 GET CURRENT USER
   async function refreshProfile(): Promise<void> {
     try {
       const token = localStorage.getItem(eLocalStorage.AccessToken);
-      if (!token) return;
+      if (!token) {
+        setUser(null);
+        return;
+      }
 
       const profile = await AuthenticationService.getMe();
-      setUser(profile);
-    } catch (err) {
+
+      // ✅ IMPORTANT FIX: unwrap if API returns {data, result}
+      const actualUser = (profile as any)?.data ?? profile;
+
+      setUser(actualUser);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err: any) {
       setUser(null);
-    } finally {
-      setLoading(false);
+      localStorage.removeItem(eLocalStorage.AccessToken);
+      localStorage.removeItem(eLocalStorage.RefreshToken);
     }
   }
 
@@ -78,12 +92,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem(eLocalStorage.AccessToken);
-    if (token) {
-      refreshProfile();
-    } else {
+    const init = async () => {
+      const token = localStorage.getItem(eLocalStorage.AccessToken);
+
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      await refreshProfile(); // ✅ wait properly
       setLoading(false);
-    }
+    };
+
+    init();
   }, []);
 
   return (

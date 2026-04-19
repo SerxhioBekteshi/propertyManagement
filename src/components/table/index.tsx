@@ -69,7 +69,6 @@ const BaseTableComponent = <T extends Record<string, any>>(
     addButton,
     clickableRow = false,
     navigateToDetails,
-    setFilters,
     onAddClick,
   } = props;
 
