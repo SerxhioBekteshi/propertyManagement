@@ -12,20 +12,27 @@ const BooleanSelect = ({
 }) => (
   <select
     {...field}
-    value={field.value === undefined ? "" : String(field.value)}
+    value={
+      field.value === undefined
+        ? ""
+        : field.value === true
+          ? "yes" // 👈 map boolean → string for display
+          : field.value === false
+            ? "no"
+            : field.value // already a string, use as-is
+    }
     onChange={(e) =>
       field.onChange(
-        e.target.value === "" ? undefined : e.target.value === "true",
+        e.target.value === "" ? undefined : e.target.value === "yes",
       )
     }
     className={inputClass}
   >
     {options.map((v, i) => (
-      <option key={i} value={v.value}>
+      <option key={i} value={v.value === undefined ? "" : String(v.value)}>
         {v.label}
       </option>
     ))}
   </select>
 );
-
 export default BooleanSelect;

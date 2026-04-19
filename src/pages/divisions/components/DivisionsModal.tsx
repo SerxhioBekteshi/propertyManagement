@@ -9,7 +9,7 @@ import { EFormMode } from "../../../assets/enums";
 import Modal from "../../../components/modal";
 import FormProvider from "../../../components/hook-form/form-provider";
 import DivisionsForm, { divionsSchema } from "./DivisionsForm";
-import { LocationConfigurationService } from "../../../lib/LocationConfiguration";
+import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { enqueueSnackbar } from "notistack";
 

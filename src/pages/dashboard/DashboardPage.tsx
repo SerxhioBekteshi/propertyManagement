@@ -10,7 +10,7 @@ import {
 } from "../../types/properties";
 import { usePagedList } from "../../hooks/usePagedList";
 import { ENDPOINTS } from "../../lib/axios";
-import { LocationConfigurationService } from "../../lib/LocationConfiguration";
+import { LocationConfigurationService } from "../../lib/ListConfiguration";
 import { IOption } from "../../types";
 import { filterMappings, INITIAL_FILTERS } from "./components/filterMappings";
 
@@ -36,6 +36,7 @@ export default function DashboardPage() {
   } = usePagedList<PropertyResponseDTO, PropertyFiltersDTO>({
     controller: ENDPOINTS.properties.getAll,
     filterMappings: filterMappings,
+    initialFilters: INITIAL_FILTERS,
   });
 
   const fetchAgentsAndCities = async () => {

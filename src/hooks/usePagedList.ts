@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { BaseTableService } from "../lib/Table";
 import { LookupFilterOperation, LookupSortingDirection } from "../assets/enums";
 import {
   LookupFilterDTO,
   LookupRepositoryDTO,
   LookupSortingDTO,
-} from "../types";
+} from "../types/database";
 
 export interface FilterMapping<T> {
   key: keyof T;
@@ -20,20 +20,30 @@ interface Props<_T, F> {
   controller: string;
   filterMappings: FilterMapping<F>[];
   pageSize?: number;
+  initialFilters?: F;
 }
 
 export function usePagedList<T, F>({
   controller,
   filterMappings,
   pageSize = 12,
+  initialFilters,
 }: Props<T, F>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const [filtersState, setFiltersState] = useState<F | null>(null);
   const [totalCount, setTotalCount] = useState(0);
+  const [filtersState, setFiltersState] = useState<F | null>(
+    initialFilters ?? null,
+  );
+
+  useEffect(() => {
+    if (initialFilters) {
+      fetchData(initialFilters, 0, false);
+    }
+  }, []);
 
   // 🔥 BUILD FILTERS (FIXED)
   const buildFilters = (filters: F): LookupFilterDTO[] => {
@@ -117,7 +127,7 @@ export function usePagedList<T, F>({
   const applyFilters = useCallback((filters: F) => {
     setFiltersState(filters);
     setPage(1);
-    fetchData(filters, 1, false);
+    fetchData(filters, 0, false);
   }, []);
 
   const loadMore = useCallback(() => {
@@ -130,7 +140,7 @@ export function usePagedList<T, F>({
 
   const refresh = () => {
     if (!filtersState) return;
-    fetchData(filtersState, 1, false);
+    fetchData(filtersState, 0, false);
   };
 
   return {

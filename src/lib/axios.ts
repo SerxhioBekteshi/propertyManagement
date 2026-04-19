@@ -152,6 +152,7 @@ export const ENDPOINTS = {
     getAll: "Property/get-all",
     create: `Property/create`,
     getById: (id: number) => `Property/${id}`,
+    createOwner: "Property/create/owner",
   },
   locationConfigurationList: {
     cities(divisionId?: number) {
@@ -164,6 +165,7 @@ export const ENDPOINTS = {
       return `List/zones/${cityId ?? ""}`;
     },
     agents: "/List/agents",
+    propertyOwners: "/List/propertyOwners",
   },
   cities: {
     create: "City/create",

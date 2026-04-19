@@ -1,4 +1,4 @@
-import { BaseAuditableDTO } from "..";
+import { BaseAuditableDTO } from "../database";
 
 export interface PropertyFiltersDTO {
   businessType?: string; // Label: "Business Type" (Options: Sale/Rent)
@@ -113,3 +113,14 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   imageUrls?: string[];
   mainImage?: string;
 };
+
+export interface CreatePropertyOwnerDTO {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  email?: string;
+  nationality?: string;
+  assignedToId: number;
+  mainLeadSource?: string;
+  ssn?: string;
+}

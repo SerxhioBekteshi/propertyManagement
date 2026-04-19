@@ -27,8 +27,8 @@ import { ErrorState } from "../error-state";
 import NoResults from "../no-results";
 
 import { motion } from "framer-motion";
-import { LookupFilterDTO, LookupRepositoryDTO } from "../../types";
 import { BaseTableService } from "../../lib/Table";
+import { LookupFilterDTO, LookupRepositoryDTO } from "../../types/database";
 
 export interface ColumnConfig {
   key: string;

@@ -1,4 +1,10 @@
-import { Controller, useFormContext, useWatch } from "react-hook-form";
+import {
+  Controller,
+  FormProvider,
+  useForm,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 import Label from "../../../components/label";
 import Section from "../../../components/section";
 import {
@@ -22,9 +28,15 @@ import {
 import { MultiSelect } from "../../../components/multi-select";
 import { ImageUploader } from "../../../components/upload-file";
 import { useEffect, useState } from "react";
-import { LocationConfigurationService } from "../../../lib/LocationConfiguration";
+import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import BooleanSelect from "../../../components/boolean-select";
 import { IOption } from "../../../types";
+import { SingleSelect } from "../../../components/single-select";
+import BaseDrawer from "../../../components/base-drawer";
+import PropertyOwnerForm, { propertyOwnerchema } from "./propertyOwnerForm";
+import { Plus } from "lucide-react";
+import { CreatePropertyOwnerDTO } from "../../../types/properties";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -35,6 +47,17 @@ const checkboxClass =
 const PropertyForm = () => {
   const { control, setValue } = useFormContext();
 
+  // const methods = useForm<CreatePropertyOwnerDTO>({
+  //   resolver: yupResolver(propertyOwnerchema),
+  //   defaultValues: {},
+  // });
+
+  // const {
+  //   handleSubmit,
+  //   reset,
+  //   formState: { isDirty },
+  // } = methods;
+
   const selectedCountry = useWatch({ control, name: "country" });
   const selectedDivisionId = useWatch({ control, name: "divisionId" });
   const selectedCityId = useWatch({ control, name: "cityId" });
@@ -42,11 +65,12 @@ const PropertyForm = () => {
   const [divisions, setDivisions] = useState<IOption<number>[]>([]);
   const [cities, setCities] = useState<IOption<number>[]>([]);
   const [zones, setZones] = useState<IOption<number>[]>([]);
+  const [propertyOwners, setPropertyOwners] = useState<IOption<number>[]>([]);
 
   const [loadingDivisions, setLoadingDivisions] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingZones, setLoadingZones] = useState(false);
-
+  const [ownerDrawerOpen, setOwnerDrawerOpen] = useState(false);
   // Fetch divisions when country changes
   // Fetch divisions when country changes
   useEffect(() => {
@@ -121,6 +145,21 @@ const PropertyForm = () => {
 
     fetch();
   }, [selectedCityId]);
+
+  const fetchPropertyOwners = async () => {
+    setLoadingZones(true);
+    // setValue("", undefined);
+    try {
+      const res = await LocationConfigurationService.getPropertyOwners();
+      setPropertyOwners(res.data ?? []);
+    } finally {
+      setLoadingZones(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPropertyOwners();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -794,14 +833,20 @@ const PropertyForm = () => {
               render={({ field }) => (
                 <>
                   <Label>Owner</Label>
-                  <input
-                    {...field}
-                    placeholder="Owner name or ID"
-                    className={inputClass}
+                  <SingleSelect<number>
+                    options={propertyOwners}
+                    onChange={field.onChange}
                   />
                 </>
               )}
             />
+            <button
+              type="button"
+              onClick={() => setOwnerDrawerOpen(true)}
+              className="shrink-0 w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all text-slate-600"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
           </div>
           <div>
             <Controller
@@ -823,7 +868,7 @@ const PropertyForm = () => {
             />
           </div>
 
-          <div>
+          {/* <div>
             <Controller
               control={control}
               name="ownersPhoneNumber"
@@ -838,7 +883,7 @@ const PropertyForm = () => {
                 </>
               )}
             />
-          </div>
+          </div> */}
         </div>
       </Section>
 
@@ -846,6 +891,8 @@ const PropertyForm = () => {
       <Section title="Property Other">
         <div className="grid lg:grid-cols-2 gap-6">
           <div>
+            <Label>Communal Charge</Label>
+
             <Controller
               control={control}
               name="communalCharger"
@@ -985,6 +1032,20 @@ const PropertyForm = () => {
           />
         </div>
       </Section>
+
+      <BaseDrawer
+        open={ownerDrawerOpen}
+        onClose={() => setOwnerDrawerOpen(false)}
+        onOpenChange={setOwnerDrawerOpen}
+        title="Add Owner"
+        onSave={() => {
+          // handle save — you'll wire this up
+        }}
+      >
+        {/* <FormProvider methods={methods}> */}
+        <PropertyOwnerForm assignes={null} />
+        {/* </FormProvider> */}
+      </BaseDrawer>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { BaseAuditableDTO } from "..";
+import { BaseAuditableDTO } from "../database";
 
 export interface ZonesResponseDTO extends BaseAuditableDTO {
   id: number;

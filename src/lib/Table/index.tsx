@@ -1,4 +1,4 @@
-import { LookupRepositoryDTO, PagedListResponse } from "../../types";
+import { LookupRepositoryDTO, PagedListResponse } from "../../types/database";
 import { axiosInstance } from "../axios";
 
 export class BaseTableService {

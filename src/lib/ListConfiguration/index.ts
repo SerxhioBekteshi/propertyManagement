@@ -31,6 +31,12 @@ export const LocationConfigurationService = {
     return axiosInstance.get(ENDPOINTS.locationConfigurationList.agents);
   },
 
+  async getPropertyOwners(): Promise<TBaseResponse<IOption<number>[]>> {
+    return axiosInstance.get(
+      ENDPOINTS.locationConfigurationList.propertyOwners,
+    );
+  },
+
   async addCity(payload: CreateCityDTO): Promise<TBaseResponse<boolean>> {
     return axiosInstance.post(ENDPOINTS.cities.create, payload);
   },

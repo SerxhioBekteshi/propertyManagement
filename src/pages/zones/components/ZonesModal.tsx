@@ -8,7 +8,7 @@ import {
 import { EFormMode } from "../../../assets/enums";
 import Modal from "../../../components/modal";
 import FormProvider from "../../../components/hook-form/form-provider";
-import { LocationConfigurationService } from "../../../lib/LocationConfiguration";
+import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import ZonesForm, { zonesSchema } from "./ZonesForm";
 import { Spinner } from "../../../components/spinner";
 import { yupResolver } from "@hookform/resolvers/yup";
