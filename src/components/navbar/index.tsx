@@ -170,14 +170,11 @@ export default function Navbar() {
 
       {/* BACKDROPS */}
       {menuOpen && (
-        <div
-          className="fixed inset-0 z-[99990]"
-          onClick={() => setMenuOpen(false)}
-        />
+        <div className="fixed inset-0 " onClick={() => setMenuOpen(false)} />
       )}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-50 md:hidden"
+          className="fixed inset-0  md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}

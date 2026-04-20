@@ -74,10 +74,11 @@ const BaseDrawer = (props: BaseDrawerProps) => {
             ? { width: isMobile ? "100%" : `${width}px` }
             : undefined
         }
-        className="flex flex-col h-full "
+        className="flex flex-col h-full overflow-hidden" // 👈 overflow-hidden
       >
-        {/* Header - Fixed at top */}
-        <DrawerHeader className="px-4 relative">
+        <DrawerHeader className="px-4 relative shrink-0">
+          {" "}
+          {/* 👈 shrink-0 */}
           <div>
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
@@ -90,15 +91,13 @@ const BaseDrawer = (props: BaseDrawerProps) => {
           </div>
         </DrawerHeader>
 
-        {/* Scrollable form content */}
-        <div className="flex-1 min-h-0">
-          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
-            {children}
-          </div>
+        {/* Scrollable content */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
+          {children}
         </div>
 
-        {/* Footer - Sticky at bottom */}
-        <DrawerFooter className="flex flex-row justify-end gap-2 ">
+        {/* Sticky footer */}
+        <DrawerFooter className="flex flex-row justify-end gap-2 shrink-0 bg-white border-t border-slate-100 px-6 py-4">
           {footerActions}
           {!removeDefaultActions && (
             <>
@@ -106,9 +105,7 @@ const BaseDrawer = (props: BaseDrawerProps) => {
                 type="button"
                 variant="outline"
                 className="w-fit"
-                onClick={() => {
-                  onClose();
-                }}
+                onClick={onClose}
                 disabled={isSubmitLoading}
               >
                 Cancel
@@ -118,9 +115,7 @@ const BaseDrawer = (props: BaseDrawerProps) => {
                 disabled={isSubmitLoading || disabledSubmitButton}
                 variant={submitVariant}
                 className="w-fit"
-                onClick={() => {
-                  if (onSave) onSave();
-                }}
+                onClick={() => onSave?.()}
               >
                 {isSubmitLoading ? "Saving..." : submitTitle}
               </Button>
