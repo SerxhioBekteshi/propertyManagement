@@ -19,7 +19,6 @@ const columns: ColumnConfig[] = [
 const COUNTRIES: CountriesResponseDTO[] = [
   { code: "AL", name: "Albania", flag: "🇦🇱" },
   { code: "GR", name: "Greece", flag: "🇬🇷" },
-  { code: "IT", name: "Italy", flag: "🇮🇹" },
   // ...add more
 ];
 

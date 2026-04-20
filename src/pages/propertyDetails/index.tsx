@@ -374,14 +374,26 @@ export default function PropertyDetailsPage() {
             <div className="space-y-3">
               <Item label="Owner's Typology" value={property.ownersTypology} />
 
-              {/* <Item
+              <Item
                 label="Owner's Phone Number"
                 value={
-                  user?.id == property.agentId
-                    ? property.ownersPhoneNumber
+                  user?.id == property.agentId ||
+                  user?.id == property.propertyOwner?.assignedToId
+                    ? property.propertyOwner?.phoneNumber
                     : "---"
                 }
-              /> */}
+              />
+
+              <Item
+                label="Owner's Name"
+                value={
+                  user?.id == property.agentId
+                    ? property.propertyOwner?.firstName +
+                      " " +
+                      property.propertyOwner?.lastName
+                    : "---"
+                }
+              />
 
               <div className="pt-4 mt-4 border-t border-slate-100">
                 <Item label="Assigned Agent" value={property.agent} highlight />

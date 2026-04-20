@@ -23,6 +23,7 @@ export type AddPropertyDTO = Omit<
   PropertyResponseDTO,
   | "id"
   | "agentId"
+  | "agent"
   | "createdDateTime"
   | "createdBy"
   | "modifiedDateTime"
@@ -32,6 +33,8 @@ export type AddPropertyDTO = Omit<
   | "city"
   | "imageUrls"
   | "mainImage"
+  | "propertyOwnerId"
+  | "properyOwner"
 > & {
   images?: File[];
 };
@@ -95,10 +98,11 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   //property Owner
   // owner?: string;
   agentId?: number;
-  propertyOwnerId?: number;
   agent?: string;
+  propertyOwnerId?: number;
+  propertyOwner?: ProperyOwnerDTO;
   ownersTypology?: string;
-  // ownersPhoneNumber?: string;
+
   // Timeline and other Features
   documentation?: "yes" | "no" | "in_progress";
   communalCharger?: boolean;
@@ -115,7 +119,7 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   mainImage?: string;
 };
 
-export interface CreatePropertyOwnerDTO {
+export interface ProperyOwnerDTO {
   firstName: string;
   lastName: string;
   phoneNumber: string;
@@ -125,3 +129,5 @@ export interface CreatePropertyOwnerDTO {
   mainLeadSource?: string;
   ssn?: string;
 }
+
+export type CreatePropertyOwnerDTO = ProperyOwnerDTO;
