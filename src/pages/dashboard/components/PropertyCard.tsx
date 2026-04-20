@@ -4,7 +4,7 @@ import { PropertyResponseDTO } from "../../../types/properties";
 
 interface PropertyCardProps {
   property: PropertyResponseDTO;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const propertyTypeColors: Record<string, string> = {

@@ -33,7 +33,6 @@ const ZonesModal = (props: ZonesModalProps) => {
     try {
       setIsLoading(true);
       const res = await LocationConfigurationService.getCities();
-      console.log(res, "RES");
       if (res.result) {
         setCities(res.data);
       } else {
@@ -64,10 +63,9 @@ const ZonesModal = (props: ZonesModalProps) => {
 
   const onSubmit = handleSubmit(async (data) => {
     setIsSubmitting(true);
-    let res = null;
 
     try {
-      res = await LocationConfigurationService.addZone(data);
+      const res = await LocationConfigurationService.addZone(data);
 
       if (res.result) {
         onSave();

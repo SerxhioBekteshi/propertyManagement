@@ -104,7 +104,6 @@ export default function PropertyDetailsPage() {
   }, [id]);
 
   const [imgIndex, setImgIndex] = useState(0);
-  console.log(property);
   const images: string[] = property?.imageUrls?.length
     ? property.imageUrls
     : [

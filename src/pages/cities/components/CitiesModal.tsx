@@ -59,7 +59,6 @@ const CitiesModal = (props: CitiesModalProps) => {
 
     try {
       const res = await LocationConfigurationService.addCity(data);
-      console.log(res, "RES HERE");
       if (res.result) {
         onSave();
         enqueueSnackbar({

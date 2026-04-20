@@ -41,7 +41,6 @@ const DivisionsModal = (props: DivisionsModalProps) => {
 
     try {
       const res = await LocationConfigurationService.addDivision(data);
-      console.log(res, "DIVIO");
       if (res.result) {
         onSave();
         enqueueSnackbar({
