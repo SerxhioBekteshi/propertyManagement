@@ -62,7 +62,6 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchAgentsAndCities();
   }, []);
-
   // infinite scroll
   useEffect(() => {
     if (!sentinelRef.current) return;
@@ -122,7 +121,7 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
-      ) : error ? (
+      ) : error != "" ? (
         <ErrorState message={error} onRetry={refresh} />
       ) : properties.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">

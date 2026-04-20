@@ -122,9 +122,10 @@ export function usePagedList<T, F>({
       if (error) {
         setError("");
       }
-    } finally {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       setError("Failed to load data");
-
+    } finally {
       setLoading(false);
       setLoadingMore(false);
     }
