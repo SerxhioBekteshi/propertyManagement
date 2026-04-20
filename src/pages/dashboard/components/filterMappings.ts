@@ -26,12 +26,12 @@ export const filterMappings: FilterMapping<any>[] = [
   {
     key: "bedrooms",
     column: "bedrooms",
-    operation: LookupFilterOperation.MoreOrEquals,
+    operation: LookupFilterOperation.Equals,
   },
   {
     key: "bathrooms",
     column: "bathrooms",
-    operation: LookupFilterOperation.MoreOrEquals,
+    operation: LookupFilterOperation.Equals,
   },
   {
     key: "propertyType",
