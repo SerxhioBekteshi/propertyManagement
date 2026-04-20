@@ -378,20 +378,25 @@ export default function PropertyDetailsPage() {
                 label="Owner's Phone Number"
                 value={
                   user?.id == property.agentId ||
-                  user?.id == property.propertyOwner?.assignedToId
-                    ? property.propertyOwner?.phoneNumber
-                    : "---"
+                  user?.id == property.propertyOwner?.assignedToId ? (
+                    property.propertyOwner?.phoneNumber
+                  ) : (
+                    <span className="text-slate-300">—</span>
+                  )
                 }
               />
 
               <Item
                 label="Owner's Name"
                 value={
-                  user?.id == property.agentId
-                    ? property.propertyOwner?.firstName +
-                      " " +
-                      property.propertyOwner?.lastName
-                    : "---"
+                  property.propertyOwner?.firstName &&
+                  property.propertyOwner?.lastName ? (
+                    property.propertyOwner?.firstName +
+                    " " +
+                    property.propertyOwner?.lastName
+                  ) : (
+                    <span className="text-slate-300">—</span>
+                  )
                 }
               />
 

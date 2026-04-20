@@ -177,7 +177,7 @@ export default function Navbar() {
       )}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-30 md:hidden"
+          className="fixed inset-0 z-50 md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}

@@ -6,13 +6,22 @@ import { EFormMode } from "../../assets/enums";
 import { DivisionsResponseDTO } from "../../types/main-location-configuration";
 import DivisionsModal from "./components/DivisionsModal";
 import { ENDPOINTS } from "../../lib/axios";
+import { formatDate } from "../../utils";
 
 const columns = [
   { key: "name", header: "Division" },
   { key: "country", header: "Country" },
-  { key: "createdDateTime", header: "Created At" },
+  {
+    key: "createdDateTime",
+    header: "Created At",
+    render: (val: string) => formatDate(val),
+  },
   { key: "createdBy", header: "Created By" },
-  { key: "modifiedDateTime", header: "Modified At" },
+  {
+    key: "modifiedDateTime",
+    header: "Modified At",
+    render: (val: string) => formatDate(val),
+  },
   { key: "modifiedBy", header: "Modified By" },
 ];
 

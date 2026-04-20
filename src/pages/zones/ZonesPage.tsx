@@ -6,13 +6,22 @@ import { EFormMode } from "../../assets/enums";
 import ZonesModal from "./components/ZonesModal";
 import { ZonesResponseDTO } from "../../types/main-location-configuration";
 import { ENDPOINTS } from "../../lib/axios";
+import { formatDate } from "../../utils";
 
 const columns = [
   { key: "name", header: "Zone" },
   { key: "city", header: "City" },
-  { key: "createdDateTime", header: "Created At" },
+  {
+    key: "createdDateTime",
+    header: "Created At",
+    render: (val: string) => formatDate(val),
+  },
   { key: "createdBy", header: "Created By" },
-  { key: "modifiedDateTime", header: "Modified At" },
+  {
+    key: "modifiedDateTime",
+    header: "Modified At",
+    render: (val: string) => formatDate(val),
+  },
   { key: "modifiedBy", header: "Modified By" },
 ];
 

@@ -6,13 +6,10 @@ type LogoProps = {
   className?: string;
 };
 
-const LOGO_URL =
-  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=200&auto=format&fit=crop";
-
 const Logo: React.FC<LogoProps> = ({ disabledLink, className }) => {
   const logo = (
     <img
-      src={LOGO_URL}
+      src={"images/logo.png"}
       alt="Real Estate Logo"
       className={`w-24 cursor-pointer object-cover ${className || ""}`}
     />

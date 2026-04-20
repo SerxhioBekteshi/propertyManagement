@@ -155,7 +155,7 @@ export default function DashboardPage() {
               </div>
             )}
             {!hasMore && properties.length > 0 && (
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-slate-500 fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-1.5 rounded-full shadow-sm">
                 All {totalCount} listings loaded
               </p>
             )}
