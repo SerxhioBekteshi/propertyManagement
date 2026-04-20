@@ -9,6 +9,7 @@ const PropertyDetailsPage = lazy(() => import("../pages/propertyDetails"));
 const ZonesPage = lazy(() => import("../pages/zones/ZonesPage"));
 const CitiesPage = lazy(() => import("../pages/cities/CitiesPage"));
 const DivisionsPage = lazy(() => import("../pages/divisions/DivisionsPage"));
+const CountriesPage = lazy(() => import("../pages/countries/CountriesPage"));
 
 export const dashboardRoutes = [
   {
@@ -50,6 +51,14 @@ export const dashboardRoutes = [
         element: (
           <ProtectedRoute>
             <DivisionsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "countries",
+        element: (
+          <ProtectedRoute>
+            <CountriesPage />
           </ProtectedRoute>
         ),
       },

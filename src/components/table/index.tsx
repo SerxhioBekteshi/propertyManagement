@@ -33,6 +33,7 @@ import { LookupFilterDTO, LookupRepositoryDTO } from "../../types/database";
 export interface ColumnConfig {
   key: string;
   header: string;
+  render?: (value: any, row: any) => React.ReactNode;
 }
 
 export interface BaseTableRef<T> {
@@ -42,7 +43,8 @@ export interface BaseTableRef<T> {
 }
 
 interface BaseTableProps<T> {
-  controller: string;
+  controller?: string;
+  staticData?: T[];
   columns: ColumnConfig[];
   filters?: any;
   defaultFilters?: any;
@@ -70,6 +72,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
     clickableRow = false,
     navigateToDetails,
     onAddClick,
+    staticData,
   } = props;
 
   const { searchTerm, immediateValue, updateSearch } = useDebouncedSearch();
@@ -81,9 +84,11 @@ const BaseTableComponent = <T extends Record<string, any>>(
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isStatic = !!staticData;
 
   const fetchData = useCallback(
     async (currentFilters: any) => {
+      if (isStatic) return;
       try {
         setLoading(true);
 
@@ -103,7 +108,10 @@ const BaseTableComponent = <T extends Record<string, any>>(
           sorting: [],
         };
 
-        const result = await BaseTableService.getAllItems<T>(controller, body);
+        const result = await BaseTableService.getAllItems<T>(
+          controller ?? "",
+          body,
+        );
 
         setData(result.items);
         setTotalPages(result.totalPages);
@@ -116,11 +124,19 @@ const BaseTableComponent = <T extends Record<string, any>>(
         setLoading(false);
       }
     },
-    [controller, currentPage, searchTerm],
+    [controller, currentPage, searchTerm, isStatic],
   );
   useEffect(() => {
     fetchData(filters);
   }, [fetchData]);
+
+  useEffect(() => {
+    if (staticData) {
+      setData(staticData);
+      setTotalCount(staticData.length);
+      setTotalPages(1);
+    }
+  }, [staticData]);
 
   useImperativeHandle(ref, () => ({
     refresh: () => fetchData(filters),
@@ -136,7 +152,9 @@ const BaseTableComponent = <T extends Record<string, any>>(
         onClick={() => clickableRow && navigateToDetails?.(row)}
       >
         {columns.map((col) => (
-          <TableCell key={col.key}>{row[col.key] ?? "-"}</TableCell>
+          <TableCell key={col.key}>
+            {col.render ? col.render(row[col.key], row) : (row[col.key] ?? "-")}
+          </TableCell>
         ))}
       </motion.tr>
     ));
