@@ -33,14 +33,7 @@ const ZonesModal = (props: ZonesModalProps) => {
     try {
       setIsLoading(true);
       const res = await LocationConfigurationService.getCities();
-      if (res.result) {
-        setCities(res.data);
-      } else {
-        enqueueSnackbar({
-          variant: "error",
-          message: "Failed to fetch cities list",
-        });
-      }
+      setCities(res.data);
     } finally {
       setIsLoading(false);
     }
