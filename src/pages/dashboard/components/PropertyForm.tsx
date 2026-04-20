@@ -50,7 +50,7 @@ const PropertyForm = () => {
   const [loadingDivisions, setLoadingDivisions] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingZones, setLoadingZones] = useState(false);
-  // Fetch divisions when country changes
+
   // Fetch divisions when country changes
   useEffect(() => {
     if (!selectedCountry) {
