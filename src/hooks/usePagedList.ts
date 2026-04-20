@@ -35,6 +35,7 @@ export function usePagedList<T, F>({
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [error, setError] = useState("");
   const [filtersState, setFiltersState] = useState<F | null>(
     initialFilters ?? null,
   );
@@ -118,7 +119,12 @@ export function usePagedList<T, F>({
 
       setTotalCount(data.totalCount);
       setHasMore(data.items.length === pageSize);
+      if (error) {
+        setError("");
+      }
     } finally {
+      setError("Failed to load data");
+
       setLoading(false);
       setLoadingMore(false);
     }
@@ -152,5 +158,6 @@ export function usePagedList<T, F>({
     applyFilters,
     loadMore,
     refresh,
+    error,
   };
 }

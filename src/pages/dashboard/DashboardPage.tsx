@@ -13,6 +13,7 @@ import { ENDPOINTS } from "../../lib/axios";
 import { LocationConfigurationService } from "../../lib/ListConfiguration";
 import { IOption } from "../../types";
 import { filterMappings, INITIAL_FILTERS } from "./components/filterMappings";
+import { ErrorState } from "../../components/error-state";
 
 export default function DashboardPage() {
   const [filters, setFilters] = useState<PropertyFiltersDTO>(INITIAL_FILTERS);
@@ -33,6 +34,7 @@ export default function DashboardPage() {
     loadMore,
     refresh,
     applyFilters,
+    error,
   } = usePagedList<PropertyResponseDTO, PropertyFiltersDTO>({
     controller: ENDPOINTS.properties.getAll,
     filterMappings: filterMappings,
@@ -120,6 +122,8 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
+      ) : error ? (
+        <ErrorState message={error} onRetry={refresh} />
       ) : properties.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
