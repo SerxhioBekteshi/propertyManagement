@@ -372,28 +372,19 @@ export default function PropertyDetailsPage() {
             title="Ownership & Agent"
           >
             <div className="space-y-3">
-              <Item label="Owner" value={property.owner} />
-              <Item
-                label="Typology"
-                value={property.ownersTypology}
-                capitalize
-              />
+              <Item label="Owner's Typology" value={property.ownersTypology} />
 
-              <Item
+              {/* <Item
                 label="Owner's Phone Number"
                 value={
                   user?.id == property.agentId
                     ? property.ownersPhoneNumber
                     : "---"
                 }
-              />
+              /> */}
 
               <div className="pt-4 mt-4 border-t border-slate-100">
-                <Item
-                  label="Assigned Agent"
-                  value={property.agentId}
-                  highlight
-                />
+                <Item label="Assigned Agent" value={property.agent} highlight />
                 <div className="flex justify-between items-center py-1 border-b border-slate-50 last:border-0">
                   <span className="text-slate-500 text-xs font-medium">
                     Documentation
@@ -472,34 +463,29 @@ export default function PropertyDetailsPage() {
             title="More Features"
           >
             <div className="space-y-4">
-              {property.withViewTo && (
-                <FeatureGroup
-                  label="View To"
-                  values={parseList(property.withViewTo)}
-                  color="blue"
-                />
-              )}
-              {property.equipment && (
-                <FeatureGroup
-                  label="Equipment"
-                  values={parseList(property.equipment)}
-                  color="emerald"
-                />
-              )}
-              {property.infrastructures && (
-                <FeatureGroup
-                  label="Infrastructures"
-                  values={parseList(property.infrastructures)}
-                  color="amber"
-                />
-              )}
-              {property.surroundings && (
-                <FeatureGroup
-                  label="Surroundings"
-                  values={parseList(property.surroundings)}
-                  color="indigo"
-                />
-              )}
+              <FeatureGroup
+                label="View To"
+                values={parseList(property.withViewTo)}
+                color="blue"
+              />
+
+              <FeatureGroup
+                label="Equipment"
+                values={parseList(property.equipment)}
+                color="emerald"
+              />
+
+              <FeatureGroup
+                label="Infrastructures"
+                values={parseList(property.infrastructures)}
+                color="amber"
+              />
+
+              <FeatureGroup
+                label="Surroundings"
+                values={parseList(property.surroundings)}
+                color="indigo"
+              />
             </div>
           </Section>
         </div>
@@ -673,15 +659,49 @@ function FeatureGroup({
   return (
     <div>
       <p className="text-xs font-semibold text-slate-500 mb-2">{label}</p>
+
       <div className="flex flex-wrap gap-2">
-        {values.map((v) => (
-          <span
-            key={v}
-            className={`text-[11px] font-medium px-2.5 py-1 rounded-lg border ${colorMap[color]}`}
-          >
-            {v.replace(/_/g, " ")}
-          </span>
-        ))}
+        {values.length > 0 ? (
+          values.map((v) => (
+            <span
+              key={v}
+              className={`text-[11px] font-medium px-2.5 py-1 rounded-lg border ${colorMap[color]}`}
+            >
+              {v.replace(/_/g, " ")}
+            </span>
+          ))
+        ) : (
+          <div className="flex items-center gap-2 py-1.5 px-3 rounded-lg bg-slate-50 border border-dashed border-slate-200 w-fit">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              className="text-slate-300 shrink-0"
+            >
+              <circle
+                cx="6"
+                cy="6"
+                r="5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeDasharray="2 2"
+              />
+              <line
+                x1="4"
+                y1="6"
+                x2="8"
+                y2="6"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="text-[11px] text-slate-400 font-medium italic">
+              Not specified
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

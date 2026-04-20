@@ -1,10 +1,4 @@
-import {
-  Controller,
-  FormProvider,
-  useForm,
-  useFormContext,
-  useWatch,
-} from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import Label from "../../../components/label";
 import Section from "../../../components/section";
 import {
@@ -32,11 +26,8 @@ import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import BooleanSelect from "../../../components/boolean-select";
 import { IOption } from "../../../types";
 import { SingleSelect } from "../../../components/single-select";
-import BaseDrawer from "../../../components/base-drawer";
-import PropertyOwnerForm, { propertyOwnerchema } from "./propertyOwnerForm";
 import { Plus } from "lucide-react";
-import { CreatePropertyOwnerDTO } from "../../../types/properties";
-import { yupResolver } from "@hookform/resolvers/yup";
+import PropertyOwnerDrawer from "./PropertyOwnerModal";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -47,17 +38,6 @@ const checkboxClass =
 const PropertyForm = () => {
   const { control, setValue } = useFormContext();
 
-  // const methods = useForm<CreatePropertyOwnerDTO>({
-  //   resolver: yupResolver(propertyOwnerchema),
-  //   defaultValues: {},
-  // });
-
-  // const {
-  //   handleSubmit,
-  //   reset,
-  //   formState: { isDirty },
-  // } = methods;
-
   const selectedCountry = useWatch({ control, name: "country" });
   const selectedDivisionId = useWatch({ control, name: "divisionId" });
   const selectedCityId = useWatch({ control, name: "cityId" });
@@ -66,11 +46,10 @@ const PropertyForm = () => {
   const [cities, setCities] = useState<IOption<number>[]>([]);
   const [zones, setZones] = useState<IOption<number>[]>([]);
   const [propertyOwners, setPropertyOwners] = useState<IOption<number>[]>([]);
-
+  const [ownerDrawerOpen, setOwnerDrawerOpen] = useState(false);
   const [loadingDivisions, setLoadingDivisions] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingZones, setLoadingZones] = useState(false);
-  const [ownerDrawerOpen, setOwnerDrawerOpen] = useState(false);
   // Fetch divisions when country changes
   // Fetch divisions when country changes
   useEffect(() => {
@@ -826,18 +805,19 @@ const PropertyForm = () => {
       {/* Owner */}
       <Section title="Property Owner">
         <div className="grid lg:grid-cols-2 gap-6">
-          <div>
+          <div className="flex justify-between gap-3 items-end">
             <Controller
               control={control}
-              name="owner"
+              name="propertyOwnerId"
               render={({ field }) => (
-                <>
+                <div className="w-full">
                   <Label>Owner</Label>
                   <SingleSelect<number>
+                    value={field.value}
                     options={propertyOwners}
                     onChange={field.onChange}
                   />
-                </>
+                </div>
               )}
             />
             <button
@@ -1033,19 +1013,15 @@ const PropertyForm = () => {
         </div>
       </Section>
 
-      <BaseDrawer
-        open={ownerDrawerOpen}
-        onClose={() => setOwnerDrawerOpen(false)}
-        onOpenChange={setOwnerDrawerOpen}
-        title="Add Owner"
-        onSave={() => {
-          // handle save — you'll wire this up
+      <PropertyOwnerDrawer
+        key={"createOwner"}
+        onOpenChange={(open) => {
+          setOwnerDrawerOpen(open);
         }}
-      >
-        {/* <FormProvider methods={methods}> */}
-        <PropertyOwnerForm assignes={null} />
-        {/* </FormProvider> */}
-      </BaseDrawer>
+        open={ownerDrawerOpen}
+        onSave={() => fetchPropertyOwners()}
+        propertyOwners={propertyOwners}
+      />
     </div>
   );
 };

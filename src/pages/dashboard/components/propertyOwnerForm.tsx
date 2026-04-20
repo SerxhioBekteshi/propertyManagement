@@ -2,10 +2,11 @@ import { Controller, useFormContext } from "react-hook-form";
 import * as yup from "yup";
 import ErrorMessage from "../../../components/hook-form/error-message";
 import Label from "../../../components/label";
+import { IOption } from "../../../types";
+import { PROPERTY_MAIN_LEAD_SOURCE_OPTIONS } from "../../../assets/enums/constants/property";
 
 interface PropertyOwnerFormProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  assignes: any;
+  propertyOwners: IOption<number>[];
 }
 
 const inputClass =
@@ -23,9 +24,10 @@ export const propertyOwnerchema = yup.object({
     .trim()
     .min(2, "Name must be at least 2 characters"),
   phoneNumber: yup.string().required("Phone Number is required").trim(),
+  // assignedToId: yup.number().required("Agent is required"),
 });
 
-const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
+const PropertyOwnerForm = ({ propertyOwners }: PropertyOwnerFormProps) => {
   const { control } = useFormContext();
 
   return (
@@ -115,23 +117,25 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
         )}
       />
 
-      <Controller
-        control={control}
-        name="mainLeadSource"
-        render={({ field: { value, onChange }, fieldState: { error } }) => (
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Main Lead Source{" "}
-            </label>
-            <input
-              value={value}
-              onChange={onChange}
-              className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
-            />
-            <ErrorMessage message={error?.message} />
-          </div>
-        )}
-      />
+      <div>
+        <Label>Main Type</Label>
+        <Controller
+          control={control}
+          name="mainType"
+          render={({ field }) => (
+            <>
+              <select {...field} className={inputClass}>
+                {PROPERTY_MAIN_LEAD_SOURCE_OPTIONS.map((v, i) => (
+                  <option key={i} value={v.value}>
+                    {v.label}
+                  </option>
+                ))}
+              </select>
+              {/* <ErrorMessage message={error?.message} /> */}
+            </>
+          )}
+        />
+      </div>
 
       <Controller
         control={control}
@@ -147,19 +151,21 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
           </>
         )}
       />
-      {/* <Controller
+      <Controller
         control={control}
-        name="divisionId"
+        name="assignedToId"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <label className="block text-sm font-medium mb-1">Division</label>
+            <label className="block text-sm font-medium mb-1">
+              Select agent
+            </label>
             <select
               value={value}
               onChange={onChange}
               className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
             >
-              <option value="">Select division</option>
-              {divisions.map((d) => (
+              <option value="">Select agent</option>
+              {propertyOwners.map((d) => (
                 <option key={d.value} value={d.value}>
                   {d.label}
                 </option>
@@ -167,7 +173,8 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
             </select>
             <ErrorMessage message={error?.message} />
           </div>
-        )} */}
+        )}
+      />
     </div>
   );
 };

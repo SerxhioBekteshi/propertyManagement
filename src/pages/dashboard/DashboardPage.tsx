@@ -78,7 +78,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4 mb-6">
-      <div className="sticky top-0 z-40 bg-white flex justify-between items-center py-3">
+      <div className="sticky top-0 z-40 bg-white flex justify-between items-center py-2 mt-4  rounded-2xl border border-slate-100 px-4">
         <h1 className="text-lg font-semibold text-slate-900">Properties</h1>
         <Button
           onClick={() => setUploadOpen(true)}

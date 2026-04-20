@@ -93,11 +93,12 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   livingRoom?: number;
 
   //property Owner
-  owner?: string;
+  // owner?: string;
   agentId?: number;
+  propertyOwnerId?: number;
   agent?: string;
   ownersTypology?: string;
-  ownersPhoneNumber?: string;
+  // ownersPhoneNumber?: string;
   // Timeline and other Features
   documentation?: "yes" | "no" | "in_progress";
   communalCharger?: boolean;
@@ -120,7 +121,7 @@ export interface CreatePropertyOwnerDTO {
   phoneNumber: string;
   email?: string;
   nationality?: string;
-  assignedToId: number;
+  assignedToId?: number;
   mainLeadSource?: string;
   ssn?: string;
 }

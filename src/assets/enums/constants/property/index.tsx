@@ -254,3 +254,16 @@ export const PROPERTY_EQUIPMENT_OPTIONS = withDefault([
   { value: "dishwasher", label: "Dishwasher" },
   { value: "washing_machine", label: "Washing Machine" },
 ]);
+
+export const PROPERTY_MAIN_LEAD_SOURCE_OPTIONS = withDefault([
+  { value: "coldCall", label: "Cold Call" },
+  { value: "socialMedia", label: "Social Media" },
+  { value: "c21Website", label: "C21 Website" },
+  { value: "century21Master", label: "Century 21 Master" },
+  { value: "portals", label: "Portals" },
+  { value: "office", label: "Office" },
+  { value: "offlineMarketing", label: "Offline Marketing" },
+  { value: "soi", label: "Sphere of Influence" },
+  { value: "outdoorProspecting", label: "Outdoor Prospecting" },
+  { value: "brokerContacts", label: "Broker Contacts" },
+]);
