@@ -23,6 +23,7 @@ const navLinks = [
   { to: "/divisions", label: "Divisions" },
   { to: "/cities", label: "Cities" },
   { to: "/zones", label: "Zones" },
+  { to: "/contacts", label: "Contacts" },
 ];
 
 export default function Navbar() {

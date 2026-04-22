@@ -27,7 +27,7 @@ import BooleanSelect from "../../../components/boolean-select";
 import { IOption } from "../../../types";
 import { SingleSelect } from "../../../components/single-select";
 import { Plus } from "lucide-react";
-import PropertyOwnerDrawer from "./PropertyOwnerModal";
+import PropertyOwnerDrawer from "./PropertyOwnerDrawer";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -468,8 +468,8 @@ const PropertyForm = () => {
                     <option value="">
                       {loadingDivisions ? "Loading..." : "— Select —"}
                     </option>
-                    {divisions.map((d) => (
-                      <option key={d.value} value={d.value}>
+                    {divisions.map((d, index) => (
+                      <option key={index} value={d.value}>
                         {d.label}
                       </option>
                     ))}
@@ -500,8 +500,8 @@ const PropertyForm = () => {
                     <option value="">
                       {loadingCities ? "Loading..." : "— Select —"}
                     </option>
-                    {cities.map((c) => (
-                      <option key={c.value} value={c.value}>
+                    {cities.map((c, index) => (
+                      <option key={index} value={c.value}>
                         {c.label}
                       </option>
                     ))}
@@ -1020,7 +1020,6 @@ const PropertyForm = () => {
         }}
         open={ownerDrawerOpen}
         onSave={() => fetchPropertyOwners()}
-        propertyOwners={propertyOwners}
       />
     </div>
   );

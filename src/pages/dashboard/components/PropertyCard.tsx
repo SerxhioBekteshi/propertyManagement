@@ -108,6 +108,7 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
           <MapPin className="w-3.5 h-3.5 text-slate-400" />
           {property.cityName ?? "—"}
           {property.zoneName ? `, ${property.zoneName}` : ""}
+          {property.address ? `, ${property.address}` : ""}
         </div>
 
         {/* FEATURES */}

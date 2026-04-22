@@ -153,6 +153,7 @@ export const ENDPOINTS = {
     create: `Property/create`,
     getById: (id: number) => `Property/${id}`,
     createOwner: "Property/create/owner",
+    contacts: "Property/owners/get-all",
   },
   locationConfigurationList: {
     cities(divisionId?: number) {

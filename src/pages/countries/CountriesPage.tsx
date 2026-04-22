@@ -8,14 +8,13 @@ export interface CountriesResponseDTO {
 
 const columns: ColumnConfig[] = [
   {
-    key: "code",
+    key: "flag", // or anything unique
     header: "Flag",
     render: (_, row) => <CountryFlag code={row.code} />,
   },
   { key: "code", header: "Code" },
   { key: "name", header: "Country" },
 ];
-
 const COUNTRIES: CountriesResponseDTO[] = [
   { code: "AL", name: "Albania", flag: "🇦🇱" },
   { code: "GR", name: "Greece", flag: "🇬🇷" },
@@ -59,9 +58,9 @@ const FLAGS: Record<string, React.ReactNode> = {
       className="rounded-sm border border-slate-100"
     >
       {/* 9 stripes */}
-      {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i, index) => (
         <rect
-          key={i}
+          key={index}
           x="0"
           y={i * (28 / 9)}
           width="40"

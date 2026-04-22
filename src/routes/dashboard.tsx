@@ -10,6 +10,7 @@ const ZonesPage = lazy(() => import("../pages/zones/ZonesPage"));
 const CitiesPage = lazy(() => import("../pages/cities/CitiesPage"));
 const DivisionsPage = lazy(() => import("../pages/divisions/DivisionsPage"));
 const CountriesPage = lazy(() => import("../pages/countries/CountriesPage"));
+const ContactsPage = lazy(() => import("../pages/contacts/ContactsPage"));
 
 export const dashboardRoutes = [
   {
@@ -59,6 +60,14 @@ export const dashboardRoutes = [
         element: (
           <ProtectedRoute>
             <CountriesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "contacts",
+        element: (
+          <ProtectedRoute>
+            <ContactsPage />
           </ProtectedRoute>
         ),
       },

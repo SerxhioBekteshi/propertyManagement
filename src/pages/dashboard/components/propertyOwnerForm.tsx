@@ -6,7 +6,7 @@ import { IOption } from "../../../types";
 import { PROPERTY_MAIN_LEAD_SOURCE_OPTIONS } from "../../../assets/enums/constants/property";
 
 interface PropertyOwnerFormProps {
-  propertyOwners: IOption<number>[];
+  assignes: IOption<number>[];
 }
 
 const inputClass =
@@ -27,7 +27,7 @@ export const propertyOwnerchema = yup.object({
   // assignedToId: yup.number().required("Agent is required"),
 });
 
-const PropertyOwnerForm = ({ propertyOwners }: PropertyOwnerFormProps) => {
+const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
   const { control } = useFormContext();
 
   return (
@@ -40,7 +40,7 @@ const PropertyOwnerForm = ({ propertyOwners }: PropertyOwnerFormProps) => {
           <div>
             <label className="block text-sm font-medium mb-1">First Name</label>
             <input
-              value={value}
+              value={value ?? ""}
               onChange={onChange}
               className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
             />
@@ -56,7 +56,7 @@ const PropertyOwnerForm = ({ propertyOwners }: PropertyOwnerFormProps) => {
           <div>
             <label className="block text-sm font-medium mb-1">Last Name</label>
             <input
-              value={value}
+              value={value ?? ""}
               onChange={onChange}
               className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
             />
@@ -72,7 +72,7 @@ const PropertyOwnerForm = ({ propertyOwners }: PropertyOwnerFormProps) => {
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
             <input
-              value={value}
+              value={value ?? ""}
               onChange={onChange}
               className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
             />
@@ -90,7 +90,7 @@ const PropertyOwnerForm = ({ propertyOwners }: PropertyOwnerFormProps) => {
               Phone Number
             </label>
             <input
-              value={value}
+              value={value ?? ""}
               onChange={onChange}
               className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
             />
@@ -108,7 +108,7 @@ const PropertyOwnerForm = ({ propertyOwners }: PropertyOwnerFormProps) => {
               Personal ID
             </label>
             <input
-              value={value}
+              value={value ?? ""}
               onChange={onChange}
               className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
             />
@@ -160,13 +160,13 @@ const PropertyOwnerForm = ({ propertyOwners }: PropertyOwnerFormProps) => {
               Select agent
             </label>
             <select
-              value={value}
+              value={value ?? ""}
               onChange={onChange}
               className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
             >
               <option value="">Select agent</option>
-              {propertyOwners.map((d) => (
-                <option key={d.value} value={d.value}>
+              {assignes.map((d, index) => (
+                <option key={index} value={d.value}>
                   {d.label}
                 </option>
               ))}

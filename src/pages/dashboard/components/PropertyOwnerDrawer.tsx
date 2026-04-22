@@ -3,22 +3,40 @@ import { PropertiesService } from "../../../lib/Properties";
 import { CreatePropertyOwnerDTO } from "../../../types/properties";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IOption } from "../../../types";
 import PropertyOwnerForm, { propertyOwnerchema } from "./propertyOwnerForm";
 import BaseDrawer from "../../../components/base-drawer";
 import FormProvider from "../../../components/hook-form/form-provider";
+import { LocationConfigurationService } from "../../../lib/ListConfiguration";
+import { Spinner } from "../../../components/spinner";
 
 interface IPropertyOwnerDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: () => void;
-  propertyOwners: IOption<number>[];
 }
 
 const PropertyOwnerDrawer = (props: IPropertyOwnerDrawerProps) => {
-  const { open, onOpenChange, onSave, propertyOwners } = props;
+  const { open, onOpenChange, onSave } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [agents, setAgents] = useState<IOption<number>[]>([]);
+
+  const fetchAgents = async () => {
+    try {
+      const res = await LocationConfigurationService.getAgents();
+      if (res.result) {
+        setAgents(res.data);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAgents();
+  }, []);
 
   const methods = useForm<CreatePropertyOwnerDTO>({
     resolver: yupResolver(propertyOwnerchema),
@@ -65,9 +83,13 @@ const PropertyOwnerDrawer = (props: IPropertyOwnerDrawerProps) => {
       isSubmitLoading={isSubmitting}
       disabledSubmitButton={!isDirty}
     >
-      <FormProvider methods={methods}>
-        <PropertyOwnerForm propertyOwners={propertyOwners} />
-      </FormProvider>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <FormProvider methods={methods}>
+          <PropertyOwnerForm assignes={agents} />
+        </FormProvider>
+      )}
     </BaseDrawer>
   );
 };
