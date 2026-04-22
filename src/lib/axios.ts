@@ -7,7 +7,7 @@ import Axios, {
 import { eHttpResponse, eLocalStorage } from "../assets/enums";
 import { enqueueSnackbar } from "notistack";
 
-interface IApiError {
+export interface IApiError {
   Result?: boolean;
   StatusCode?: number;
   Errors?: string;

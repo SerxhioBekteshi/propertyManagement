@@ -10,6 +10,8 @@ import { eLocalStorage } from "../assets/enums";
 import { useNavigate } from "react-router-dom";
 import { TUserResponse } from "../types/auth";
 import { AuthenticationService } from "../lib/Authentication";
+import { enqueueSnackbar } from "notistack";
+import { IApiError } from "../lib/axios";
 
 interface AuthContextType {
   user: TUserResponse | null;
@@ -41,20 +43,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setLoading(true);
+    try {
+      const res = await AuthenticationService.login({
+        email,
+        password,
+        country,
+      });
+      if (!res.accessToken) {
+        setLoading(false);
+        return { error: new Error("Login failed") };
+      }
 
-    const res = await AuthenticationService.login({
-      email,
-      password,
-      country,
-    });
-
-    if (!res.accessToken) {
+      localStorage.setItem(eLocalStorage.AccessToken, res.accessToken);
+      localStorage.setItem(eLocalStorage.RefreshToken, res.refreshToken);
+    } catch (error: any) {
+      enqueueSnackbar({
+        variant: "error",
+        message: (error.response?.data as IApiError)?.Errors ?? error.message,
+      });
       setLoading(false);
-      return { error: new Error("Login failed") };
     }
-
-    localStorage.setItem(eLocalStorage.AccessToken, res.accessToken);
-    localStorage.setItem(eLocalStorage.RefreshToken, res.refreshToken);
 
     await refreshProfile();
 
