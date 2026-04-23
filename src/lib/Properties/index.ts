@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   AddPropertyDTO,
   CreatePropertyOwnerDTO,
@@ -26,7 +27,7 @@ export const PropertiesService = {
     const formData = new FormData();
 
     Object.entries(row).forEach(([key, value]) => {
-      if (key === "images") return;
+      if (key === "images" || key === "privateImages") return;
       if (value === undefined || value === null) return;
 
       if (typeof value === "boolean") {
@@ -36,10 +37,13 @@ export const PropertiesService = {
       }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     row.images?.forEach((item: any) => {
       formData.append("images", item.file);
     });
+    row.privateImages?.forEach((item: any) => {
+      formData.append("PrivateImages", item.file);
+    });
+
     return axiosInstance.post(ENDPOINTS.properties.create, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });

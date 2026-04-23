@@ -17,6 +17,7 @@ export function MultiSelect({
   placeholder = "Select...",
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const toggle = (val: string) => {
     if (value.includes(val)) {
@@ -30,8 +31,20 @@ export function MultiSelect({
     onChange(value.filter((v) => v !== val));
   };
 
+  // ✅ OUTSIDE CLICK CLOSE
+  React.useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       {/* Trigger */}
       <div
         onClick={() => setOpen((o) => !o)}
@@ -68,7 +81,7 @@ export function MultiSelect({
       {open && (
         <div className="absolute z-50 mt-1 w-full max-h-60 overflow-auto border bg-white rounded-xl shadow">
           {options
-            .filter((o) => o.value) // remove default ""
+            .filter((o) => o.value)
             .map((opt) => (
               <div
                 key={opt.value}

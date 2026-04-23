@@ -28,6 +28,7 @@ import { IOption } from "../../../types";
 import { SingleSelect } from "../../../components/single-select";
 import { Plus } from "lucide-react";
 import PropertyOwnerDrawer from "./PropertyOwnerDrawer";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -38,6 +39,7 @@ const checkboxClass =
 const PropertyForm = () => {
   const { control, setValue } = useFormContext();
 
+  const { user } = useAuth();
   const selectedCountry = useWatch({ control, name: "country" });
   const selectedDivisionId = useWatch({ control, name: "divisionId" });
   const selectedCityId = useWatch({ control, name: "cityId" });
@@ -165,17 +167,37 @@ const PropertyForm = () => {
               </div>
             )}
           />
-          <Controller
-            control={control}
-            name="images"
-            render={({ field }) => (
-              <ImageUploader
-                value={field.value ?? []}
-                onChange={field.onChange}
-                maxFiles={20}
+          <div
+            className={`grid ${user?.role === "Agent" ? "grid-cols-2" : "grid-cols-1"} gap-4`}
+          >
+            <Controller
+              control={control}
+              name="images"
+              render={({ field }) => (
+                <ImageUploader
+                  value={field.value ?? []}
+                  onChange={field.onChange}
+                  label="Public Images"
+                />
+              )}
+            />
+
+            {user?.role == "Agent" && (
+              <Controller
+                control={control}
+                name="privateImages"
+                render={({ field }) => (
+                  <ImageUploader
+                    value={field.value ?? []}
+                    onChange={field.onChange}
+                    label="Private Images"
+                    maxFiles={5}
+                  />
+                )}
               />
             )}
-          />
+          </div>
+
           <Controller
             control={control}
             name="comments"
@@ -200,13 +222,11 @@ const PropertyForm = () => {
                 control={control}
                 name="mainType"
                 render={({ field }) => (
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_MAIN_TYPE_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <SingleSelect
+                    value={field.value}
+                    options={PROPERTY_MAIN_TYPE_OPTIONS}
+                    onChange={field.onChange}
+                  />
                 )}
               />
             </div>
@@ -216,13 +236,11 @@ const PropertyForm = () => {
                 control={control}
                 name="status"
                 render={({ field }) => (
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_STATUS_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <SingleSelect
+                    value={field.value}
+                    options={PROPERTY_STATUS_OPTIONS}
+                    onChange={field.onChange}
+                  />
                 )}
               />
             </div>
@@ -232,13 +250,11 @@ const PropertyForm = () => {
                 control={control}
                 name="availability"
                 render={({ field }) => (
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_AVAILABILITY_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <SingleSelect
+                    value={field.value}
+                    options={PROPERTY_AVAILABILITY_OPTIONS}
+                    onChange={field.onChange}
+                  />
                 )}
               />
             </div>
@@ -248,13 +264,11 @@ const PropertyForm = () => {
                 control={control}
                 name="furnished"
                 render={({ field }) => (
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_FURNISHED_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <SingleSelect
+                    value={field.value}
+                    options={PROPERTY_FURNISHED_OPTIONS}
+                    onChange={field.onChange}
+                  />
                 )}
               />
             </div>
@@ -304,13 +318,11 @@ const PropertyForm = () => {
                 control={control}
                 name="propertyType"
                 render={({ field }) => (
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_TYPE_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <SingleSelect
+                    value={field.value}
+                    options={PROPERTY_TYPE_OPTIONS}
+                    onChange={field.onChange}
+                  />
                 )}
               />
             </div>
@@ -412,13 +424,11 @@ const PropertyForm = () => {
                 control={control}
                 name="propertyOrientation"
                 render={({ field }) => (
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_ORIENTATION_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <SingleSelect
+                    value={field.value}
+                    options={PROPERTY_ORIENTATION_OPTIONS}
+                    onChange={field.onChange}
+                  />
                 )}
               />
             </div>
@@ -455,25 +465,16 @@ const PropertyForm = () => {
               render={({ field }) => (
                 <>
                   <Label>Division</Label>
-                  <select
-                    {...field}
+                  <SingleSelect
+                    value={field.value}
                     disabled={!selectedCountry || loadingDivisions}
-                    className={inputClass}
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
-                      )
+                    loading={loadingDivisions}
+                    options={divisions}
+                    onChange={(value) =>
+                      field.onChange(value ? Number(value) : undefined)
                     }
-                  >
-                    <option value="">
-                      {loadingDivisions ? "Loading..." : "— Select —"}
-                    </option>
-                    {divisions.map((d, index) => (
-                      <option key={index} value={d.value}>
-                        {d.label}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="— Select —"
+                  />
                 </>
               )}
             />
@@ -487,25 +488,17 @@ const PropertyForm = () => {
               render={({ field }) => (
                 <>
                   <Label>City</Label>
-                  <select
-                    {...field}
+
+                  <SingleSelect
+                    value={field.value}
                     disabled={!selectedDivisionId || loadingCities}
-                    className={inputClass}
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? Number(e.target.value) : undefined,
-                      )
+                    loading={loadingCities}
+                    options={cities}
+                    onChange={(value) =>
+                      field.onChange(value ? Number(value) : undefined)
                     }
-                  >
-                    <option value="">
-                      {loadingCities ? "Loading..." : "— Select —"}
-                    </option>
-                    {cities.map((c, index) => (
-                      <option key={index} value={c.value}>
-                        {c.label}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="— Select —"
+                  />
                 </>
               )}
             />
@@ -519,23 +512,16 @@ const PropertyForm = () => {
               render={({ field }) => (
                 <>
                   <Label>Zone</Label>
-                  <select
-                    {...field}
+                  <SingleSelect
+                    value={field.value}
                     disabled={!selectedCityId || loadingZones}
-                    className={inputClass}
-                    onChange={(e) =>
-                      field.onChange(e.target.value || undefined)
+                    loading={loadingZones}
+                    options={zones}
+                    onChange={(value) =>
+                      field.onChange(value ? Number(value) : undefined)
                     }
-                  >
-                    <option value="">
-                      {loadingZones ? "Loading..." : "— Select —"}
-                    </option>
-                    {zones.map((z) => (
-                      <option key={z.value} value={z.value}>
-                        {z.label}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="— Select —"
+                  />
                 </>
               )}
             />
@@ -657,13 +643,12 @@ const PropertyForm = () => {
               render={({ field }) => (
                 <>
                   <Label>Business Type</Label>
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_BUSINESS_TYPE_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <SingleSelect
+                    value={field.value}
+                    options={PROPERTY_BUSINESS_TYPE_OPTIONS}
+                    onChange={field.onChange}
+                    placeholder="— Select —"
+                  />
                 </>
               )}
             />
@@ -835,14 +820,12 @@ const PropertyForm = () => {
               render={({ field }) => (
                 <>
                   <Label>Owner's Typology</Label>
-                  <select {...field} className={inputClass}>
-                    <option value="">— Select —</option>
-                    {PROPERTY_OWNER_TYPOLOGY_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <SingleSelect
+                    value={field.value}
+                    options={PROPERTY_OWNER_TYPOLOGY_OPTIONS}
+                    onChange={field.onChange}
+                    placeholder="— Select —"
+                  />
                 </>
               )}
             />
@@ -893,13 +876,12 @@ const PropertyForm = () => {
               render={({ field }) => (
                 <>
                   <Label>Documentation</Label>
-                  <select {...field} className={inputClass}>
-                    {PROPERTY_DOCUMENTATION_OPTIONS.map((v, i) => (
-                      <option key={i} value={v.value}>
-                        {v.label}
-                      </option>
-                    ))}
-                  </select>
+                  <SingleSelect
+                    value={field.value}
+                    options={PROPERTY_DOCUMENTATION_OPTIONS}
+                    onChange={field.onChange}
+                    placeholder="— Select —"
+                  />
                 </>
               )}
             />

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   MapPin,
@@ -104,12 +103,26 @@ export default function PropertyDetailsPage() {
   }, [id]);
 
   const [imgIndex, setImgIndex] = useState(0);
-  const images: string[] = property?.imageUrls?.length
-    ? property.imageUrls
-    : [
-        "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
-        "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
-      ];
+
+  const publicImages: { url: string; private: boolean }[] = (
+    property?.imageUrls ?? []
+  ).map((u) => ({ url: u, private: false }));
+  const privateImages: { url: string; private: boolean }[] = (
+    property?.privateImageUrls ?? []
+  ).map((u) => ({ url: u, private: true }));
+  const images: { url: string; private: boolean }[] =
+    publicImages.length + privateImages.length > 0
+      ? [...publicImages, ...privateImages]
+      : [
+          {
+            url: "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+            private: false,
+          },
+          {
+            url: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
+            private: false,
+          },
+        ];
 
   if (isLoading) {
     return (
@@ -159,88 +172,136 @@ export default function PropertyDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* IMAGE CAROUSEL */}
-          <div className="relative h-[520px] rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900 group">
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={imgIndex}
-                src={`${import.meta.env.VITE_APP_BACKEND_API_URL}/${images[imgIndex]}`}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.3 }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                onDragEnd={(_, info) => {
-                  if (info.offset.x < -50) nextImg();
-                  if (info.offset.x > 50) prevImg();
+          {/* IMAGE CAROUSEL */}
+          <div className="space-y-3">
+            {/* Main Image */}
+            <div className="relative h-[480px] rounded-2xl overflow-hidden bg-slate-900 group border border-slate-200 shadow-sm">
+              {/* Images stacked, toggled via opacity — no AnimatePresence delay */}
+              {images.map((img, i) => (
+                <img
+                  key={img.url}
+                  src={`${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url}`}
+                  loading="eager"
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-200"
+                  style={{
+                    opacity: i === imgIndex ? 1 : 0,
+                    zIndex: i === imgIndex ? 1 : 0,
+                  }}
+                  draggable={false}
+                />
+              ))}
+
+              {/* Swipe support via an invisible drag layer */}
+              <div
+                className="absolute inset-0 z-10 cursor-grab active:cursor-grabbing select-none"
+                onPointerDown={(e) => {
+                  const startX = e.clientX;
+                  const onUp = (ev: PointerEvent) => {
+                    const dx = ev.clientX - startX;
+                    if (dx < -40) nextImg();
+                    if (dx > 40) prevImg();
+                    window.removeEventListener("pointerup", onUp);
+                  };
+                  window.addEventListener("pointerup", onUp);
                 }}
-                className="w-full h-full object-cover cursor-grab active:cursor-grabbing"
               />
-            </AnimatePresence>
 
-            {images.length > 1 && (
-              <>
-                <button
-                  onClick={prevImg}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <ChevronLeft />
-                </button>
-                <button
-                  onClick={nextImg}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <ChevronRight />
-                </button>
-                <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  {images.map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-1.5 rounded-full transition-all ${
-                        i === imgIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"
-                      }`}
-                    />
-                  ))}
+              {/* Private badge */}
+              {images[imgIndex]?.private && (
+                <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 px-2.5 py-1 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold rounded-full border border-white/10">
+                  {/* <Lock className="w-3 h-3" /> */}
+                  Private
                 </div>
-              </>
-            )}
+              )}
 
-            {/* Floating Info Card */}
-            <div className="absolute bottom-4 left-4 right-4 p-4 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900">
-                  {property.title ?? "—"}
-                </h1>
-                <div className="flex items-center gap-1 text-slate-500 text-sm mt-1 font-medium">
-                  <MapPin className="w-4 h-4 text-blue-500" />
-                  {[property.address, property.cityName]
-                    .filter(Boolean)
-                    .join(", ") || "—"}
-                </div>
+              {/* Nav arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImg}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/40 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={nextImg}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/40 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+
+              {/* Counter badge */}
+              <div className="absolute bottom-4 right-4 z-20 px-2.5 py-1 bg-black/50 backdrop-blur-sm text-white text-[11px] font-bold rounded-full tabular-nums">
+                {imgIndex + 1} / {images.length}
               </div>
-              <div className="flex flex-col items-end border-l border-slate-100 pl-6 gap-1">
-                <div className="text-right">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block leading-none mb-1">
+
+              {/* Floating Info Card */}
+              <div className="absolute bottom-4 left-4 right-16 z-20 p-4 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl flex justify-between items-center">
+                <div className="min-w-0 pr-4">
+                  <h1 className="text-xl font-bold text-slate-900 truncate">
+                    {property.title ?? "—"}
+                  </h1>
+                  <div className="flex items-center gap-1 text-slate-500 text-sm mt-1 font-medium">
+                    <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
+                    <span className="truncate">
+                      {[property.address, property.cityName]
+                        .filter(Boolean)
+                        .join(", ") || "—"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end border-l border-slate-100 pl-4 shrink-0 gap-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
                     Total Price
                   </span>
-                  <p className="text-3xl font-black text-slate-900 leading-none">
+                  <p className="text-2xl font-black text-slate-900 leading-none">
                     {property.priceUponRequest
-                      ? "Price on Request"
+                      ? "On Request"
                       : property.price
                         ? `€${property.price.toLocaleString()}`
                         : "—"}
                   </p>
+                  {property.priceForM2 && !property.priceUponRequest && (
+                    <div className="flex items-center gap-1 mt-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-lg border border-blue-100/50">
+                      <Maximize2 className="w-3 h-3" />
+                      <span className="text-xs font-bold whitespace-nowrap">
+                        €{property.priceForM2.toLocaleString()} / m²
+                      </span>
+                    </div>
+                  )}
                 </div>
-                {property.priceForM2 && !property.priceUponRequest && (
-                  <div className="flex items-center gap-1.5 mt-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg border border-blue-100/50">
-                    <Maximize2 className="w-3 h-3" />
-                    <span className="text-xs font-bold whitespace-nowrap">
-                      €{property.priceForM2.toLocaleString()} / m²
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
+
+            {/* Thumbnail filmstrip */}
+            {images.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-200">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setImgIndex(i)}
+                    className={`relative shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                      i === imgIndex
+                        ? "border-slate-900 shadow-md scale-105"
+                        : "border-transparent opacity-60 hover:opacity-90"
+                    }`}
+                  >
+                    <img
+                      src={`${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url}`}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                    {img.private && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        {/* <Lock className="w-3 h-3 text-white" /> */}
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* QUICK STATS BAR */}

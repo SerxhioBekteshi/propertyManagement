@@ -32,11 +32,13 @@ export type AddPropertyDTO = Omit<
   | "division"
   | "city"
   | "imageUrls"
+  | "privateImageUrls"
   | "mainImage"
   | "propertyOwnerId"
   | "properyOwner"
 > & {
   images?: File[];
+  privateImages?: File[];
 };
 
 export type PropertyResponseDTO = BaseAuditableDTO & {
@@ -116,6 +118,8 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   surroundings?: string;
 
   imageUrls?: string[];
+  privateImageUrls?: string[];
+
   mainImage?: string;
 };
 

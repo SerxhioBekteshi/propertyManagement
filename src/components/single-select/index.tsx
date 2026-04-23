@@ -9,11 +9,15 @@ export function SingleSelect<T>({
   value,
   onChange,
   placeholder = "Select...",
+  loading = false, // ✅ NEW
+  disabled,
 }: {
   options: IOption<T>[];
   value?: T;
   onChange: (val: T) => void;
   placeholder?: string;
+  loading?: boolean; // ✅ NEW
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -26,7 +30,6 @@ export function SingleSelect<T>({
     o.label.toLowerCase().includes(search.toLowerCase()),
   );
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) {
@@ -38,24 +41,29 @@ export function SingleSelect<T>({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Focus search input when dropdown opens
   useEffect(() => {
-    if (open) searchRef.current?.focus();
-  }, [open]);
+    if (open && !loading) searchRef.current?.focus();
+  }, [open, loading]);
 
   return (
     <div ref={containerRef} className="relative w-full">
       {/* Trigger */}
       <button
         type="button"
-        onClick={() => setOpen((p) => !p)}
+        disabled={loading} // ✅ disable while loading
+        onClick={() => !loading && setOpen((p) => !p)}
         className={`${baseClass} text-left flex justify-between items-center ${
-          !selected ? "text-slate-400" : "text-slate-900"
-        }`}
+          loading ? "opacity-60 cursor-not-allowed" : ""
+        } ${!selected ? "text-slate-400" : "text-slate-900"}`}
       >
-        <span className="truncate">{selected?.label ?? placeholder}</span>
+        <span className="truncate">
+          {loading ? "Loading..." : (selected?.label ?? placeholder)}
+        </span>
+
         <svg
-          className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
           viewBox="0 0 20 20"
           fill="currentColor"
         >
@@ -78,20 +86,22 @@ export function SingleSelect<T>({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search..."
+              disabled={disabled || loading}
               className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900"
             />
           </div>
 
           {/* Options */}
           <ul className="max-h-52 overflow-y-auto py-1">
-            {filtered.length === 0 ? (
+            {loading ? (
+              <li className="px-3 py-2 text-sm text-slate-400">Loading...</li>
+            ) : filtered.length === 0 ? (
               <li className="px-3 py-2 text-sm text-slate-400">No results</li>
             ) : (
               filtered.map((o, index) => (
                 <li
                   key={index}
                   onMouseDown={() => {
-                    // onMouseDown keeps focus from firing outside-click handler
                     onChange(o.value);
                     setOpen(false);
                     setSearch("");
