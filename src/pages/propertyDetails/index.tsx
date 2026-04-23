@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Square,
   TreeDeciduous,
+  Hand,
 } from "lucide-react";
 import { statusColors } from "../dashboard/components/PropertyCard";
 import { countryFlags } from "../../components/navbar";
@@ -209,7 +210,7 @@ export default function PropertyDetailsPage() {
               {/* Private badge */}
               {images[imgIndex]?.private && (
                 <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 px-2.5 py-1 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold rounded-full border border-white/10">
-                  {/* <Lock className="w-3 h-3" /> */}
+                  <Hand className="w-3 h-3 text-white" />
                   Private
                 </div>
               )}
@@ -295,7 +296,7 @@ export default function PropertyDetailsPage() {
                     />
                     {img.private && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        {/* <Lock className="w-3 h-3 text-white" /> */}
+                        <Hand className="w-3 h-3 text-white" />
                       </div>
                     )}
                   </button>
