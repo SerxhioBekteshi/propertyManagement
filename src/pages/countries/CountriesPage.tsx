@@ -15,7 +15,7 @@ const columns: ColumnConfig[] = [
   { key: "code", header: "Code" },
   { key: "name", header: "Country" },
 ];
-const COUNTRIES: CountriesResponseDTO[] = [
+export const COUNTRIES: CountriesResponseDTO[] = [
   { code: "AL", name: "Albania", flag: "🇦🇱" },
   { code: "GR", name: "Greece", flag: "🇬🇷" },
   // ...add more

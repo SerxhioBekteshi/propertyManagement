@@ -8,6 +8,7 @@ import {
 import { PropertyFiltersDTO } from "../../../types/properties";
 import Modal from "../../../components/modal";
 import { IOption } from "../../../types";
+import { INITIAL_FILTERS } from "./filterMappings";
 
 interface PropertyFiltersProps {
   filters: PropertyFiltersDTO;
@@ -42,15 +43,7 @@ export default function PropertyFilters({
   };
 
   const clearFilters = () => {
-    onChange({
-      ...filters,
-      businessType: "",
-      propertyType: "",
-      cityId: 0,
-      zoneId: 0,
-      availability: "",
-      owner: "",
-    });
+    onChange(INITIAL_FILTERS);
   };
 
   const inputStyle =

@@ -508,7 +508,7 @@ const PropertyForm = () => {
           <div>
             <Controller
               control={control}
-              name="zone"
+              name="zoneId"
               render={({ field }) => (
                 <>
                   <Label>Zone</Label>

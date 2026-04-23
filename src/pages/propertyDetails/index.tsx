@@ -26,6 +26,12 @@ import { countryFlags } from "../../components/navbar";
 import { PropertyResponseDTO } from "../../types/properties";
 import { PropertiesService } from "../../lib/Properties";
 import { useAuth } from "../../contexts/AuthContext";
+import { ERoles } from "../../assets/enums";
+
+const nationalityFlags: Record<string, string> = {
+  albania: "AL",
+  greece: "GR",
+};
 
 const AVAILABILITY_STYLES: Record<string, string> = {
   available: "bg-emerald-100 text-emerald-700 border-emerald-200",
@@ -239,39 +245,83 @@ export default function PropertyDetailsPage() {
               </div>
 
               {/* Floating Info Card */}
-              <div className="absolute bottom-4 left-4 right-16 z-20 p-4 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl flex justify-between items-center">
-                <div className="min-w-0 pr-4">
-                  <h1 className="text-xl font-bold text-slate-900 truncate">
-                    {property.title ?? "—"}
-                  </h1>
-                  <div className="flex items-center gap-1 text-slate-500 text-sm mt-1 font-medium">
-                    <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
-                    <span className="truncate">
-                      {[property.address, property.cityName]
-                        .filter(Boolean)
-                        .join(", ") || "—"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end border-l border-slate-100 pl-4 shrink-0 gap-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
-                    Total Price
-                  </span>
-                  <p className="text-2xl font-black text-slate-900 leading-none">
-                    {property.priceUponRequest
-                      ? "On Request"
-                      : property.price
-                        ? `€${property.price.toLocaleString()}`
-                        : "—"}
-                  </p>
-                  {property.priceForM2 && !property.priceUponRequest && (
-                    <div className="flex items-center gap-1 mt-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-lg border border-blue-100/50">
-                      <Maximize2 className="w-3 h-3" />
-                      <span className="text-xs font-bold whitespace-nowrap">
-                        €{property.priceForM2.toLocaleString()} / m²
-                      </span>
+              {/* Floating Info Bar — full width at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 z-20">
+                {/* Gradient fade behind the bar */}
+                <div className="h-24 bg-gradient-to-t from-black/60 to-transparent" />
+
+                <div className="bg-white/90 backdrop-blur-md border-t border-white/50 shadow-2xl px-5 py-4 flex items-stretch justify-between gap-4">
+                  {/* LEFT — Title + Location */}
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <div className="mt-0.5 p-2 bg-blue-500 rounded-xl shrink-0">
+                      <MapPin className="w-4 h-4 text-white" />
                     </div>
-                  )}
+                    <div className="min-w-0">
+                      <h1 className="text-base font-black text-slate-900 leading-tight truncate">
+                        {property.title ?? "—"}
+                      </h1>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1">
+                        {[
+                          property.address,
+                          property.divisionName,
+                          property.cityName,
+                          property.zoneName,
+                        ]
+                          .filter(Boolean)
+                          .map((val, i, arr) => (
+                            <span key={i} className="flex items-center gap-2">
+                              <span className="text-xs text-slate-500">
+                                {val}
+                              </span>
+                              {i < arr.length - 1 && (
+                                <span className="w-1 h-1 rounded-full bg-slate-300 shrink-0" />
+                              )}
+                            </span>
+                          ))}
+                        {![
+                          property.address,
+                          property.divisionName,
+                          property.cityName,
+                          property.zoneName,
+                        ].some(Boolean) && (
+                          <span className="text-xs text-slate-400">
+                            Location not specified
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* DIVIDER */}
+                  <div className="w-px bg-slate-200 self-stretch shrink-0" />
+
+                  {/* RIGHT — Price */}
+                  <div className="flex flex-col items-end justify-center shrink-0 pl-1">
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] leading-none mb-1.5">
+                      {property.businessType === "rent"
+                        ? "Monthly Rent"
+                        : "Sale Price"}
+                    </span>
+                    <p
+                      className={`font-black text-slate-900 leading-none ${
+                        property.priceUponRequest ? "text-base" : "text-2xl"
+                      }`}
+                    >
+                      {property.priceUponRequest
+                        ? "Price on Request"
+                        : property.price
+                          ? `€${property.price.toLocaleString()}`
+                          : "—"}
+                    </p>
+                    {property.priceForM2 && !property.priceUponRequest && (
+                      <div className="flex items-center gap-1 mt-2 px-2.5 py-1 bg-slate-900 text-white rounded-lg">
+                        <Maximize2 className="w-3 h-3 opacity-70" />
+                        <span className="text-[11px] font-bold whitespace-nowrap">
+                          €{property.priceForM2.toLocaleString()} / m²
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -403,6 +453,14 @@ export default function PropertyDetailsPage() {
               </Grid>
             </Section>
           </div>
+          <Section
+            icon={<Info className="w-5 h-5 text-blue-500" />}
+            title="Comments"
+          >
+            <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
+              "{property.comments || "No description provided."}"
+            </p>
+          </Section>
         </div>
 
         {/* SIDEBAR */}
@@ -438,15 +496,29 @@ export default function PropertyDetailsPage() {
               <Item
                 label="Owner's Phone Number"
                 value={
+                  user?.role == ERoles.Admin.toString() ||
                   user?.id == property.agentId ||
                   user?.id == property.propertyOwner?.assignedToId ? (
-                    property.propertyOwner?.phoneNumber
+                    <span className="flex items-center gap-2">
+                      <span className="text-base">
+                        {nationalityFlags[
+                          property.propertyOwner?.nationality?.toLowerCase() ||
+                            ""
+                        ] || ""}
+                      </span>
+
+                      <span>
+                        {getPhoneWithPrefix(
+                          property.propertyOwner?.phoneNumber,
+                          property.propertyOwner?.nationality,
+                        )}
+                      </span>
+                    </span>
                   ) : (
                     <span className="text-slate-300">—</span>
                   )
                 }
               />
-
               <Item
                 label="Owner's Name"
                 value={
@@ -498,14 +570,21 @@ export default function PropertyDetailsPage() {
                 isBoolean
               />
               <div className="flex flex-wrap gap-1 mt-2">
-                {parseList(property.portalsToPublish).map((p: string) => (
-                  <span
-                    key={p}
-                    className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold uppercase border border-blue-100"
-                  >
-                    {p}
-                  </span>
-                ))}
+                {parseList(property.portalsToPublish).map((p: string) => {
+                  const url = p.startsWith("http") ? p : `https://${p}`;
+
+                  return (
+                    <a
+                      key={p}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold uppercase border border-blue-100 hover:bg-blue-100 transition"
+                    >
+                      {p} ↗
+                    </a>
+                  );
+                })}
               </div>
               <div className="pt-4 mt-4 border-t border-slate-100 space-y-2">
                 <div className="flex justify-between text-[10px] text-slate-400 font-medium">
@@ -784,3 +863,43 @@ function FeatureGroup({
     </div>
   );
 }
+
+const getPhoneWithPrefix = (phone?: string, nationality?: string) => {
+  if (!phone) return null;
+
+  const cleanedPhone = phone.trim();
+
+  // already has "+" prefix → leave as-is
+  if (cleanedPhone.startsWith("+")) return cleanedPhone;
+
+  // also check raw numeric prefixes
+  if (cleanedPhone.startsWith("355") || cleanedPhone.startsWith("30")) {
+    return `+${cleanedPhone}`;
+  }
+
+  const prefixMap: Record<string, string> = {
+    AL: "+355",
+    GR: "+30",
+  };
+
+  const key = nationality?.toUpperCase();
+  const prefix = key ? prefixMap[key] : undefined;
+
+  if (!prefix) return cleanedPhone;
+
+  return `${prefix} ${cleanedPhone}`;
+};
+
+// const getWhatsAppLink = (phone?: string) => {
+//   if (!phone) return null;
+
+//   // remove spaces, keep digits and +
+//   const cleaned = phone.replace(/\s/g, "");
+
+//   // WhatsApp requires no "+" in URL format
+//   const formatted = cleaned.startsWith("+")
+//     ? cleaned.replace("+", "")
+//     : cleaned;
+
+//   return `https://wa.me/${formatted}`;
+// };
