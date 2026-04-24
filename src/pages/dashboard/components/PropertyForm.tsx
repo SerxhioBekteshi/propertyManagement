@@ -20,7 +20,7 @@ import {
   PROPERTY_VIEW_OPTIONS,
 } from "../../../assets/enums/constants/property";
 import { MultiSelect } from "../../../components/multi-select";
-import { ImageUploader } from "../../../components/upload-file";
+import { ImageUploader } from "../../../components/upload-image";
 import { useEffect, useState } from "react";
 import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import BooleanSelect from "../../../components/boolean-select";
@@ -29,6 +29,7 @@ import { SingleSelect } from "../../../components/single-select";
 import { Plus } from "lucide-react";
 import PropertyOwnerDrawer from "./PropertyOwnerDrawer";
 import { useAuth } from "../../../contexts/AuthContext";
+import { FileUploader } from "../../../components/upload-file";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -210,6 +211,20 @@ const PropertyForm = () => {
           />
         </div>
       </Section>
+
+      <div className="grid cols-1">
+        <Controller
+          control={control}
+          name="files"
+          render={({ field }) => (
+            <FileUploader
+              value={field.value ?? []}
+              onChange={field.onChange}
+              label="Files"
+            />
+          )}
+        />
+      </div>
 
       {/* ===================== TWO-COLUMN BODY ===================== */}
       <div className="grid lg:grid-cols-2 gap-6">

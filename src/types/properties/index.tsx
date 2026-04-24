@@ -36,6 +36,7 @@ export type AddPropertyDTO = Omit<
   | "mainImage"
   | "propertyOwnerId"
   | "properyOwner"
+  | "fileUrls"
 > & {
   images?: File[];
   privateImages?: File[];
@@ -119,6 +120,7 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
 
   imageUrls?: string[];
   privateImageUrls?: string[];
+  fileUrls?: string[];
 
   mainImage?: string;
 };

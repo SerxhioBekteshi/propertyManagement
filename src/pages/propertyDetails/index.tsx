@@ -114,19 +114,21 @@ export default function PropertyDetailsPage() {
   const publicImages: { url: string; private: boolean }[] = (
     property?.imageUrls ?? []
   ).map((u) => ({ url: u, private: false }));
+
   const privateImages: { url: string; private: boolean }[] = (
     property?.privateImageUrls ?? []
   ).map((u) => ({ url: u, private: true }));
+
   const images: { url: string; private: boolean }[] =
     publicImages.length + privateImages.length > 0
       ? [...publicImages, ...privateImages]
       : [
           {
-            url: "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+            url: "https://placehold.co/800x600/e2e8f0/94a3b8?text=No+Image+Available",
             private: false,
           },
           {
-            url: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
+            url: "https://placehold.co/600x400?text=No+Image",
             private: false,
           },
         ];
@@ -179,7 +181,6 @@ export default function PropertyDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* IMAGE CAROUSEL */}
-          {/* IMAGE CAROUSEL */}
           <div className="space-y-3">
             {/* Main Image */}
             <div className="relative h-[480px] rounded-2xl overflow-hidden bg-slate-900 group border border-slate-200 shadow-sm">
@@ -187,7 +188,11 @@ export default function PropertyDetailsPage() {
               {images.map((img, i) => (
                 <img
                   key={img.url}
-                  src={`${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url}`}
+                  src={
+                    img.url?.startsWith("http")
+                      ? img.url
+                      : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url}`
+                  }
                   loading="eager"
                   className="absolute inset-0 w-full h-full object-cover transition-opacity duration-200"
                   style={{
@@ -328,7 +333,7 @@ export default function PropertyDetailsPage() {
 
             {/* Thumbnail filmstrip */}
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-200">
+              <div className="flex gap-2 overflow-x-auto p-2  scrollbar-thin scrollbar-thumb-slate-200">
                 {images.map((img, i) => (
                   <button
                     key={i}
@@ -340,7 +345,11 @@ export default function PropertyDetailsPage() {
                     }`}
                   >
                     <img
-                      src={`${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url}`}
+                      src={
+                        img.url?.startsWith("http")
+                          ? img.url
+                          : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url}`
+                      }
                       loading="lazy"
                       className="w-full h-full object-cover"
                     />

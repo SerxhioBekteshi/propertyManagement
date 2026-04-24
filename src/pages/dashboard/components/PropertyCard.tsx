@@ -1,6 +1,8 @@
 import { BedDouble, Bath, Maximize2, MapPin, User, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PropertyResponseDTO } from "../../../types/properties";
+import { useAuth } from "../../../contexts/AuthContext";
+import { ERoles } from "../../../assets/enums";
 
 interface PropertyCardProps {
   property: PropertyResponseDTO;
@@ -34,6 +36,7 @@ export const statusColors: Record<string, string> = {
 
 export default function PropertyCard({ property, onClick }: PropertyCardProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const typeClass =
     propertyTypeColors[property.propertyType ?? ""] ||
@@ -133,21 +136,23 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
 
         {/* AGENT + CTA */}
         <div className="flex items-center justify-between mt-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
-              <User className="w-3 h-3 text-slate-400" />
+          {user?.role !== ERoles.Agent.toString() && (
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                <User className="w-3 h-3 text-slate-400" />
+              </div>
+              <span className="truncate max-w-[100px]">
+                {property.agent ?? "No agent assigned"}
+              </span>
             </div>
-            <span className="truncate max-w-[100px]">
-              {property.agent ?? "Unassigned"}
-            </span>
-          </div>
+          )}
 
           <button
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/property/${property.id}/details`);
             }}
-            className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors ml-auto"
           >
             <Eye className="w-3.5 h-3.5" />
             Details

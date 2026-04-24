@@ -1,48 +1,28 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { FileText, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 
 interface PreviewFile {
   id: string;
   file: File;
-  name: string;
-  size: string;
+  url: string;
 }
 
-interface FileUploaderProps {
+interface ImageUploaderProps {
   value?: PreviewFile[];
   onChange?: (files: PreviewFile[]) => void;
   maxFiles?: number;
   label?: string;
   className?: string;
-  accept?: Record<string, string[]>;
 }
 
-const formatBytes = (bytes: number) => {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-};
-
-export const FileUploader = ({
+export const ImageUploader = ({
   value = [],
   onChange,
-  maxFiles = 10,
+  maxFiles = 20,
   label,
   className = "",
-  accept = {
-    "application/pdf": [".pdf"],
-    "application/msword": [".doc"],
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
-      ".docx",
-    ],
-    "application/vnd.ms-excel": [".xls"],
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-      ".xlsx",
-    ],
-    "image/*": [],
-  },
-}: FileUploaderProps) => {
+}: ImageUploaderProps) => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const newFiles: PreviewFile[] = acceptedFiles
@@ -50,8 +30,7 @@ export const FileUploader = ({
         .map((file) => ({
           id: `${file.name}-${Date.now()}-${Math.random()}`,
           file,
-          name: file.name,
-          size: formatBytes(file.size),
+          url: URL.createObjectURL(file),
         }));
 
       onChange?.([...value, ...newFiles]);
@@ -61,53 +40,66 @@ export const FileUploader = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept,
+    accept: { "image/*": [] },
   });
 
   const remove = (id: string) => {
+    const item = value.find((f) => f.id === id);
+    if (item) URL.revokeObjectURL(item.url);
     onChange?.(value.filter((f) => f.id !== id));
   };
 
   return (
     <div className={`space-y-2 ${className}`}>
+      {/* Label */}
       {label && <p className="text-sm font-medium text-slate-700">{label}</p>}
 
+      {/* Dropzone */}
       <div
         {...getRootProps()}
         className={`flex items-center justify-center gap-2 w-full h-24 rounded-xl border border-dashed transition cursor-pointer text-xs
-        ${isDragActive ? "border-slate-900 bg-slate-100" : "border-slate-300 hover:bg-slate-50"}
+        ${
+          isDragActive
+            ? "border-slate-900 bg-slate-100"
+            : "border-slate-300 hover:bg-slate-50"
+        }
         ${value.length >= maxFiles ? "opacity-50 pointer-events-none" : ""}
       `}
       >
         <input {...getInputProps()} />
         <Upload className="w-4 h-4 text-slate-500" />
         <span className="text-slate-600">
-          {isDragActive ? "Drop..." : "Upload Files"}
+          {isDragActive ? "Drop..." : "Upload"}
         </span>
         <span className="text-slate-400">
           {value.length}/{maxFiles}
         </span>
       </div>
 
+      {/* Preview */}
       {value.length > 0 && (
         <div className="grid grid-cols-3 gap-1.5">
-          {value.map((item) => (
+          {value.map((item, index) => (
             <div
               key={item.id}
-              className="flex flex-col gap-1 px-2 py-2 rounded-lg border border-slate-200 bg-slate-50 group relative"
+              className="relative group rounded-lg overflow-hidden aspect-square"
             >
-              <FileText className="w-4 h-4 text-slate-400 shrink-0" />
-              <p className="text-[10px] font-medium text-slate-700 truncate w-full">
-                {item.name}
-              </p>
-              <p className="text-[9px] text-slate-400">{item.size}</p>
+              <img src={item.url} className="w-full h-full object-cover" />
 
+              {/* Cover */}
+              {index === 0 && (
+                <span className="absolute bottom-1 left-1 text-[9px] bg-black text-white px-1 rounded">
+                  Cover
+                </span>
+              )}
+
+              {/* Remove */}
               <button
                 type="button"
                 onClick={() => remove(item.id)}
-                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-white/80 rounded p-0.5 transition"
+                className="absolute top-1 right-1 bg-white/80 rounded p-0.5 opacity-0 group-hover:opacity-100"
               >
-                <X className="w-3 h-3 text-slate-500" />
+                <X className="w-3 h-3" />
               </button>
             </div>
           ))}

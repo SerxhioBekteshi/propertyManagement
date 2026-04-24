@@ -4,6 +4,8 @@ import ErrorMessage from "../../../components/hook-form/error-message";
 import Label from "../../../components/label";
 import { IOption } from "../../../types";
 import { PROPERTY_MAIN_LEAD_SOURCE_OPTIONS } from "../../../assets/enums/constants/property";
+import { useAuth } from "../../../contexts/AuthContext";
+import { ERoles } from "../../../assets/enums";
 
 interface PropertyOwnerFormProps {
   assignes: IOption<number>[];
@@ -29,6 +31,8 @@ export const propertyOwnerchema = yup.object({
 
 const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
   const { control } = useFormContext();
+
+  const { user } = useAuth();
 
   return (
     <div className="space-y-4">
@@ -121,7 +125,7 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
         <Label>Main Type</Label>
         <Controller
           control={control}
-          name="mainType"
+          name="mainLeadSource"
           render={({ field }) => (
             <>
               <select {...field} className={inputClass}>
@@ -151,30 +155,32 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
           </>
         )}
       />
-      <Controller
-        control={control}
-        name="assignedToId"
-        render={({ field: { value, onChange }, fieldState: { error } }) => (
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Select agent
-            </label>
-            <select
-              value={value ?? ""}
-              onChange={onChange}
-              className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
-            >
-              <option value="">Select agent</option>
-              {assignes.map((d, index) => (
-                <option key={index} value={d.value}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
-            <ErrorMessage message={error?.message} />
-          </div>
-        )}
-      />
+      {user?.role != ERoles.Agent.toString() && (
+        <Controller
+          control={control}
+          name="assignedToId"
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Select agent
+              </label>
+              <select
+                value={value ?? ""}
+                onChange={onChange}
+                className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
+              >
+                <option value="">Select agent</option>
+                {assignes.map((d, index) => (
+                  <option key={index} value={d.value}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+              <ErrorMessage message={error?.message} />
+            </div>
+          )}
+        />
+      )}
     </div>
   );
 };
