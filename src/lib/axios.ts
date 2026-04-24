@@ -104,6 +104,7 @@ axiosInstance.interceptors.response.use(
     }
 
     if (error.response) {
+      console.log(error, "ERROR");
       const statusCode = error.response?.status;
 
       if (
