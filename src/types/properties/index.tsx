@@ -40,6 +40,7 @@ export type AddPropertyDTO = Omit<
 > & {
   images?: File[];
   privateImages?: File[];
+  files?: File[];
 };
 
 export type PropertyResponseDTO = BaseAuditableDTO & {

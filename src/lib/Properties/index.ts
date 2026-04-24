@@ -27,7 +27,7 @@ export const PropertiesService = {
     const formData = new FormData();
 
     Object.entries(row).forEach(([key, value]) => {
-      if (key === "images" || key === "privateImages") return;
+      if (key === "images" || key === "privateImages" || key == "files") return;
       if (value === undefined || value === null) return;
 
       if (typeof value === "boolean") {
@@ -43,7 +43,9 @@ export const PropertiesService = {
     row.privateImages?.forEach((item: any) => {
       formData.append("PrivateImages", item.file);
     });
-
+    row.files?.forEach((item: any) => {
+      formData.append("files", item.file);
+    });
     return axiosInstance.post(ENDPOINTS.properties.create, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });

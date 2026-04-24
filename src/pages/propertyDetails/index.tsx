@@ -20,6 +20,7 @@ import {
   Square,
   TreeDeciduous,
   Hand,
+  FileText,
 } from "lucide-react";
 import { statusColors } from "../dashboard/components/PropertyCard";
 import { countryFlags } from "../../components/navbar";
@@ -27,6 +28,19 @@ import { PropertyResponseDTO } from "../../types/properties";
 import { PropertiesService } from "../../lib/Properties";
 import { useAuth } from "../../contexts/AuthContext";
 import { ERoles } from "../../assets/enums";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 
 const nationalityFlags: Record<string, string> = {
   albania: "AL",
@@ -94,7 +108,7 @@ export default function PropertyDetailsPage() {
   const { user } = useAuth();
 
   const [property, setProperty] = useState<PropertyResponseDTO>();
-  const [isLoading, setIsLoading] = useState(true); // ✅ ADDED
+  const [isLoading, setIsLoading] = useState(true);
 
   const getPropertyDetails = async () => {
     setIsLoading(true);
@@ -184,26 +198,33 @@ export default function PropertyDetailsPage() {
           <div className="space-y-3">
             {/* Main Image */}
             <div className="relative h-[480px] rounded-2xl overflow-hidden bg-slate-900 group border border-slate-200 shadow-sm">
-              {/* Images stacked, toggled via opacity — no AnimatePresence delay */}
-              {images.map((img, i) => (
-                <img
-                  key={img.url}
-                  src={
-                    img.url?.startsWith("http")
-                      ? img.url
-                      : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url}`
-                  }
-                  loading="eager"
-                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-200"
-                  style={{
-                    opacity: i === imgIndex ? 1 : 0,
-                    zIndex: i === imgIndex ? 1 : 0,
-                  }}
-                  draggable={false}
-                />
-              ))}
+              {images.map((img, i) => {
+                const src = img.url?.startsWith("http")
+                  ? img.url
+                  : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url.replace(/^\//, "")}`;
 
-              {/* Swipe support via an invisible drag layer */}
+                return (
+                  <picture
+                    key={img.url}
+                    className="absolute inset-0 w-full h-full"
+                    style={{
+                      opacity: i === imgIndex ? 1 : 0,
+                      zIndex: i === imgIndex ? 1 : 0,
+                    }}
+                  >
+                    <source srcSet={src} type="image/avif" />
+                    <source srcSet={src} type="image/webp" />
+                    <img
+                      src={src}
+                      loading="eager"
+                      className="w-full h-full object-cover transition-opacity duration-200"
+                      draggable={false}
+                    />
+                  </picture>
+                );
+              })}
+
+              {/* Swipe support */}
               <div
                 className="absolute inset-0 z-10 cursor-grab active:cursor-grabbing select-none"
                 onPointerDown={(e) => {
@@ -249,12 +270,9 @@ export default function PropertyDetailsPage() {
                 {imgIndex + 1} / {images.length}
               </div>
 
-              {/* Floating Info Card */}
-              {/* Floating Info Bar — full width at bottom */}
+              {/* Floating Info Bar */}
               <div className="absolute bottom-0 left-0 right-0 z-20">
-                {/* Gradient fade behind the bar */}
                 <div className="h-24 bg-gradient-to-t from-black/60 to-transparent" />
-
                 <div className="bg-white/90 backdrop-blur-md border-t border-white/50 shadow-2xl px-5 py-4 flex items-stretch justify-between gap-4">
                   {/* LEFT — Title + Location */}
                   <div className="flex items-start gap-3 min-w-0 flex-1">
@@ -333,7 +351,7 @@ export default function PropertyDetailsPage() {
 
             {/* Thumbnail filmstrip */}
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto p-2  scrollbar-thin scrollbar-thumb-slate-200">
+              <div className="flex gap-2 overflow-x-auto p-2 scrollbar-thin scrollbar-thumb-slate-200">
                 {images.map((img, i) => (
                   <button
                     key={i}
@@ -348,7 +366,7 @@ export default function PropertyDetailsPage() {
                       src={
                         img.url?.startsWith("http")
                           ? img.url
-                          : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url}`
+                          : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url.replace(/^\//, "")}`
                       }
                       loading="lazy"
                       className="w-full h-full object-cover"
@@ -462,6 +480,7 @@ export default function PropertyDetailsPage() {
               </Grid>
             </Section>
           </div>
+
           <Section
             icon={<Info className="w-5 h-5 text-blue-500" />}
             title="Comments"
@@ -484,14 +503,38 @@ export default function PropertyDetailsPage() {
               <Item label="City" value={property.cityName} />
               <Item label="Zone" value={property.zoneName} />
               <Item label="Floor" value={property.floor ?? "—"} />
-              <div className="mt-4 h-32 bg-slate-100 rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-slate-200">
+              {property.latitude && property.longitude ? (
+                <div className="mt-4 h-48 rounded-xl overflow-hidden border border-slate-200">
+                  <MapContainer
+                    center={[property.latitude, property.longitude]}
+                    zoom={15}
+                    scrollWheelZoom={false}
+                    style={{ height: "100%", width: "100%" }}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={[property.latitude, property.longitude]}>
+                      <Popup>{property.title ?? "Property"}</Popup>
+                    </Marker>
+                  </MapContainer>
+                </div>
+              ) : (
+                <div className="mt-4 h-32 bg-slate-100 rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-slate-200">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    No location set
+                  </p>
+                </div>
+              )}
+              {/* <div className="mt-4 h-32 bg-slate-100 rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-slate-200">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                   Georeference
                 </p>
                 <p className="text-xs text-slate-500 font-mono">
                   {property.latitude ?? "—"}, {property.longitude ?? "—"}
                 </p>
-              </div>
+              </div> */}
             </div>
           </Section>
 
@@ -515,7 +558,6 @@ export default function PropertyDetailsPage() {
                             ""
                         ] || ""}
                       </span>
-
                       <span>
                         {getPhoneWithPrefix(
                           property.propertyOwner?.phoneNumber,
@@ -581,7 +623,6 @@ export default function PropertyDetailsPage() {
               <div className="flex flex-wrap gap-1 mt-2">
                 {parseList(property.portalsToPublish).map((p: string) => {
                   const url = p.startsWith("http") ? p : `https://${p}`;
-
                   return (
                     <a
                       key={p}
@@ -624,6 +665,46 @@ export default function PropertyDetailsPage() {
             </div>
           </Section>
 
+          {/* DOCUMENTS SECTION */}
+          {property.fileUrls && property.fileUrls.length > 0 && (
+            <Section
+              icon={<FileText className="w-5 h-5 text-orange-500" />}
+              title="Documents"
+            >
+              <div className="flex flex-col gap-2">
+                {property.fileUrls.map((fileUrl: string, i: number) => {
+                  const src = fileUrl?.startsWith("http")
+                    ? fileUrl
+                    : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${fileUrl.replace(/^\//, "")}`;
+
+                  const fileName =
+                    decodeURIComponent(fileUrl.split("/").pop() ?? "") ||
+                    `Document ${i + 1}`;
+
+                  return (
+                    <a
+                      key={fileUrl}
+                      href={src}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-orange-50 hover:border-orange-200 transition group"
+                    >
+                      <div className="p-1.5 bg-orange-100 rounded-lg shrink-0 group-hover:bg-orange-200 transition">
+                        <FileText className="w-3.5 h-3.5 text-orange-600" />
+                      </div>
+                      <span className="text-xs font-medium text-slate-700 truncate flex-1">
+                        {fileName}
+                      </span>
+                      <span className="text-[10px] text-orange-500 font-bold shrink-0">
+                        ↗
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+            </Section>
+          )}
+
           <Section
             icon={<Layers className="w-5 h-5 text-purple-500" />}
             title="More Features"
@@ -634,19 +715,16 @@ export default function PropertyDetailsPage() {
                 values={parseList(property.withViewTo)}
                 color="blue"
               />
-
               <FeatureGroup
                 label="Equipment"
                 values={parseList(property.equipment)}
                 color="emerald"
               />
-
               <FeatureGroup
                 label="Infrastructures"
                 values={parseList(property.infrastructures)}
                 color="amber"
               />
-
               <FeatureGroup
                 label="Surroundings"
                 values={parseList(property.surroundings)}
@@ -659,8 +737,6 @@ export default function PropertyDetailsPage() {
     </div>
   );
 }
-
-/* ALL YOUR COMPONENTS BELOW EXACTLY SAME */
 
 function Section({ title, icon, children }: any) {
   return (
@@ -825,7 +901,6 @@ function FeatureGroup({
   return (
     <div>
       <p className="text-xs font-semibold text-slate-500 mb-2">{label}</p>
-
       <div className="flex flex-wrap gap-2">
         {values.length > 0 ? (
           values.map((v) => (
@@ -878,10 +953,8 @@ const getPhoneWithPrefix = (phone?: string, nationality?: string) => {
 
   const cleanedPhone = phone.trim();
 
-  // already has "+" prefix → leave as-is
   if (cleanedPhone.startsWith("+")) return cleanedPhone;
 
-  // also check raw numeric prefixes
   if (cleanedPhone.startsWith("355") || cleanedPhone.startsWith("30")) {
     return `+${cleanedPhone}`;
   }
@@ -898,17 +971,3 @@ const getPhoneWithPrefix = (phone?: string, nationality?: string) => {
 
   return `${prefix} ${cleanedPhone}`;
 };
-
-// const getWhatsAppLink = (phone?: string) => {
-//   if (!phone) return null;
-
-//   // remove spaces, keep digits and +
-//   const cleaned = phone.replace(/\s/g, "");
-
-//   // WhatsApp requires no "+" in URL format
-//   const formatted = cleaned.startsWith("+")
-//     ? cleaned.replace("+", "")
-//     : cleaned;
-
-//   return `https://wa.me/${formatted}`;
-// };
