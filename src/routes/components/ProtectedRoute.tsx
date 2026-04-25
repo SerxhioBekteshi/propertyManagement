@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { Spinner } from "../../components/spinner";
 
 export type TProtectedRoute = {
   children: React.ReactNode;
@@ -12,7 +13,7 @@ const ProtectedRoute = (props: TProtectedRoute) => {
   const hasAccess = user;
 
   if (loading) {
-    return null;
+    return <Spinner fullScreen={true} />;
   }
 
   if (!user) return <Navigate to="/" />;
