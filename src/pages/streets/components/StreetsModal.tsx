@@ -23,7 +23,6 @@ const StreetsModal = (props: StreetsModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { zones, loadingZones } = useLocationConfigBase({
     open: open,
-
     fetch: {
       zones: true,
     },
@@ -70,8 +69,8 @@ const StreetsModal = (props: StreetsModalProps) => {
       onOpenChange={onOpenChange}
       isSubmitLoading={isSubmitting}
       onSave={onSubmit}
-      title={"Add new zone"}
-      description="Configure new zone"
+      title={"Add new street"}
+      description="Configure new street"
       disabledSubmitButton={!isDirty}
       size="2xl"
     >
