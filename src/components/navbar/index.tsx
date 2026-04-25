@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { NavLink } from "react-router-dom";
+import { createPortal } from "react-dom";
 
 export const countryFlags: Record<string, string> = {
   AL: "/images/flags/albanian.jpg",
@@ -112,37 +113,39 @@ export default function Navbar() {
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </button>
 
-            {/* USER DROPDOWN */}
-            {menuOpen && (
-              <div className="fixed right-4 top-16 w-52 bg-white rounded-2xl border border-slate-200 shadow-lg py-2 z-[99999]">
-                <div className="px-4 py-2.5 border-b border-slate-100">
-                  <p className="text-xs font-semibold text-slate-900 flex items-center gap-2">
-                    {user?.firstName} {user?.lastName}
-                    {user?.country && countryFlags[user.country] && (
-                      <img
-                        src={countryFlags[user.country]}
-                        alt={user.country}
-                        className="w-5 h-4 object-cover rounded-sm"
-                      />
-                    )}
-                  </p>
-                  <p className="text-xs text-slate-400 capitalize">
-                    {user?.role}
-                  </p>
-                </div>
+            {menuOpen &&
+              createPortal(
+                <div className="fixed right-4 top-16 w-52 bg-white rounded-2xl border border-slate-200 shadow-lg py-2 z-[99999]">
+                  <div className="px-4 py-2.5 border-b border-slate-100">
+                    <p className="text-xs font-semibold text-slate-900 flex items-center gap-2">
+                      {user?.firstName} {user?.lastName}
+                      {user?.country && countryFlags[user.country] && (
+                        <img
+                          src={countryFlags[user.country]}
+                          alt={user.country}
+                          className="w-5 h-4 object-cover rounded-sm"
+                        />
+                      )}
+                    </p>
+                    <p className="text-xs text-slate-400 capitalize">
+                      {user?.role}
+                    </p>
+                  </div>
 
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    signOut();
-                  }}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign out
-                </button>
-              </div>
-            )}
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      signOut();
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign out
+                  </button>
+                </div>,
+
+                document.body,
+              )}
           </div>
         </div>
 
