@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  AddPropertyDTO,
-  CreatePropertyOwnerDTO,
-  PropertyResponseDTO,
-} from "../../types/properties";
+import { AddPropertyDTO, PropertyResponseDTO } from "../../types/properties";
+import { CreatePropertyOwnerDTO } from "../../types/properties/propertyOwner";
 import { axiosInstance, ENDPOINTS, TBaseResponse } from "../axios";
 
 export const PropertiesService = {
@@ -27,7 +24,13 @@ export const PropertiesService = {
     const formData = new FormData();
 
     Object.entries(row).forEach(([key, value]) => {
-      if (key === "images" || key === "privateImages" || key == "files") return;
+      if (
+        key === "images" ||
+        key === "privateImages" ||
+        key === "files" ||
+        key === "mainImage"
+      )
+        return;
       if (value === undefined || value === null) return;
 
       if (typeof value === "boolean") {
@@ -36,7 +39,9 @@ export const PropertiesService = {
         formData.append(key, String(value));
       }
     });
-
+    if (row.mainImage) {
+      formData.append("mainImage", row.mainImage);
+    }
     row.images?.forEach((item: any) => {
       formData.append("images", item.file);
     });

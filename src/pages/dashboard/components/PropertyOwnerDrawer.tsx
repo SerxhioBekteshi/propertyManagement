@@ -1,6 +1,5 @@
 import { enqueueSnackbar } from "notistack";
 import { PropertiesService } from "../../../lib/Properties";
-import { CreatePropertyOwnerDTO } from "../../../types/properties";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
@@ -10,6 +9,7 @@ import BaseDrawer from "../../../components/base-drawer";
 import FormProvider from "../../../components/hook-form/form-provider";
 import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import { Spinner } from "../../../components/spinner";
+import { CreatePropertyOwnerDTO } from "../../../types/properties/propertyOwner";
 
 interface IPropertyOwnerDrawerProps {
   open: boolean;

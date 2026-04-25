@@ -1,50 +1,45 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  CreateZoneDTO,
-  DivisionsResponseDTO,
-} from "../../../types/location-configuration";
+import { CreateStreetDTO } from "../../../types/location-configuration";
 import { EFormMode } from "../../../assets/enums";
 import Modal from "../../../components/modal";
 import FormProvider from "../../../components/hook-form/form-provider";
 import { LocationConfigurationService } from "../../../lib/ListConfiguration";
-import ZonesForm, { zonesSchema } from "./ZonesForm";
 import { Spinner } from "../../../components/spinner";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { enqueueSnackbar } from "notistack";
 import { IOption } from "../../../types";
+import StreetsForm, { streetsSchema } from "./StreetsForm";
 
-interface ZonesModalProps {
+interface StreetsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  defaultValues: DivisionsResponseDTO | null;
   onSave: () => void;
   formMode?: EFormMode | null;
 }
 
-const ZonesModal = (props: ZonesModalProps) => {
+const StreetsModal = (props: StreetsModalProps) => {
   const { open, onOpenChange, onSave } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [cities, setCities] = useState<IOption<number>[]>([]);
+  const [zones, setZones] = useState<IOption<number>[]>([]);
 
-  const fetchCitiesList = async () => {
+  const fetchZonesList = async () => {
     try {
       setIsLoading(true);
-      const res = await LocationConfigurationService.getCities();
-      setCities(res.data);
+      const res = await LocationConfigurationService.getZones();
+      setZones(res.data);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (open) fetchCitiesList();
+    if (open) fetchZonesList();
   }, [open]);
 
-  const methods = useForm<CreateZoneDTO>({
-    resolver: yupResolver(zonesSchema),
-    defaultValues: {},
+  const methods = useForm<CreateStreetDTO>({
+    resolver: yupResolver(streetsSchema),
   });
 
   const {
@@ -57,13 +52,13 @@ const ZonesModal = (props: ZonesModalProps) => {
     setIsSubmitting(true);
 
     try {
-      const res = await LocationConfigurationService.addZone(data);
+      const res = await LocationConfigurationService.addStreet(data);
 
       if (res.result) {
         onSave();
         enqueueSnackbar({
           variant: "success",
-          message: `Zone added`,
+          message: `Street added`,
         });
       }
     } finally {
@@ -95,11 +90,11 @@ const ZonesModal = (props: ZonesModalProps) => {
         </>
       ) : (
         <FormProvider methods={methods}>
-          <ZonesForm cities={cities} />
+          <StreetsForm zones={zones} />
         </FormProvider>
       )}
     </Modal>
   );
 };
 
-export default ZonesModal;
+export default StreetsModal;

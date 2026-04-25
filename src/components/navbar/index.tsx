@@ -23,6 +23,7 @@ const navLinks = [
   { to: "/divisions", label: "Divisions" },
   { to: "/cities", label: "Cities" },
   { to: "/zones", label: "Zones" },
+  { to: "/streets", label: "Streets" },
   { to: "/contacts", label: "Contacts" },
 ];
 

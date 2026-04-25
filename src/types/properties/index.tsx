@@ -1,21 +1,21 @@
 import { BaseAuditableDTO } from "../database";
+import { ProperyOwnerDTO } from "./propertyOwner";
 
 export interface PropertyFiltersDTO {
-  businessType?: string; // Label: "Business Type" (Options: Sale/Rent)
-  minPrice?: number; // Label: "Min Price"
-  maxPrice?: number; // Label: "Max Price"
-  bedrooms?: number; // Label: "Bedrooms"
-  bathrooms?: number; // Label: "Bathrooms"
+  businessType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
 
   // Row 2 in Image
-  propertyType?: string; // Label: "Property Type"
-  cityId?: number; // Label: "City"
-  zoneId?: number; // Label: "Zone"
-  availability?: string; // Label: "Availability"
-  agentId?: number; // Label: "Assigned To" (Maps to DTO agentId)
-  owner?: string; // Label: "Owner"
+  propertyType?: string;
+  cityId?: number;
+  zoneId?: number;
+  availability?: string;
+  agentId?: number;
+  owner?: string;
 
-  // Sort Logic
   orderBy: "newest" | "oldest" | "price_asc" | "price_desc";
 }
 
@@ -28,15 +28,14 @@ export type AddPropertyDTO = Omit<
   | "createdBy"
   | "modifiedDateTime"
   | "modifiedBy"
-  | "zone"
-  | "division"
-  | "city"
+  | "zoneName"
+  | "divisionName"
+  | "cityName"
+  | "streetName"
   | "imageUrls"
   | "privateImageUrls"
-  | "mainImage"
-  | "propertyOwnerId"
-  | "properyOwner"
   | "fileUrls"
+  | "properyOwner"
 > & {
   images?: File[];
   privateImages?: File[];
@@ -68,15 +67,23 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
 
   //Location
   country?: string;
+
   cityId?: number;
   cityName?: string;
+
   address?: string;
   latitude?: number;
   longitude?: number;
+
   divisionId?: number;
   divisionName?: string;
+
   zoneId?: number;
   zoneName?: string;
+
+  streetId?: number;
+  streetName?: string;
+
   floor?: number;
   publishGeoreference?: boolean;
 
@@ -93,14 +100,11 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   balconyArea?: number;
   commonArea?: number;
 
-  // Divisions
   bedrooms?: number;
   bathrooms?: number;
   otherRooms?: number;
   livingRoom?: number;
 
-  //property Owner
-  // owner?: string;
   agentId?: number;
   agent?: string;
   propertyOwnerId?: number;
@@ -123,23 +127,5 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   privateImageUrls?: string[];
   fileUrls?: string[];
 
-  mainImage?: string;
+  mainImage?: File | null;
 };
-
-export interface ProperyOwnerDTO {
-  id: number;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email?: string;
-  nationality?: string;
-  assignedToId?: number;
-  assignedToName?: string;
-  mainLeadSource?: string;
-  ssn?: string;
-}
-
-export type CreatePropertyOwnerDTO = Omit<
-  ProperyOwnerDTO,
-  "id" | "assignedToName"
->;

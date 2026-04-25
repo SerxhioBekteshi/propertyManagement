@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import {
   CreateDivionDTO,
   DivisionsResponseDTO,
-} from "../../../types/main-location-configuration";
+} from "../../../types/location-configuration";
 import { EFormMode } from "../../../assets/enums";
 import Modal from "../../../components/modal";
 import FormProvider from "../../../components/hook-form/form-provider";

@@ -3,14 +3,14 @@ import { BaseTable, BaseTableRef } from "../../components/table";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import { EFormMode } from "../../assets/enums";
-import ZonesModal from "./components/ZonesModal";
-import { ZonesResponseDTO } from "../../types/location-configuration";
+import { StreetsResponseDTO } from "../../types/location-configuration";
 import { ENDPOINTS } from "../../lib/axios";
 import { formatDate } from "../../utils";
+import StreetsModal from "./components/StreetsModal";
 
 const columns = [
-  { key: "name", header: "Zone" },
-  { key: "city", header: "City" },
+  { key: "name", header: "Street" },
+  { key: "zone", header: "Zone" },
   {
     key: "createdDateTime",
     header: "Created At",
@@ -25,10 +25,10 @@ const columns = [
   { key: "modifiedBy", header: "Modified By" },
 ];
 
-export default function ZonesPage() {
+export default function StreetsPage() {
   const [formMode, setFormMode] = useState<EFormMode | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const tableRef = useRef<BaseTableRef<ZonesResponseDTO>>(null);
+  const tableRef = useRef<BaseTableRef<StreetsResponseDTO>>(null);
 
   const onAddClick = () => {
     setDialogOpen(true);
@@ -37,10 +37,10 @@ export default function ZonesPage() {
 
   return (
     <>
-      <BaseTable<ZonesResponseDTO>
+      <BaseTable<StreetsResponseDTO>
         ref={tableRef}
         onAddClick={onAddClick}
-        controller={ENDPOINTS.zones.getAll}
+        controller={ENDPOINTS.streets.getAll}
         columns={columns}
         addButton={
           <Button
@@ -55,7 +55,7 @@ export default function ZonesPage() {
         }
       />
       {formMode && (
-        <ZonesModal
+        <StreetsModal
           key={"create"}
           open={dialogOpen}
           onOpenChange={(open) => {
@@ -68,7 +68,6 @@ export default function ZonesPage() {
             setFormMode(null);
           }}
           formMode={formMode}
-          defaultValues={null}
         />
       )}
     </>

@@ -16,6 +16,13 @@ interface ImageUploaderProps {
   className?: string;
 }
 
+interface SingleImageUploaderProps {
+  value?: File | null;
+  onChange?: (file: File | null) => void;
+  label?: string;
+  className?: string;
+}
+
 export const ImageUploader = ({
   value = [],
   onChange,
@@ -103,6 +110,62 @@ export const ImageUploader = ({
               </button>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const SingleImageUploader = ({
+  value,
+  onChange,
+  label,
+  className = "",
+}: SingleImageUploaderProps) => {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      onChange?.(acceptedFiles[0] ?? null);
+    },
+    [onChange],
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+    maxFiles: 1,
+  });
+
+  const preview = value ? URL.createObjectURL(value) : null;
+
+  return (
+    <div className={`space-y-2 ${className}`}>
+      {label && <p className="text-sm font-medium text-slate-700">{label}</p>}
+
+      {!value ? (
+        <div
+          {...getRootProps()}
+          className={`flex items-center justify-center gap-2 w-full h-24 rounded-xl border border-dashed transition cursor-pointer text-xs
+          ${isDragActive ? "border-slate-900 bg-slate-100" : "border-slate-300 hover:bg-slate-50"}`}
+        >
+          <input {...getInputProps()} />
+          <Upload className="w-4 h-4 text-slate-500" />
+          <span className="text-slate-600">
+            {isDragActive ? "Drop..." : "Upload"}
+          </span>
+        </div>
+      ) : (
+        <div className="relative group rounded-lg overflow-hidden aspect-square w-32">
+          <img src={preview!} className="w-full h-full object-cover" />
+          <span className="absolute bottom-1 left-1 text-[9px] bg-black text-white px-1 rounded">
+            Cover
+          </span>
+          <button
+            type="button"
+            onClick={() => onChange?.(null)}
+            className="absolute top-1 right-1 bg-white/80 rounded p-0.5 opacity-0 group-hover:opacity-100"
+          >
+            <X className="w-3 h-3" />
+          </button>
         </div>
       )}
     </div>

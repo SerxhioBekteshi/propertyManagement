@@ -4,11 +4,11 @@ import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import { ENDPOINTS } from "../../lib/axios";
 import { formatDate } from "../../utils";
-import { ProperyOwnerDTO } from "../../types/properties";
 import PropertyOwnerDrawer from "../dashboard/components/PropertyOwnerDrawer";
 import { useAuth } from "../../contexts/AuthContext";
 import { ERoles } from "../../assets/enums";
 import { CountryFlag } from "../../components/flags/CountryFlag";
+import { ProperyOwnerDTO } from "../../types/properties/propertyOwner";
 
 const columns: ColumnConfig[] = [
   { key: "firstName", header: "First Name" },

@@ -18,6 +18,12 @@ export interface DivisionsResponseDTO extends BaseAuditableDTO {
   country: string;
 }
 
+export interface StreetsResponseDTO extends BaseAuditableDTO {
+  id: number;
+  name: string;
+  zone: string;
+}
+
 export interface CreateCityDTO {
   name: string;
   divisionId: number;
@@ -31,4 +37,9 @@ export interface CreateZoneDTO {
 export interface CreateDivionDTO {
   name: string;
   country: string;
+}
+
+export interface CreateStreetDTO {
+  name: string;
+  zoneId: number;
 }

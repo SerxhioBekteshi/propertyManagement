@@ -166,6 +166,9 @@ export const ENDPOINTS = {
     zones(cityId?: number) {
       return `List/zones/${cityId ?? ""}`;
     },
+    streets(zoneId?: number) {
+      return `List/streets/${zoneId ?? ""}`;
+    },
     agents: "/List/agents",
     propertyOwners: "/List/propertyOwners",
   },
@@ -176,6 +179,10 @@ export const ENDPOINTS = {
   zones: {
     create: "Zones/create",
     getAll: "Zones/get-all",
+  },
+  streets: {
+    create: "Street/create",
+    getAll: "Street/get-all",
   },
   division: {
     create: "Division/create",

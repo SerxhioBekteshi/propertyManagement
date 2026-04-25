@@ -20,7 +20,10 @@ import {
   PROPERTY_VIEW_OPTIONS,
 } from "../../../assets/enums/constants/property";
 import { MultiSelect } from "../../../components/multi-select";
-import { ImageUploader } from "../../../components/upload-image";
+import {
+  ImageUploader,
+  SingleImageUploader,
+} from "../../../components/upload-image";
 import { useEffect, useState } from "react";
 import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import BooleanSelect from "../../../components/boolean-select";
@@ -44,15 +47,19 @@ const PropertyForm = () => {
   const selectedCountry = useWatch({ control, name: "country" });
   const selectedDivisionId = useWatch({ control, name: "divisionId" });
   const selectedCityId = useWatch({ control, name: "cityId" });
+  const selectedZoneId = useWatch({ control, name: "zoneId" });
 
   const [divisions, setDivisions] = useState<IOption<number>[]>([]);
   const [cities, setCities] = useState<IOption<number>[]>([]);
   const [zones, setZones] = useState<IOption<number>[]>([]);
+  const [streets, setStreets] = useState<IOption<number>[]>([]);
+
   const [propertyOwners, setPropertyOwners] = useState<IOption<number>[]>([]);
   const [ownerDrawerOpen, setOwnerDrawerOpen] = useState(false);
   const [loadingDivisions, setLoadingDivisions] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingZones, setLoadingZones] = useState(false);
+  const [loadingStreets, setLoadingStreets] = useState(false);
 
   // Fetch divisions when country changes
   useEffect(() => {
@@ -116,7 +123,7 @@ const PropertyForm = () => {
 
     const fetch = async () => {
       setLoadingZones(true);
-      setValue("zone", undefined);
+      setValue("zoneId", undefined);
       try {
         const res = await LocationConfigurationService.getZones(selectedCityId);
         setZones(res.data ?? []);
@@ -127,6 +134,27 @@ const PropertyForm = () => {
 
     fetch();
   }, [selectedCityId]);
+
+  useEffect(() => {
+    if (!selectedZoneId) {
+      setStreets([]);
+      return;
+    }
+
+    const fetch = async () => {
+      setLoadingStreets(true);
+      setValue("streetId", undefined);
+      try {
+        const res =
+          await LocationConfigurationService.getStreets(selectedZoneId);
+        setStreets(res.data ?? []);
+      } finally {
+        setLoadingStreets(false);
+      }
+    };
+
+    fetch();
+  }, [selectedZoneId]);
 
   const fetchPropertyOwners = async () => {
     setLoadingZones(true);
@@ -169,8 +197,20 @@ const PropertyForm = () => {
             )}
           />
           <div
-            className={`grid ${user?.role === "Agent" ? "grid-cols-2" : "grid-cols-1"} gap-4`}
+            className={`grid ${user?.role === "Agent" ? "grid-cols-3" : "grid-cols-2"} gap-4`}
           >
+            <Controller
+              control={control}
+              name="mainImage"
+              render={({ field }) => (
+                <SingleImageUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  label="Main Image"
+                />
+              )}
+            />
+
             <Controller
               control={control}
               name="images"
@@ -542,8 +582,31 @@ const PropertyForm = () => {
             />
           </div>
 
-          {/* Address */}
           <div>
+            <Controller
+              control={control}
+              name="streetId"
+              render={({ field }) => (
+                <>
+                  <Label>Street</Label>
+
+                  <SingleSelect
+                    value={field.value}
+                    disabled={!selectedZoneId || loadingStreets}
+                    loading={loadingStreets}
+                    options={streets}
+                    onChange={(value) =>
+                      field.onChange(value ? Number(value) : undefined)
+                    }
+                    placeholder="— Select —"
+                  />
+                </>
+              )}
+            />
+          </div>
+
+          {/* Address */}
+          {/* <div>
             <Controller
               control={control}
               name="address"
@@ -554,7 +617,7 @@ const PropertyForm = () => {
                 </>
               )}
             />
-          </div>
+          </div> */}
 
           {/* Floor */}
           <div>

@@ -3,7 +3,7 @@ import { BaseTable, BaseTableRef } from "../../components/table";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import { EFormMode } from "../../assets/enums";
-import { DivisionsResponseDTO } from "../../types/main-location-configuration";
+import { DivisionsResponseDTO } from "../../types/location-configuration";
 import DivisionsModal from "./components/DivisionsModal";
 import { ENDPOINTS } from "../../lib/axios";
 import { formatDate } from "../../utils";
