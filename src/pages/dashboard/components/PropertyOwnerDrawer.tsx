@@ -2,14 +2,13 @@ import { enqueueSnackbar } from "notistack";
 import { PropertiesService } from "../../../lib/Properties";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect, useState } from "react";
-import { IOption } from "../../../types";
+import { useState } from "react";
 import PropertyOwnerForm, { propertyOwnerchema } from "./propertyOwnerForm";
 import BaseDrawer from "../../../components/base-drawer";
 import FormProvider from "../../../components/hook-form/form-provider";
-import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import { Spinner } from "../../../components/spinner";
 import { CreatePropertyOwnerDTO } from "../../../types/properties/propertyOwner";
+import { useLocationConfigBase } from "../../../hooks/useLocationConfiguration";
 
 interface IPropertyOwnerDrawerProps {
   open: boolean;
@@ -20,23 +19,13 @@ interface IPropertyOwnerDrawerProps {
 const PropertyOwnerDrawer = (props: IPropertyOwnerDrawerProps) => {
   const { open, onOpenChange, onSave } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [agents, setAgents] = useState<IOption<number>[]>([]);
 
-  const fetchAgents = async () => {
-    try {
-      const res = await LocationConfigurationService.getAgents();
-      if (res.result) {
-        setAgents(res.data);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAgents();
-  }, []);
+  const { agents, loadingAgents } = useLocationConfigBase({
+    open: open,
+    fetch: {
+      agents: true,
+    },
+  });
 
   const methods = useForm<CreatePropertyOwnerDTO>({
     resolver: yupResolver(propertyOwnerchema),
@@ -83,7 +72,7 @@ const PropertyOwnerDrawer = (props: IPropertyOwnerDrawerProps) => {
       isSubmitLoading={isSubmitting}
       disabledSubmitButton={!isDirty}
     >
-      {loading ? (
+      {loadingAgents ? (
         <Spinner />
       ) : (
         <FormProvider methods={methods}>

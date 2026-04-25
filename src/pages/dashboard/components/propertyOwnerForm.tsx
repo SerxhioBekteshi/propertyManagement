@@ -3,9 +3,13 @@ import * as yup from "yup";
 import ErrorMessage from "../../../components/hook-form/error-message";
 import Label from "../../../components/label";
 import { IOption } from "../../../types";
-import { PROPERTY_MAIN_LEAD_SOURCE_OPTIONS } from "../../../assets/enums/constants/property";
+import {
+  COUNTRY_OPTIONS,
+  PROPERTY_MAIN_LEAD_SOURCE_OPTIONS,
+} from "../../../assets/enums/constants/property";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ERoles } from "../../../assets/enums";
+import { SingleSelect } from "../../../components/single-select";
 
 interface PropertyOwnerFormProps {
   assignes: IOption<number>[];
@@ -42,7 +46,7 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
         name="firstName"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <label className="block text-sm font-medium mb-1">First Name</label>
+            <Label>First Name</Label>
             <input
               value={value ?? ""}
               onChange={onChange}
@@ -58,7 +62,7 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
         name="lastName"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <label className="block text-sm font-medium mb-1">Last Name</label>
+            <Label>Last Name</Label>
             <input
               value={value ?? ""}
               onChange={onChange}
@@ -74,7 +78,7 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
         name="email"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <Label>Email</Label>
             <input
               value={value ?? ""}
               onChange={onChange}
@@ -90,9 +94,7 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
         name="phoneNumber"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Phone Number
-            </label>
+            <Label>Phone Number</Label>
             <input
               value={value ?? ""}
               onChange={onChange}
@@ -108,9 +110,7 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
         name="ssn"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Personal ID
-            </label>
+            <Label>Personal ID</Label>
             <input
               value={value ?? ""}
               onChange={onChange}
@@ -126,15 +126,14 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
         <Controller
           control={control}
           name="mainLeadSource"
-          render={({ field }) => (
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
             <>
-              <select {...field} className={inputClass}>
-                {PROPERTY_MAIN_LEAD_SOURCE_OPTIONS.map((v, i) => (
-                  <option key={i} value={v.value}>
-                    {v.label}
-                  </option>
-                ))}
-              </select>
+              <SingleSelect
+                options={PROPERTY_MAIN_LEAD_SOURCE_OPTIONS}
+                onChange={onChange}
+                value={value}
+                error={error}
+              />
               {/* <ErrorMessage message={error?.message} /> */}
             </>
           )}
@@ -144,14 +143,15 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
       <Controller
         control={control}
         name="nationality"
-        render={({ field }) => (
+        render={({ field: { value, onChange }, fieldState: { error } }) => (
           <>
             <Label>Nationality</Label>
-            <select {...field} className={inputClass}>
-              <option value="">— Select —</option>
-              <option value="AL">Albania</option>
-              <option value="GR">Greece</option>
-            </select>
+            <SingleSelect
+              options={COUNTRY_OPTIONS}
+              onChange={onChange}
+              value={value}
+              error={error}
+            />
           </>
         )}
       />
@@ -161,21 +161,13 @@ const PropertyOwnerForm = ({ assignes }: PropertyOwnerFormProps) => {
           name="assignedToId"
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Select agent
-              </label>
-              <select
-                value={value ?? ""}
+              <Label>Agent</Label>
+              <SingleSelect
+                options={assignes}
                 onChange={onChange}
-                className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
-              >
-                <option value="">Select agent</option>
-                {assignes.map((d, index) => (
-                  <option key={index} value={d.value}>
-                    {d.label}
-                  </option>
-                ))}
-              </select>
+                value={value}
+                error={error}
+              />
               <ErrorMessage message={error?.message} />
             </div>
           )}

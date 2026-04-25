@@ -13,6 +13,7 @@ export const useLocationConfigBase = (
       zones?: boolean;
       streets?: boolean;
       propertyOwners?: boolean;
+      agents?: boolean;
     };
   } = {},
 ) => {
@@ -23,12 +24,14 @@ export const useLocationConfigBase = (
   const [zones, setZones] = useState<IOption<number>[]>([]);
   const [streets, setStreets] = useState<IOption<number>[]>([]);
   const [propertyOwners, setPropertyOwners] = useState<IOption<number>[]>([]);
+  const [agents, setAgents] = useState<IOption<number>[]>([]);
 
   const [loadingDivisions, setLoadingDivisions] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingZones, setLoadingZones] = useState(false);
   const [loadingStreets, setLoadingStreets] = useState(false);
   const [loadingPropertyOwners, setLoadingPropertyOwners] = useState(false);
+  const [loadingAgents, setLoadingAgents] = useState(false);
 
   useEffect(() => {
     if (open === false) return;
@@ -102,6 +105,19 @@ export const useLocationConfigBase = (
           })(),
         );
 
+      if (fetch.agents)
+        calls.push(
+          (async () => {
+            setLoadingAgents(true);
+            try {
+              const res = await LocationConfigurationService.getAgents();
+              setAgents(res.data ?? []);
+            } finally {
+              setLoadingAgents(false);
+            }
+          })(),
+        );
+
       await Promise.all(calls);
     };
 
@@ -113,12 +129,14 @@ export const useLocationConfigBase = (
     cities,
     zones,
     streets,
+    agents,
     propertyOwners,
     loadingDivisions,
     loadingCities,
     loadingZones,
     loadingStreets,
     loadingPropertyOwners,
+    loadingAgents,
   };
 };
 
