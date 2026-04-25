@@ -279,7 +279,7 @@ export default function PropertyDetailsPage() {
                     <div className="mt-0.5 p-2 bg-blue-500 rounded-xl shrink-0">
                       <MapPin className="w-4 h-4 text-white" />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <h1 className="text-base font-black text-slate-900 leading-tight truncate">
                         {property.title ?? "—"}
                       </h1>
@@ -289,6 +289,7 @@ export default function PropertyDetailsPage() {
                           property.divisionName,
                           property.cityName,
                           property.zoneName,
+                          property.streetName,
                         ]
                           .filter(Boolean)
                           .map((val, i, arr) => (
@@ -306,9 +307,25 @@ export default function PropertyDetailsPage() {
                           property.divisionName,
                           property.cityName,
                           property.zoneName,
+                          property.streetName,
                         ].some(Boolean) && (
                           <span className="text-xs text-slate-400">
                             Location not specified
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Exclusive badge */}
+                      <div className="mt-1.5">
+                        {property.exclusive ? (
+                          <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-green-400 text-white">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Exclusive
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-400">
+                            <XCircle className="w-3 h-3" />
+                            Not Exclusive
                           </span>
                         )}
                       </div>
@@ -502,6 +519,14 @@ export default function PropertyDetailsPage() {
               <Item label="Division" value={property.divisionName} capitalize />
               <Item label="City" value={property.cityName} />
               <Item label="Zone" value={property.zoneName} />
+              <Item
+                label="Street"
+                value={
+                  property.streetName?.toLowerCase().includes("street")
+                    ? property.streetName.replace(/street/gi, "").trim()
+                    : property.streetName
+                }
+              />
               <Item label="Floor" value={property.floor ?? "—"} />
               {property.latitude && property.longitude ? (
                 <div className="mt-4 h-48 rounded-xl overflow-hidden border border-slate-200">
@@ -509,7 +534,7 @@ export default function PropertyDetailsPage() {
                     center={[property.latitude, property.longitude]}
                     zoom={15}
                     scrollWheelZoom={false}
-                    style={{ height: "100%", width: "100%" }}
+                    style={{ height: "100%", width: "100%", zIndex: 0 }}
                   >
                     <TileLayer
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -585,12 +610,18 @@ export default function PropertyDetailsPage() {
               />
 
               <div className="pt-4 mt-4 border-t border-slate-100">
-                <Item label="Assigned Agent" value={property.agent} highlight />
-                <div className="flex justify-between items-center py-1 border-b border-slate-50 last:border-0">
-                  <span className="text-slate-500 text-xs font-medium">
-                    Documentation
-                  </span>
-                  <div className="flex gap-2 flex-wrap">
+                {property.agentId != user?.id && (
+                  <Item
+                    label="Assigned Agent"
+                    value={property.agent}
+                    highlight
+                  />
+                )}
+                <div className="py-1 border-b border-slate-50 last:border-0 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 text-xs font-medium">
+                      Documentation
+                    </span>
                     <span
                       className={`px-3 py-1 text-xs font-bold rounded-full border ${
                         property.documentation === "yes"
@@ -605,6 +636,41 @@ export default function PropertyDetailsPage() {
                       {property.documentation?.replace(/_/g, " ") ?? "—"}
                     </span>
                   </div>
+
+                  {/* DOCUMENTS SECTION */}
+                  {property.fileUrls && property.fileUrls.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                      {property.fileUrls.map((fileUrl: string, i: number) => {
+                        const src = fileUrl?.startsWith("http")
+                          ? fileUrl
+                          : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${fileUrl.replace(/^\//, "")}`;
+
+                        const fileName =
+                          decodeURIComponent(fileUrl.split("/").pop() ?? "") ||
+                          `Document ${i + 1}`;
+
+                        return (
+                          <a
+                            key={fileUrl}
+                            href={src}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-orange-50 hover:border-orange-200 transition group"
+                          >
+                            <div className="p-1.5 bg-orange-100 rounded-lg shrink-0 group-hover:bg-orange-200 transition">
+                              <FileText className="w-3.5 h-3.5 text-orange-600" />
+                            </div>
+                            <span className="text-xs font-medium text-slate-700 truncate flex-1">
+                              {fileName}
+                            </span>
+                            <span className="text-[10px] text-orange-500 font-bold shrink-0">
+                              ↗
+                            </span>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -664,46 +730,6 @@ export default function PropertyDetailsPage() {
               </div>
             </div>
           </Section>
-
-          {/* DOCUMENTS SECTION */}
-          {property.fileUrls && property.fileUrls.length > 0 && (
-            <Section
-              icon={<FileText className="w-5 h-5 text-orange-500" />}
-              title="Documents"
-            >
-              <div className="flex flex-col gap-2">
-                {property.fileUrls.map((fileUrl: string, i: number) => {
-                  const src = fileUrl?.startsWith("http")
-                    ? fileUrl
-                    : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${fileUrl.replace(/^\//, "")}`;
-
-                  const fileName =
-                    decodeURIComponent(fileUrl.split("/").pop() ?? "") ||
-                    `Document ${i + 1}`;
-
-                  return (
-                    <a
-                      key={fileUrl}
-                      href={src}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-orange-50 hover:border-orange-200 transition group"
-                    >
-                      <div className="p-1.5 bg-orange-100 rounded-lg shrink-0 group-hover:bg-orange-200 transition">
-                        <FileText className="w-3.5 h-3.5 text-orange-600" />
-                      </div>
-                      <span className="text-xs font-medium text-slate-700 truncate flex-1">
-                        {fileName}
-                      </span>
-                      <span className="text-[10px] text-orange-500 font-bold shrink-0">
-                        ↗
-                      </span>
-                    </a>
-                  );
-                })}
-              </div>
-            </Section>
-          )}
 
           <Section
             icon={<Layers className="w-5 h-5 text-purple-500" />}
