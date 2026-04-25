@@ -440,7 +440,7 @@ const PropertyForm = () => {
                   };
                   return (
                     <div className="border rounded-md p-2 min-h-[40px]">
-                      <div className="flex flex-wrap gap-2 mb-2">
+                      <div className="flex flex-wrap gap-2 ">
                         {values.map((v) => (
                           <span
                             key={v}
