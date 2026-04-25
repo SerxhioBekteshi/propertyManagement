@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CreateStreetDTO } from "../../../types/location-configuration";
 import { EFormMode } from "../../../assets/enums";
@@ -8,8 +8,8 @@ import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import { Spinner } from "../../../components/spinner";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { enqueueSnackbar } from "notistack";
-import { IOption } from "../../../types";
 import StreetsForm, { streetsSchema } from "./StreetsForm";
+import { useLocationConfigBase } from "../../../hooks/useLocationConfiguration";
 
 interface StreetsModalProps {
   open: boolean;
@@ -21,22 +21,13 @@ interface StreetsModalProps {
 const StreetsModal = (props: StreetsModalProps) => {
   const { open, onOpenChange, onSave } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [zones, setZones] = useState<IOption<number>[]>([]);
+  const { zones, loadingZones } = useLocationConfigBase({
+    open: open,
 
-  const fetchZonesList = async () => {
-    try {
-      setIsLoading(true);
-      const res = await LocationConfigurationService.getZones();
-      setZones(res.data);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (open) fetchZonesList();
-  }, [open]);
+    fetch: {
+      zones: true,
+    },
+  });
 
   const methods = useForm<CreateStreetDTO>({
     resolver: yupResolver(streetsSchema),
@@ -84,7 +75,7 @@ const StreetsModal = (props: StreetsModalProps) => {
       disabledSubmitButton={!isDirty}
       size="2xl"
     >
-      {isLoading ? (
+      {loadingZones ? (
         <>
           <Spinner />
         </>

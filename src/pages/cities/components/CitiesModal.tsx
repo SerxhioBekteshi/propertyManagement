@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   CitiesResponseDTO,
@@ -12,7 +12,7 @@ import { Spinner } from "../../../components/spinner";
 import CitiesForm, { citiesSchema } from "./CitiesForm";
 import { enqueueSnackbar } from "notistack";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { IOption } from "../../../types";
+import { useLocationConfigBase } from "../../../hooks/useLocationConfiguration";
 
 interface CitiesModalProps {
   open: boolean;
@@ -25,22 +25,12 @@ interface CitiesModalProps {
 const CitiesModal = (props: CitiesModalProps) => {
   const { open, onOpenChange, onSave } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [divisions, setDivisions] = useState<IOption<number>[]>([]);
-
-  const fetchDivisionsList = async () => {
-    try {
-      setIsLoading(true);
-      const res = await LocationConfigurationService.getDivisions();
-      setDivisions(res.data);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (open) fetchDivisionsList();
-  }, [open]);
+  const { divisions, loadingDivisions } = useLocationConfigBase({
+    open: open,
+    fetch: {
+      zones: true,
+    },
+  });
 
   const methods = useForm<CreateCityDTO>({
     resolver: yupResolver(citiesSchema),
@@ -88,7 +78,7 @@ const CitiesModal = (props: CitiesModalProps) => {
       disabledSubmitButton={!isDirty}
       size="2xl"
     >
-      {isLoading ? (
+      {loadingDivisions ? (
         <>
           <Spinner />
         </>
