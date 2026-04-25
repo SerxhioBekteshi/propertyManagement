@@ -11,6 +11,7 @@ export function SingleSelect<T>({
   placeholder = "Select...",
   loading = false, // ✅ NEW
   disabled,
+  error,
 }: {
   options: IOption<T>[];
   value?: T;
@@ -18,6 +19,8 @@ export function SingleSelect<T>({
   placeholder?: string;
   loading?: boolean; // ✅ NEW
   disabled?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  error?: any;
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -54,7 +57,9 @@ export function SingleSelect<T>({
         onClick={() => !loading && setOpen((p) => !p)}
         className={`${baseClass} text-left flex justify-between items-center ${
           loading ? "opacity-60 cursor-not-allowed" : ""
-        } ${!selected ? "text-slate-400" : "text-slate-900"}`}
+        } ${!selected ? "text-slate-400" : "text-slate-900"} ${
+          error ? "border-red-500 focus:ring-red-500" : ""
+        }`}
       >
         <span className="truncate">
           {loading ? "Loading..." : (selected?.label ?? placeholder)}

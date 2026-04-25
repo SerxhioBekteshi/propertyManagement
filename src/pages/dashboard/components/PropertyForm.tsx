@@ -2,6 +2,7 @@ import { Controller, useFormContext, useWatch } from "react-hook-form";
 import Label from "../../../components/label";
 import Section from "../../../components/section";
 import {
+  COUNTRY_OPTIONS,
   PROPERTY_AVAILABILITY_OPTIONS,
   PROPERTY_BEING_LIVED_OPTIONS,
   PROPERTY_BUSINESS_TYPE_OPTIONS,
@@ -502,11 +503,11 @@ const PropertyForm = () => {
               render={({ field }) => (
                 <>
                   <Label>Country</Label>
-                  <select {...field} className={inputClass}>
-                    <option value="">— Select —</option>
-                    <option value="AL">Albania</option>
-                    <option value="GR">Greece</option>
-                  </select>
+                  <SingleSelect
+                    options={COUNTRY_OPTIONS}
+                    onChange={field.onChange}
+                    value={field.value}
+                  />
                 </>
               )}
             />

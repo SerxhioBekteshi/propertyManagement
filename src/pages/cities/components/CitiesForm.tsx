@@ -2,6 +2,8 @@ import { Controller, useFormContext } from "react-hook-form";
 import * as yup from "yup";
 import ErrorMessage from "../../../components/hook-form/error-message";
 import { IOption } from "../../../types";
+import { SingleSelect } from "../../../components/single-select";
+import Label from "../../../components/label";
 
 interface CitiesFormProps {
   divisions: IOption<number>[];
@@ -30,7 +32,7 @@ const CitiesForm = ({ divisions }: CitiesFormProps) => {
         name="name"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <Label>Name</Label>
             <input
               value={value}
               onChange={onChange}
@@ -47,19 +49,13 @@ const CitiesForm = ({ divisions }: CitiesFormProps) => {
         name="divisionId"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <label className="block text-sm font-medium mb-1">Division</label>
-            <select
-              value={value}
+            <Label>Division</Label>
+            <SingleSelect
+              options={divisions}
               onChange={onChange}
-              className={`${inputClass} ${error ? "border-red-500 focus:ring-red-500" : ""}`}
-            >
-              <option value="">Select division</option>
-              {divisions.map((d) => (
-                <option key={d.value} value={d.value}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
+              value={value}
+              error={error}
+            />
             <ErrorMessage message={error?.message} />
           </div>
         )}

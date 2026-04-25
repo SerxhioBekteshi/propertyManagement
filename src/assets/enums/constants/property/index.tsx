@@ -136,6 +136,10 @@ export const PROPERTY_ORIENTATION_OPTIONS = withDefault([
   { value: "west", label: "West" },
 ]);
 
+export const COUNTRY_OPTIONS = withDefault([
+  { value: "AL", label: "Albania" },
+  { value: "GR", label: "Greece" },
+]);
 /**
  * 12. BUSINESS TYPE
  */
