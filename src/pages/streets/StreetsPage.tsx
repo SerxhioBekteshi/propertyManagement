@@ -50,7 +50,7 @@ export default function StreetsPage() {
             }}
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add Zone
+            Add Street
           </Button>
         }
       />
