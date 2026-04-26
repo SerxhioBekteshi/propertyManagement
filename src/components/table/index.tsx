@@ -126,6 +126,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
     },
     [controller, currentPage, searchTerm, isStatic],
   );
+
   useEffect(() => {
     fetchData(filters);
   }, [fetchData]);
@@ -150,6 +151,9 @@ const BaseTableComponent = <T extends Record<string, any>>(
         key={index}
         className="border-b hover:bg-muted/40"
         onClick={() => clickableRow && navigateToDetails?.(row)}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: index * 0.05 }}
       >
         {columns.map((col) => (
           <TableCell key={col.key}>

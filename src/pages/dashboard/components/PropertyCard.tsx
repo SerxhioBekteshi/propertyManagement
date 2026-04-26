@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { PropertyResponseDTO } from "../../../types/properties";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ERoles } from "../../../assets/enums";
+import { motion } from "framer-motion";
 
 interface PropertyCardProps {
   property: PropertyResponseDTO;
   onClick?: () => void;
+  index?: number;
 }
 
 const propertyTypeColors: Record<string, string> = {
@@ -28,13 +30,11 @@ export const statusColors: Record<string, string> = {
   for_refurbishment: "bg-orange-400",
 };
 
-// const placeholderImages = [
-//   "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
-//   "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
-//   "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg",
-// ];
-
-export default function PropertyCard({ property, onClick }: PropertyCardProps) {
+export default function PropertyCard({
+  property,
+  onClick,
+  index,
+}: PropertyCardProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -60,9 +60,12 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
     : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${property.mainImage}`;
 
   return (
-    <article
+    <motion.article
       onClick={onClick}
       className="group bg-white rounded-2xl border border-slate-200 overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: (index ?? 0) * 0.05 }}
     >
       {/* IMAGE */}
       <div className="relative h-52 overflow-hidden">
@@ -165,6 +168,6 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
           </button>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }
