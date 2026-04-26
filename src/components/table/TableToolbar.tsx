@@ -19,6 +19,7 @@ interface TableToolbarProps {
   resetFilters: () => void;
   filters?: any;
   showFiltersButton?: boolean;
+  showSearch?: boolean;
 }
 
 const TableToolbar = (props: TableToolbarProps) => {
@@ -40,6 +41,7 @@ const TableToolbar = (props: TableToolbarProps) => {
     resetFilters,
     filters,
     showFiltersButton,
+    showSearch,
   } = props;
 
   useEffect(() => {
@@ -113,12 +115,12 @@ const TableToolbar = (props: TableToolbarProps) => {
         ref={componentRef}
       >
         <div
-          className={`flex flex-col ${
-            hasQuickFilters ? "" : "gap-4"
-          } md:flex-row md:items-center md:justify-between`}
+          className={`flex flex-col ${hasQuickFilters ? "" : "gap-4"} md:flex-row md:items-center md:justify-between`}
         >
-          <SearchButton onChange={onSearchChange} value={searchValue} />
-          <div className="flex flex-wrap">
+          {showSearch && (
+            <SearchButton onChange={onSearchChange} value={searchValue} />
+          )}
+          <div className={`flex flex-wrap ${!showSearch ? "ml-auto" : ""}`}>
             {customFilterComponentPosition === "right" &&
               renderCustomFilterComponent()}
             <div className={`${isTablet ? "pt-2" : ""}`}>{addButton}</div>

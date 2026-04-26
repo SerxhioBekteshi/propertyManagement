@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { Search } from "lucide-react";
 import {
@@ -9,6 +10,8 @@ import { PropertyFiltersDTO } from "../../../types/properties";
 import Modal from "../../../components/modal";
 import { IOption } from "../../../types";
 import { INITIAL_FILTERS } from "./filterMappings";
+import Label from "../../../components/label";
+import { SingleSelect } from "../../../components/single-select";
 
 interface PropertyFiltersProps {
   filters: PropertyFiltersDTO;
@@ -16,7 +19,7 @@ interface PropertyFiltersProps {
   cities: IOption<number>[];
   agents: IOption<number>[];
   zones: IOption<number>[];
-
+  owners: IOption<number>[];
   loading: boolean;
 }
 
@@ -26,18 +29,24 @@ export default function PropertyFilters({
   zones,
   cities,
   agents,
-  loading,
+  owners,
 }: PropertyFiltersProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // Local draft — only applied when user taps "Apply Filters"
+  const [draft, setDraft] = useState<PropertyFiltersDTO>(filters);
 
-  function update(key: keyof PropertyFiltersDTO, value: string) {
+  function update(key: keyof PropertyFiltersDTO, value: any) {
     onChange({ ...filters, [key]: value });
+  }
+
+  function updateDraft(key: keyof PropertyFiltersDTO, value: any) {
+    setDraft((prev) => ({ ...prev, [key]: value }));
   }
 
   const countActiveFilters = () => {
     return Object.entries(filters).filter(([key, value]) => {
       if (value === "" || value === null || value === undefined) return false;
-      if (key === "orderBy") return false; // ignore sorting
+      if (key === "orderBy") return false;
       return true;
     }).length;
   };
@@ -47,52 +56,39 @@ export default function PropertyFilters({
   };
 
   const inputStyle =
-    "w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-slate-300 focus:bg-white transition-all placeholder:text-slate-400 shadow-sm";
-  const labelStyle =
-    "block text-[10px] uppercase tracking-wider font-semibold text-slate-500 mb-1";
+    "w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-slate-300 focus:bg-white transition-all placeholder:text-slate-400 shadow-sm";
 
-  // ✅ REUSABLE FILTER FIELDS
-  const filterFields = (
+  // Desktop fields — apply immediately on change
+  const desktopFilterFields = (
     <>
       <div>
-        <label className={labelStyle}>Business Type</label>
-        <select
+        <Label>Business Type</Label>
+        <SingleSelect
+          options={PROPERTY_BUSINESS_TYPE_OPTIONS}
           value={filters.businessType}
-          onChange={(e) => update("businessType", e.target.value)}
-          className={inputStyle}
-        >
-          {PROPERTY_BUSINESS_TYPE_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => update("businessType", val)}
+        />
       </div>
-
       <div>
-        <label className={labelStyle}>Min Price</label>
+        <Label>Min Price</Label>
         <input
           type="number"
-          placeholder="0"
           value={filters.minPrice}
           onChange={(e) => update("minPrice", e.target.value)}
           className={inputStyle}
         />
       </div>
-
       <div>
-        <label className={labelStyle}>Max Price</label>
+        <Label>Max Price</Label>
         <input
           type="number"
-          placeholder="No limit"
           value={filters.maxPrice}
           onChange={(e) => update("maxPrice", e.target.value)}
           className={inputStyle}
         />
       </div>
-
       <div>
-        <label className={labelStyle}>Bedrooms</label>
+        <Label>Bedrooms</Label>
         <input
           type="number"
           value={filters.bedrooms}
@@ -100,9 +96,8 @@ export default function PropertyFilters({
           className={inputStyle}
         />
       </div>
-
       <div>
-        <label className={labelStyle}>Bathrooms</label>
+        <Label>Bathrooms</Label>
         <input
           type="number"
           value={filters.bathrooms}
@@ -110,132 +105,194 @@ export default function PropertyFilters({
           className={inputStyle}
         />
       </div>
-
       <div>
-        <label className={labelStyle}>Property Type</label>
-        <select
+        <Label>Property Type</Label>
+        <SingleSelect
+          options={PROPERTY_TYPE_OPTIONS}
           value={filters.propertyType}
-          onChange={(e) => update("propertyType", e.target.value)}
-          className={inputStyle}
-        >
-          {PROPERTY_TYPE_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => update("propertyType", val)}
+        />
       </div>
-
       <div>
-        <label className={labelStyle}>City</label>
-        <select
-          disabled={loading}
+        <Label>City</Label>
+        <SingleSelect
+          options={cities}
           value={filters.cityId}
-          onChange={(e) => update("cityId", e.target.value)}
-          className={inputStyle}
-        >
-          <option value="">— Select City —</option>
-          {cities.map((city, index) => (
-            <option key={index} value={city.value}>
-              {city.label}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => update("cityId", val)}
+        />
       </div>
-
       <div>
-        <label className={labelStyle}>Zone</label>
-        <select
-          disabled={loading}
+        <Label>Zone</Label>
+        <SingleSelect<number>
+          options={zones}
           value={filters.zoneId}
-          onChange={(e) => update("zoneId", e.target.value)}
-          className={inputStyle}
-        >
-          <option value="">— Select zone —</option>
-          {zones.map((zone, index) => (
-            <option key={index} value={zone.value}>
-              {zone.label}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => update("zoneId", val)}
+        />
       </div>
-
       <div>
-        <label className={labelStyle}>Availability</label>
-        <select
+        <Label>Availability</Label>
+        <SingleSelect
+          options={PROPERTY_AVAILABILITY_OPTIONS}
           value={filters.availability}
-          onChange={(e) => update("availability", e.target.value)}
-          className={inputStyle}
-        >
-          {PROPERTY_AVAILABILITY_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => update("availability", val)}
+        />
       </div>
-
       <div>
-        <label className={labelStyle}>Assigned To</label>
-        <select
-          disabled={loading}
+        <Label>Assigned To</Label>
+        <SingleSelect
+          options={agents}
           value={filters.agentId}
-          onChange={(e) => update("agentId", e.target.value)}
-          className={inputStyle}
-        >
-          <option value="">— Select agent —</option>
-          {agents.map((city, index) => (
-            <option key={index} value={city.value}>
-              {city.label}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => update("agentId", val)}
+        />
       </div>
-
       <div>
-        <label className={labelStyle}>Owner</label>
+        <Label>Owner</Label>
+        <SingleSelect
+          options={owners}
+          value={filters.ownerId}
+          onChange={(val) => update("ownerId", val)}
+        />
+      </div>
+    </>
+  );
+
+  // Mobile fields — update draft only, not applied until "Apply Filters"
+  const mobileFilterFields = (
+    <>
+      <div>
+        <Label>Business Type</Label>
+        <SingleSelect
+          options={PROPERTY_BUSINESS_TYPE_OPTIONS}
+          value={draft.businessType}
+          onChange={(val) => updateDraft("businessType", val)}
+        />
+      </div>
+      <div>
+        <Label>Min Price</Label>
         <input
-          type="text"
-          value={filters.owner}
-          onChange={(e) => update("owner", e.target.value)}
+          type="number"
+          value={draft.minPrice}
+          onChange={(e) => updateDraft("minPrice", e.target.value)}
           className={inputStyle}
+        />
+      </div>
+      <div>
+        <Label>Max Price</Label>
+        <input
+          type="number"
+          value={draft.maxPrice}
+          onChange={(e) => updateDraft("maxPrice", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+      <div>
+        <Label>Bedrooms</Label>
+        <input
+          type="number"
+          value={draft.bedrooms}
+          onChange={(e) => updateDraft("bedrooms", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+      <div>
+        <Label>Bathrooms</Label>
+        <input
+          type="number"
+          value={draft.bathrooms}
+          onChange={(e) => updateDraft("bathrooms", e.target.value)}
+          className={inputStyle}
+        />
+      </div>
+      <div>
+        <Label>Property Type</Label>
+        <SingleSelect
+          options={PROPERTY_TYPE_OPTIONS}
+          value={draft.propertyType}
+          onChange={(val) => updateDraft("propertyType", val)}
+        />
+      </div>
+      <div>
+        <Label>City</Label>
+        <SingleSelect
+          options={cities}
+          value={draft.cityId}
+          onChange={(val) => updateDraft("cityId", val)}
+        />
+      </div>
+      <div>
+        <Label>Zone</Label>
+        <SingleSelect<number>
+          options={zones}
+          value={draft.zoneId}
+          onChange={(val) => updateDraft("zoneId", val)}
+        />
+      </div>
+      <div>
+        <Label>Availability</Label>
+        <SingleSelect
+          options={PROPERTY_AVAILABILITY_OPTIONS}
+          value={draft.availability}
+          onChange={(val) => updateDraft("availability", val)}
+        />
+      </div>
+      <div>
+        <Label>Assigned To</Label>
+        <SingleSelect
+          options={agents}
+          value={draft.agentId}
+          onChange={(val) => updateDraft("agentId", val)}
+        />
+      </div>
+      <div>
+        <Label>Owner</Label>
+        <SingleSelect
+          options={owners}
+          value={draft.ownerId}
+          onChange={(val) => updateDraft("ownerId", val)}
         />
       </div>
     </>
   );
 
   return (
-    <div className=" bg-white/95 backdrop-blur-md p-2 shadow-sm border-b border-slate-200 rounded-2xl border">
+    <div className="bg-white/95 backdrop-blur-md p-2 shadow-sm border-b border-slate-200 rounded-2xl border">
       <div className="max-w-screen p-4 mx-auto">
-        {/* MOBILE FILTER BUTTON */}
-        <div className="md:hidden flex items-center mb-3">
+        {/* MOBILE FILTER + CLEAR BUTTONS */}
+        <div className="md:hidden flex items-center gap-2 mb-3">
           <button
-            onClick={() => setFiltersOpen(true)}
-            className="w-full h-[38px] flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-sm"
+            onClick={() => {
+              setDraft(filters); // sync draft with current applied filters
+              setFiltersOpen(true);
+            }}
+            className="flex-1 h-[38px] flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-sm"
           >
             <Search className="w-4 h-4" />
             Filters
+          </button>
+
+          <button
+            onClick={clearFilters}
+            className="relative h-[38px] px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
+          >
+            Clear
+            {countActiveFilters() > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
+                {countActiveFilters()}
+              </span>
+            )}
           </button>
         </div>
 
         {/* DESKTOP GRID */}
         <div className="hidden md:grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-          {filterFields}
+          {desktopFilterFields}
 
           <div className="flex items-end gap-2">
-            {/* SEARCH (kept as placeholder / no action) */}
-            {/* <button className="h-[38px] w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-all">
-              <Search className="w-4 h-4" />
-              Search
-            </button> */}
-
-            {/* CLEAR WITH BADGE */}
             <button
               onClick={clearFilters}
               className="relative h-[38px] px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
             >
               Clear
-              {/* BADGE */}
               {countActiveFilters() > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
                   {countActiveFilters()}
@@ -264,7 +321,8 @@ export default function PropertyFilters({
           </div>
         </div>
       </div>
-      {/* MOBILE MODAL (USING YOUR MODAL COMPONENT) */}
+
+      {/* MOBILE MODAL */}
       <Modal
         open={filtersOpen}
         onOpenChange={setFiltersOpen}
@@ -272,10 +330,30 @@ export default function PropertyFilters({
         title="Filters"
         description="Refine your property search"
         submitTitle="Apply Filters"
-        onSave={() => setFiltersOpen(false)}
+        onSave={() => {
+          onChange(draft); // commit draft to real filters
+          setFiltersOpen(false);
+        }}
         fitContentHeight={false}
+        footerActions={
+          <button
+            onClick={() => {
+              setDraft(INITIAL_FILTERS);
+              onChange(INITIAL_FILTERS);
+              setFiltersOpen(false);
+            }}
+            className="relative h-[38px] px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
+          >
+            Clear
+            {countActiveFilters() > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
+                {countActiveFilters()}
+              </span>
+            )}
+          </button>
+        }
       >
-        <div className="grid grid-cols-1 gap-4">{filterFields}</div>
+        <div className="grid grid-cols-1 gap-4">{mobileFilterFields}</div>
       </Modal>
     </div>
   );

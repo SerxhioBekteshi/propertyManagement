@@ -11,10 +11,10 @@ interface IModalPropertyProp {
   open: boolean;
   onSave: () => void;
   model: PropertyResponseDTO | null;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 const ModalProperty = (props: IModalPropertyProp) => {
-  const { open, onSave, model, onClose } = props;
+  const { open, onSave, model, onOpenChange } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -43,15 +43,13 @@ const ModalProperty = (props: IModalPropertyProp) => {
     } finally {
       setIsSubmitting(false);
       reset({});
-      onClose();
+      onOpenChange(false);
     }
   });
 
-  const handleClose = (innerOpen?: boolean) => {
-    if (innerOpen == null || innerOpen == false) {
-      reset({});
-      onClose();
-    }
+  const handleClose = () => {
+    onOpenChange(false);
+    reset({});
   };
 
   return (
@@ -60,7 +58,7 @@ const ModalProperty = (props: IModalPropertyProp) => {
         open={open}
         onClose={handleClose}
         title={`Add Property`}
-        onOpenChange={handleClose}
+        onOpenChange={onOpenChange}
         fitContentHeight={false}
         description={`Specify the property details`}
         isSubmitLoading={isSubmitting}

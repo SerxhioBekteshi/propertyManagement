@@ -14,7 +14,7 @@ export interface PropertyFiltersDTO {
   zoneId?: number;
   availability?: string;
   agentId?: number;
-  owner?: string;
+  ownerId?: number;
 
   orderBy: "newest" | "oldest" | "price_asc" | "price_desc";
 }

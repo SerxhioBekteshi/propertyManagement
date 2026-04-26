@@ -10,20 +10,29 @@ import {
 } from "../../types/properties";
 import { usePagedList } from "../../hooks/usePagedList";
 import { ENDPOINTS } from "../../lib/axios";
-import { LocationConfigurationService } from "../../lib/ListConfiguration";
-import { IOption } from "../../types";
 import { filterMappings, INITIAL_FILTERS } from "./components/filterMappings";
 import { ErrorState } from "../../components/error-state";
+import { useLocationConfigBase } from "../../hooks/useLocationConfiguration";
 
 export default function DashboardPage() {
   const [filters, setFilters] = useState<PropertyFiltersDTO>(INITIAL_FILTERS);
   const [uploadOpen, setUploadOpen] = useState<boolean>(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const [cities, setCities] = useState<IOption<number>[]>([]);
-  const [agents, setAgents] = useState<IOption<number>[]>([]);
-  const [zones, setZones] = useState<IOption<number>[]>([]);
 
-  const [filterLoading, setFilterLoading] = useState(false);
+  const {
+    cities,
+    zones,
+    agents,
+    propertyOwners,
+    loading: loadingFilters,
+  } = useLocationConfigBase({
+    fetch: {
+      cities: true,
+      zones: true,
+      agents: true,
+      propertyOwners: true,
+    },
+  });
 
   const {
     items: properties,
@@ -41,27 +50,6 @@ export default function DashboardPage() {
     initialFilters: INITIAL_FILTERS,
   });
 
-  const fetchAgentsAndCities = async () => {
-    setFilterLoading(true);
-    try {
-      const [res, resAgents, resZones] = await Promise.all([
-        LocationConfigurationService.getCities(),
-        LocationConfigurationService.getAgents(),
-        LocationConfigurationService.getZones(),
-      ]);
-
-      setCities(res.data);
-      setAgents(resAgents.data);
-      setZones(resZones.data);
-    } catch (err) {
-      console.log("Error fetching filters:", err);
-    } finally {
-      setFilterLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchAgentsAndCities();
-  }, []);
   // infinite scroll
   useEffect(() => {
     if (!sentinelRef.current) return;
@@ -99,7 +87,8 @@ export default function DashboardPage() {
         zones={zones}
         cities={cities}
         agents={agents}
-        loading={filterLoading}
+        owners={propertyOwners}
+        loading={loadingFilters}
       />
 
       {loading ? (
@@ -164,7 +153,10 @@ export default function DashboardPage() {
 
       {uploadOpen && (
         <ModalProperty
-          onClose={() => setUploadOpen(false)}
+          key={"create"}
+          onOpenChange={(open) => {
+            setUploadOpen(open);
+          }}
           open={uploadOpen}
           onSave={() => {
             setUploadOpen(false);

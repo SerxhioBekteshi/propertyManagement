@@ -53,6 +53,12 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
       }).format(property.price)
     : "Price on request";
 
+  const imageUrl = import.meta.env.VITE_APP_BACKEND_API_URL?.includes(
+    "localhost",
+  )
+    ? "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg"
+    : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${property.mainImage}`;
+
   return (
     <article
       onClick={onClick}
@@ -61,7 +67,7 @@ export default function PropertyCard({ property, onClick }: PropertyCardProps) {
       {/* IMAGE */}
       <div className="relative h-52 overflow-hidden">
         <img
-          src={`${import.meta.env.VITE_APP_BACKEND_API_URL}/${property.mainImage}`}
+          src={imageUrl}
           alt={property.title ?? "Property"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />

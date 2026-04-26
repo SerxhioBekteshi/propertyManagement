@@ -163,6 +163,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
   return (
     <div className="w-full">
       <TableToolbar
+        showSearch={data.length != 0}
         searchValue={immediateValue}
         onSearchChange={updateSearch}
         addButton={addButton}
@@ -196,7 +197,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
                   />
                 </TableCell>
               </TableRow>
-            ) : data.length ? (
+            ) : data.length != 0 ? (
               tableRows
             ) : (
               <TableRow>
@@ -213,15 +214,17 @@ const BaseTableComponent = <T extends Record<string, any>>(
         </Table>
       </div>
 
-      <TablePagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalRows={totalCount}
-        setCurrentPage={setCurrentPage}
-        loading={loading}
-        error={error}
-        itemsPerPage={ITEMS_PER_PAGE}
-      />
+      {data.length != 0 && (
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalRows={totalCount}
+          setCurrentPage={setCurrentPage}
+          loading={loading}
+          error={error}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
+      )}
     </div>
   );
 };

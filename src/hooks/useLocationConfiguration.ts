@@ -124,6 +124,14 @@ export const useLocationConfigBase = (
     run();
   }, [open]);
 
+  const loading =
+    loadingDivisions ||
+    loadingCities ||
+    loadingZones ||
+    loadingStreets ||
+    loadingPropertyOwners ||
+    loadingAgents;
+
   return {
     divisions,
     cities,
@@ -137,6 +145,7 @@ export const useLocationConfigBase = (
     loadingStreets,
     loadingPropertyOwners,
     loadingAgents,
+    loading,
   };
 };
 
@@ -294,6 +303,7 @@ export const useLocationConfigDependant = (
     loadingZones,
     loadingStreets,
     loadingPropertyOwners,
+
     selectedCountry,
     selectedDivisionId,
     selectedCityId,

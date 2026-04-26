@@ -10,22 +10,16 @@ import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 
 const NoResults = (props: NoResultsProps) => {
-  const {
-    title,
-    description,
-    onAddClick,
-    titleButton,
-    isSingle = false,
-  } = props;
+  const { title, description, onAddClick, titleButton } = props;
 
   return (
-    <div className="w-full flex-col flex items-center justify-center p-6">
-      <div className="flex flex-col items-center gap-3 text-center  rounded-lg bg-white p-8 max-w-md">
+    <div className="w-full flex-col flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3 text-center p-4 rounded-lg  max-w-md">
         <img
-          src={!isSingle ? "/images/notFound.webp" : "/images/notFound.webp"}
+          src={"/images/notFound.svg"}
           alt="No results"
-          width={120}
-          height={120}
+          width={500}
+          height={500}
         />
         <div className="text-lg font-semibold text-gray-900">{title}</div>
         {description && (
