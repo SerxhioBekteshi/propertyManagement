@@ -195,7 +195,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
       </motion.tr>
     ));
   }, [data, columns]);
-  console.log(immediateValue, "AWD");
+
   return (
     <div className="w-full">
       <TableToolbar
