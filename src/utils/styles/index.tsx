@@ -17,8 +17,8 @@ export const AVAILABILITY_STYLES: Record<string, string> = {
 };
 
 export const BUSINESS_TYPE_STYLES: Record<string, string> = {
-  sale: "bg-slate-900 text-white",
-  rent: "bg-blue-600 text-white",
+  sale: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  rent: "bg-blue-50 text-blue-700 border-blue-200",
 };
 
 export const PAYMENT_TYPE_STYLES: Record<string, string> = {
