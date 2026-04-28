@@ -1,4 +1,4 @@
-import { CountryFlag } from "../../components/flags/CountryFlag";
+import CountryFlag from "../../components/flags/CountryFlag";
 import { BaseTable, ColumnConfig } from "../../components/table";
 
 export interface CountriesResponseDTO {
