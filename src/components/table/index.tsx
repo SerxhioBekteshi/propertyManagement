@@ -195,11 +195,11 @@ const BaseTableComponent = <T extends Record<string, any>>(
       </motion.tr>
     ));
   }, [data, columns]);
-
+  console.log(immediateValue, "AWD");
   return (
     <div className="w-full">
       <TableToolbar
-        showSearch={data.length != 0}
+        showSearch={immediateValue !== "" || data.length !== 0}
         searchValue={immediateValue}
         onSearchChange={updateSearch}
         addButton={addButton}
