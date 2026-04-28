@@ -9,20 +9,21 @@ import {
   Mail,
 } from "lucide-react";
 import { formatDate } from "../../../utils";
-
-import { CountryFlag } from "../../../components/flags/CountryFlag";
 import { ColumnConfig } from "../../../components/table";
 import {
   AVAILABILITY_STYLES,
   BUSINESS_TYPE_STYLES,
+  PAYMENT_TYPE_STYLES,
   SALES_STAGE_STYLES,
 } from "../../../utils/styles";
+import OpportunityBadge from "../components/OpportunityBadge";
+import CountryFlag from "../../../components/flags/CountryFlag";
 
 export const columns: ColumnConfig[] = [
   { key: "title", header: "Title" },
   {
     key: "amount",
-    header: "Amount",
+    header: "Amount (€)",
     render: (val: number) => val?.toLocaleString(),
   },
   {
@@ -92,9 +93,7 @@ export const columns: ColumnConfig[] = [
     key: "paymentType",
     header: "Payment Type",
     render: (val: string) => (
-      <span className="text-sm font-semibold text-slate-700 capitalize">
-        {val?.replace(/_/g, " ") ?? "—"}
-      </span>
+      <OpportunityBadge value={val} map={PAYMENT_TYPE_STYLES} />
     ),
   },
   { key: "mainLeadSource", header: "Main Lead Source" },

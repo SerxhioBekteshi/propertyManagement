@@ -38,9 +38,9 @@ const OpportunitiesPage = () => {
           <>
             <DropdownMenuItem
               onClick={() => navigate(`/opportunities/${row.id}/details`)}
-              className="flex items-center gap-2 px-3 py-2"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 rounded-md cursor-pointer hover:bg-slate-100 focus:bg-slate-100 outline-none"
             >
-              <Eye className="w-4 h-4" />
+              <Eye className="w-4 h-4 text-slate-500" />
               Details
             </DropdownMenuItem>
           </>

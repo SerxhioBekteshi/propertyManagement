@@ -6,9 +6,6 @@ import {
   ArrowLeft,
   MapPin,
   User,
-  TrendingUp,
-  Calendar,
-  DollarSign,
   Layers,
   Info,
   CheckCircle2,
@@ -34,8 +31,10 @@ import OpportunityBadge from "../components/OpportunityBadge";
 import {
   AVAILABILITY_STYLES,
   BUSINESS_TYPE_STYLES,
+  PAYMENT_TYPE_STYLES,
   SALES_STAGE_STYLES,
 } from "../../../utils/styles";
+import CountryFlag from "../../../components/flags/CountryFlag";
 
 const OpportunityDetails = () => {
   const { id } = useParams();
@@ -207,7 +206,10 @@ const OpportunityDetails = () => {
                   />
                 </OpportunityRow>
                 <OpportunityRow label="Payment Type">
-                  {fmt(o.paymentType)}
+                  <OpportunityBadge
+                    value={o.paymentType}
+                    map={PAYMENT_TYPE_STYLES}
+                  />{" "}
                 </OpportunityRow>
                 <OpportunityRow label="Rental Time">
                   {o.rentalTime}
@@ -402,74 +404,16 @@ const OpportunityDetails = () => {
             accent="bg-red-50 text-red-500"
           >
             <OpportunityRow label="Country">
-              <span className="capitalize">{o.country ?? "—"}</span>
+              <span className="capitalize">
+                {" "}
+                <CountryFlag code={o.country ?? "-"} />
+              </span>
             </OpportunityRow>
             <OpportunityRow label="Division">
               {o.divisionName ?? "—"}
             </OpportunityRow>
             <OpportunityRow label="City">{o.cityName ?? "—"}</OpportunityRow>
             <OpportunityRow label="Zone">{o.zoneName ?? "—"}</OpportunityRow>
-          </OpportunityCard>
-
-          {/* Lead & Pipeline */}
-          <OpportunityCard
-            icon={<TrendingUp className="w-4 h-4" />}
-            title="Pipeline"
-            accent="bg-amber-50 text-amber-600"
-          >
-            <OpportunityRow label="Sales Stage">
-              <OpportunityBadge value={o.salesStage} map={SALES_STAGE_STYLES} />
-            </OpportunityRow>
-            <OpportunityRow label="Main Lead Source">
-              {fmt(o.mainLeadSource)}
-            </OpportunityRow>
-            <OpportunityRow label="Lead Source">
-              {renderLeadSource(fmt(o.leadSource))}
-            </OpportunityRow>
-            <OpportunityRow label="Payment Type">
-              {fmt(o.paymentType)}
-            </OpportunityRow>
-
-            {o.expectedCloseDate && (
-              <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-100 flex items-center gap-3">
-                <Calendar className="w-4 h-4 text-amber-500 shrink-0" />
-                <div>
-                  <p className="text-[10px] text-amber-600 font-black uppercase tracking-wide">
-                    Expected Close Date
-                  </p>
-                  <p className="text-sm font-bold text-amber-900">
-                    {fmtDate(o.expectedCloseDate)}
-                  </p>
-                </div>
-              </div>
-            )}
-          </OpportunityCard>
-
-          {/* Amount breakdown */}
-          <OpportunityCard
-            icon={<DollarSign className="w-4 h-4" />}
-            title="Financials"
-            accent="bg-slate-900 text-slate-300"
-          >
-            <OpportunityRow label="Amount">{fmtMoney(o.amount)}</OpportunityRow>
-            <OpportunityRow label="Price From">
-              {fmtMoney(o.priceFrom)}
-            </OpportunityRow>
-            <OpportunityRow label="Price To">
-              {fmtMoney(o.priceTo)}
-            </OpportunityRow>
-            <OpportunityRow label="Business Type">
-              {o.businessType ? (
-                <span
-                  className={`text-[11px] font-black uppercase tracking-wide px-2.5 py-0.5 rounded-full ${BUSINESS_TYPE_STYLES[o.businessType.toLowerCase()] ?? "bg-slate-100 text-slate-600"}`}
-                >
-                  {o.businessType}
-                </span>
-              ) : (
-                "—"
-              )}
-            </OpportunityRow>
-            <OpportunityRow label="Rental Time">{o.rentalTime}</OpportunityRow>
           </OpportunityCard>
         </div>
       </div>

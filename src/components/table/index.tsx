@@ -32,6 +32,7 @@ import { LookupFilterDTO, LookupRepositoryDTO } from "../../types/database";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuPortal,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
@@ -178,9 +179,15 @@ const BaseTableComponent = <T extends Record<string, any>>(
                   </button>
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent align="end">
-                  {renderActions(row)}
-                </DropdownMenuContent>
+                <DropdownMenuPortal>
+                  <DropdownMenuContent
+                    align="end"
+                    sideOffset={6}
+                    className="z-50 min-w-[160px] bg-white border border-slate-200 rounded-md shadow-lg p-1"
+                  >
+                    {renderActions(row)}
+                  </DropdownMenuContent>
+                </DropdownMenuPortal>
               </DropdownMenu>
             </div>
           </TableCell>
