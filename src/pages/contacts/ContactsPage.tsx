@@ -7,8 +7,8 @@ import { formatDate } from "../../utils";
 import PropertyOwnerDrawer from "../dashboard/components/PropertyOwnerDrawer";
 import { useAuth } from "../../contexts/AuthContext";
 import { ERoles } from "../../assets/enums";
-import { CountryFlag } from "../../components/flags/CountryFlag";
 import { ProperyOwnerDTO } from "../../types/properties/propertyOwner";
+import CountryFlag from "../../components/flags/CountryFlag";
 
 const columns: ColumnConfig[] = [
   { key: "firstName", header: "First Name" },
