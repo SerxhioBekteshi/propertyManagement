@@ -14,8 +14,8 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 
 export const countryFlags: Record<string, string> = {
-  AL: "/images/flags/albanian.jpg",
-  GR: "/images/flags/greece.jpg",
+  AL: "/images/flags/al.jpg",
+  GR: "/images/flags/gr.jpg",
 };
 
 const navLinks = [
