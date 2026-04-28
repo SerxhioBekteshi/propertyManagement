@@ -1,4 +1,6 @@
-export interface OpportunityResponseDTO {
+import { BaseAuditableDTO } from "../database";
+
+export type OpportunityResponseDTO = BaseAuditableDTO & {
   id: number;
 
   title?: string;
@@ -46,7 +48,7 @@ export interface OpportunityResponseDTO {
   equipment?: string;
   infrastructures?: string;
   surroundings?: string;
-}
+};
 
 export type AddOpportunityDTO = Omit<
   OpportunityResponseDTO,

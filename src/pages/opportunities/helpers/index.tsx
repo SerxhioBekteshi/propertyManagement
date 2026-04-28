@@ -107,6 +107,18 @@ export const columns: ColumnConfig[] = [
     header: "Expected Close Date",
     render: (val: string) => formatDate(val),
   },
+  {
+    key: "createdDateTime",
+    header: "Created At",
+    render: (val: string) => formatDate(val),
+  },
+  { key: "createdBy", header: "Created By" },
+  {
+    key: "modifiedDateTime",
+    header: "Modified At",
+    render: (val: string) => formatDate(val),
+  },
+  { key: "modifiedBy", header: "Modified By" },
 ];
 
 export const LEAD_SOURCE_CONFIG: Record<
