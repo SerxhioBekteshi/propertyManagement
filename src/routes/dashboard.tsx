@@ -5,7 +5,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SplashScreen from "../components/splash-screen";
 
 const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
-const PropertyDetailsPage = lazy(() => import("../pages/propertyDetails"));
+const PropertyDetailsPage = lazy(
+  () => import("../pages/dashboard/propertyDetails"),
+);
 const ZonesPage = lazy(() => import("../pages/zones/ZonesPage"));
 const CitiesPage = lazy(() => import("../pages/cities/CitiesPage"));
 const DivisionsPage = lazy(() => import("../pages/divisions/DivisionsPage"));

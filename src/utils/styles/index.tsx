@@ -25,3 +25,13 @@ export const PAYMENT_TYPE_STYLES: Record<string, string> = {
   "bank financing": "bg-blue-50 text-blue-700 border-blue-200",
   "personal financing": "bg-emerald-50 text-emerald-700 border-emerald-200",
 };
+
+export const TYPE_COLORS: Record<string, string> = {
+  apartment: "bg-blue-50 text-blue-700 border-blue-100",
+  house: "bg-emerald-50 text-emerald-700 border-emerald-100",
+  villa: "bg-amber-50 text-amber-700 border-amber-100",
+  commercial: "bg-orange-50 text-orange-700 border-orange-100",
+  land: "bg-lime-50 text-lime-700 border-lime-100",
+  office: "bg-cyan-50 text-cyan-700 border-cyan-100",
+  studio: "bg-rose-50 text-rose-700 border-rose-100",
+};
