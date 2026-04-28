@@ -37,78 +37,78 @@ export const YES_NO_IN_PROGRESS_OPTIONS: IOption<string>[] = [
  * 1. STATUS
  */
 export const PROPERTY_STATUS_OPTIONS = withDefault([
-  { value: "used", label: "Used" },
-  { value: "new", label: "New" },
-  { value: "under_construction", label: "Under Construction" },
-  { value: "in_project", label: "In Project" },
-  { value: "to_demolish_or_rebuild", label: "To Demolish or Rebuild" },
-  { value: "for_refurbishment", label: "For Refurbishment" },
-  { value: "refurbished", label: "Refurbished" },
+  { value: "Used", label: "Used" },
+  { value: "New", label: "New" },
+  { value: "Under Construction", label: "Under Construction" },
+  { value: "In Project", label: "In Project" },
+  { value: "To Demolish or Rebuild", label: "To Demolish or Rebuild" },
+  { value: "For Refurbishment", label: "For Refurbishment" },
+  { value: "Refurbished", label: "Refurbished" },
 ]);
 
 /**
  * 2. MAIN TYPE
  */
 export const PROPERTY_MAIN_TYPE_OPTIONS = withDefault([
-  { value: "residential", label: "Residential" },
-  { value: "commercial", label: "Commercial" },
-  { value: "land", label: "Land" },
+  { value: "Residential", label: "Residential" },
+  { value: "Commercial", label: "Commercial" },
+  { value: "Land", label: "Land" },
 ]);
 
 /**
  * 3. AVAILABILITY
  */
 export const PROPERTY_AVAILABILITY_OPTIONS = withDefault([
-  { value: "available", label: "Available" },
-  { value: "reserved", label: "Reserved" },
-  { value: "rented", label: "Rented" },
-  { value: "in_negotiation", label: "In Negotiation" },
-  { value: "withdrawn", label: "Withdrawn" },
-  { value: "in_evaluation", label: "In Evaluation" },
-  { value: "withdrawn_by_owner", label: "Withdrawn by Owner" },
-  { value: "closed", label: "Closed" },
+  { value: "Available", label: "Available" },
+  { value: "Reserved", label: "Reserved" },
+  { value: "Rented", label: "Rented" },
+  { value: "In negotiation", label: "In Negotiation" },
+  { value: "Withdrawn", label: "Withdrawn" },
+  { value: "In evaluation", label: "In Evaluation" },
+  { value: "Withdrawn by owner", label: "Withdrawn by Owner" },
+  { value: "Closed", label: "Closed" },
 ]);
 
 /**
  * 4. FURNISHED
  */
 export const PROPERTY_FURNISHED_OPTIONS = withDefault([
-  { value: "fully_furnished", label: "Fully Furnished" },
-  { value: "semi_furnished", label: "Semi Furnished" },
-  { value: "not_furnished", label: "Not Furnished" },
+  { value: "Fully furnished", label: "Fully Furnished" },
+  { value: "Semi furnished", label: "Semi Furnished" },
+  { value: "Not furnished", label: "Not Furnished" },
 ]);
 
 /**
  * 5. PROPERTY TYPE
  */
 export const PROPERTY_TYPE_OPTIONS = withDefault([
-  { value: "apartment", label: "Apartment" },
-  { value: "duplex", label: "Duplex" },
-  { value: "penthouse", label: "Penthouse" },
-  { value: "studio", label: "Studio" },
-  { value: "building", label: "Building" },
+  { value: "Apartment", label: "Apartment" },
+  { value: "Duplex", label: "Duplex" },
+  { value: "Penthouse", label: "Penthouse" },
+  { value: "Studio", label: "Studio" },
+  { value: "Building", label: "Building" },
   { value: "bar_restaurant", label: "Bar / Restaurant" },
-  { value: "hotel", label: "Hotel" },
-  { value: "multipurpose_space", label: "Multipurpose Space" },
-  { value: "parking", label: "Parking" },
-  { value: "house", label: "House" },
-  { value: "land", label: "Land" },
-  { value: "industrial_land", label: "Industrial Land" },
-  { value: "commercial_land", label: "Commercial Land" },
-  { value: "shop", label: "Shop" },
-  { value: "villa", label: "Villa" },
-  { value: "commercial", label: "Commercial" },
-  { value: "office", label: "Office" },
-  { value: "warehouse", label: "Warehouse" },
-  { value: "aparthotel", label: "Apart-Hotel" },
-  { value: "bungalow", label: "Bungalow" },
-  { value: "factory", label: "Factory" },
-  { value: "industrial", label: "Industrial" },
-  { value: "pavilion", label: "Pavilion" },
-  { value: "rural_land", label: "Rural Land" },
-  { value: "urban_land", label: "Urban Land" },
-  { value: "beach_area", label: "Beach Area" },
-  { value: "business", label: "Business" },
+  { value: "Hotel", label: "Hotel" },
+  { value: "Multipurpose Space", label: "Multipurpose Space" },
+  { value: "Parking", label: "Parking" },
+  { value: "House", label: "House" },
+  { value: "Land", label: "Land" },
+  { value: "Industrial Land", label: "Industrial Land" },
+  { value: "Commercial Land", label: "Commercial Land" },
+  { value: "Shop", label: "Shop" },
+  { value: "Villa", label: "Villa" },
+  { value: "Commercial", label: "Commercial" },
+  { value: "Office", label: "Office" },
+  { value: "Warehouse", label: "Warehouse" },
+  { value: "Aparthotel", label: "Apart-Hotel" },
+  { value: "Bungalow", label: "Bungalow" },
+  { value: "Factory", label: "Factory" },
+  { value: "Industrial", label: "Industrial" },
+  { value: "Pavilion", label: "Pavilion" },
+  { value: "Rural Land", label: "Rural Land" },
+  { value: "Urban Land", label: "Urban Land" },
+  { value: "Beach Area", label: "Beach Area" },
+  { value: "Business", label: "Business" },
 ]);
 
 /**
@@ -130,10 +130,10 @@ export const PROPERTY_PARKING_OPTIONS = withDefault(YES_NO_OPTIONS);
  * 10. ORIENTATION
  */
 export const PROPERTY_ORIENTATION_OPTIONS = withDefault([
-  { value: "north", label: "North" },
-  { value: "south", label: "South" },
-  { value: "east", label: "East" },
-  { value: "west", label: "West" },
+  { value: "North", label: "North" },
+  { value: "South", label: "South" },
+  { value: "East", label: "East" },
+  { value: "West", label: "West" },
 ]);
 
 export const COUNTRY_OPTIONS = withDefault([
@@ -144,17 +144,17 @@ export const COUNTRY_OPTIONS = withDefault([
  * 12. BUSINESS TYPE
  */
 export const PROPERTY_BUSINESS_TYPE_OPTIONS = withDefault([
-  { value: "sale", label: "For Sale" },
-  { value: "rent", label: "To Rent" },
+  { value: "Sale", label: "For Sale" },
+  { value: "Rent", label: "To Rent" },
 ]);
 
 /**
  * 13. OWNER TYPOLOGY
  */
 export const PROPERTY_OWNER_TYPOLOGY_OPTIONS = withDefault([
-  { value: "owner", label: "Owner" },
-  { value: "clering", label: "Clearing" }, // typo kept
-  { value: "builder", label: "Builder" },
+  { value: "Owner", label: "Owner" },
+  { value: "Clering", label: "Clearing" }, // typo kept
+  { value: "Builder", label: "Builder" },
 ]);
 
 /**
@@ -166,15 +166,15 @@ export const PROPERTY_DOCUMENTATION_OPTIONS = withDefault([
 ]);
 
 export const PROPERTY_VIEW_OPTIONS = withDefault([
-  { value: "sea", label: "Sea" },
-  { value: "lake", label: "Lake" },
-  { value: "mountains", label: "Mountains" },
-  { value: "river", label: "River" },
-  { value: "city", label: "City" },
-  { value: "beach", label: "Beach" },
-  { value: "countryside", label: "Countryside" },
-  { value: "garden", label: "Garden" },
-  { value: "dam", label: "Dam" },
+  { value: "Sea", label: "Sea" },
+  { value: "Lake", label: "Lake" },
+  { value: "Mountains", label: "Mountains" },
+  { value: "River", label: "River" },
+  { value: "City", label: "City" },
+  { value: "Beach", label: "Beach" },
+  { value: "Countryside", label: "Countryside" },
+  { value: "Garden", label: "Garden" },
+  { value: "Dam", label: "Dam" },
 ]);
 
 export const PROPERTY_INFRASTRUCTURE_OPTIONS = withDefault([
@@ -260,14 +260,14 @@ export const PROPERTY_EQUIPMENT_OPTIONS = withDefault([
 ]);
 
 export const PROPERTY_MAIN_LEAD_SOURCE_OPTIONS = withDefault([
-  { value: "coldCall", label: "Cold Call" },
-  { value: "socialMedia", label: "Social Media" },
-  { value: "c21Website", label: "C21 Website" },
-  { value: "century21Master", label: "Century 21 Master" },
-  { value: "portals", label: "Portals" },
-  { value: "office", label: "Office" },
-  { value: "offlineMarketing", label: "Offline Marketing" },
-  { value: "soi", label: "Sphere of Influence" },
-  { value: "outdoorProspecting", label: "Outdoor Prospecting" },
-  { value: "brokerContacts", label: "Broker Contacts" },
+  { value: "Cold Call", label: "Cold Call" },
+  { value: "Social Media", label: "Social Media" },
+  { value: "C21 Website", label: "C21 Website" },
+  { value: "Century 21 Master", label: "Century 21 Master" },
+  { value: "Portals", label: "Portals" },
+  { value: "Office", label: "Office" },
+  { value: "Offline Marketing", label: "Offline Marketing" },
+  { value: "Soi", label: "Sphere of Influence" },
+  { value: "Outdoor Prospecting", label: "Outdoor Prospecting" },
+  { value: "Broker Contacts", label: "Broker Contacts" },
 ]);

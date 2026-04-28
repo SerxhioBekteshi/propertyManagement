@@ -29,6 +29,13 @@ import NoResults from "../no-results";
 import { motion } from "framer-motion";
 import { BaseTableService } from "../../lib/Table";
 import { LookupFilterDTO, LookupRepositoryDTO } from "../../types/database";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 export interface ColumnConfig {
   key: string;
@@ -54,6 +61,7 @@ interface BaseTableProps<T> {
   navigateToDetails?: (row: T) => void;
   setFilters?: (val: any) => void;
   onAddClick?: () => void;
+  renderActions?: (row: T) => React.ReactNode;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -73,6 +81,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
     navigateToDetails,
     onAddClick,
     staticData,
+    renderActions,
   } = props;
 
   const { searchTerm, immediateValue, updateSearch } = useDebouncedSearch();
@@ -160,6 +169,29 @@ const BaseTableComponent = <T extends Record<string, any>>(
             {col.render ? col.render(row[col.key], row) : (row[col.key] ?? "-")}
           </TableCell>
         ))}
+        {renderActions && (
+          <TableCell className="sticky right-0 bg-white z-10 text-right">
+            <div onClick={(e) => e.stopPropagation()}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="p-2 hover:bg-muted rounded-md">
+                    <MoreHorizontal size={18} />
+                  </button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuPortal>
+                  <DropdownMenuContent
+                    align="end"
+                    sideOffset={6}
+                    className="z-50 min-w-[160px] bg-white border border-slate-200 rounded-md shadow-lg p-1"
+                  >
+                    {renderActions(row)}
+                  </DropdownMenuContent>
+                </DropdownMenuPortal>
+              </DropdownMenu>
+            </div>
+          </TableCell>
+        )}
       </motion.tr>
     ));
   }, [data, columns]);
@@ -167,7 +199,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
   return (
     <div className="w-full">
       <TableToolbar
-        showSearch={data.length != 0}
+        showSearch={immediateValue !== "" || data.length !== 0}
         searchValue={immediateValue}
         onSearchChange={updateSearch}
         addButton={addButton}
@@ -186,6 +218,12 @@ const BaseTableComponent = <T extends Record<string, any>>(
               {columns.map((c) => (
                 <TableHead key={c.key}>{c.header}</TableHead>
               ))}
+              {renderActions && (
+                <TableHead className="w-[60px] text-right sticky right-0 bg-white z-10">
+                  {" "}
+                  Actions{" "}
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
 

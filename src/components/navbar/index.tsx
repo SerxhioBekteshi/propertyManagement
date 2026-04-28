@@ -10,12 +10,12 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 
 export const countryFlags: Record<string, string> = {
-  AL: "/images/flags/albanian.jpg",
-  GR: "/images/flags/greece.jpg",
+  AL: "/images/flags/al.jpg",
+  GR: "/images/flags/gr.jpg",
 };
 
 const navLinks = [
@@ -26,12 +26,15 @@ const navLinks = [
   { to: "/zones", label: "Zones" },
   { to: "/streets", label: "Streets" },
   { to: "/contacts", label: "Contacts" },
+  { to: "/opportunities", label: "Opportunities" },
 ];
 
 export default function Navbar() {
   const { user, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <>
@@ -52,7 +55,15 @@ export default function Navbar() {
               )}
             </button>
 
-            <div className="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center">
+            <div
+              className="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center hover:cursor-pointer"
+              onClick={() => {
+                if (location.pathname == "/dashboard") {
+                  return;
+                }
+                navigate("/dashboard");
+              }}
+            >
               <Building2 className="w-4 h-4 text-white" />
             </div>
             <span className="hidden sm:block text-base font-semibold text-slate-900">

@@ -22,12 +22,11 @@ import {
   Hand,
   FileText,
 } from "lucide-react";
-import { statusColors } from "../dashboard/components/PropertyCard";
-import { countryFlags } from "../../components/navbar";
-import { PropertyResponseDTO } from "../../types/properties";
-import { PropertiesService } from "../../lib/Properties";
-import { useAuth } from "../../contexts/AuthContext";
-import { ERoles } from "../../assets/enums";
+import { statusColors } from "../components/PropertyCard";
+import { PropertyResponseDTO } from "../../../types/properties";
+import { PropertiesService } from "../../../lib/Properties";
+import { useAuth } from "../../../contexts/AuthContext";
+import { ERoles } from "../../../assets/enums";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -35,6 +34,11 @@ import L from "leaflet";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import PropertyDetailsItem from "../components/PropertyDetailsItem";
+import { formatDate, getPhoneWithPrefix, parseList } from "../helpers";
+import PropertyDetailsFeatureGroup from "../components/PropertyDetailsFeatureGroup";
+import PropertyDetailsSection from "../components/PropertyDetailsSection";
+import PropertyDetailsStat from "../components/PropertyDetailsStat";
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
@@ -45,61 +49,6 @@ L.Icon.Default.mergeOptions({
 const nationalityFlags: Record<string, string> = {
   albania: "AL",
   greece: "GR",
-};
-
-const AVAILABILITY_STYLES: Record<string, string> = {
-  available: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  reserved: "bg-purple-100 text-purple-700 border-purple-200",
-  sold: "bg-rose-100 text-rose-700 border-rose-200",
-  rented: "bg-blue-100 text-blue-700 border-blue-200",
-  in_negotiation: "bg-amber-100 text-amber-700 border-amber-200",
-  withdrawn: "bg-slate-100 text-slate-700 border-slate-200",
-};
-
-const FURNISHED_ICONS: Record<string, string> = {
-  no: "❌",
-  furnished: "🛋️",
-  semi_furnished: "🪑",
-};
-
-const ORIENTATION_ICONS: Record<string, string> = {
-  north: "⬆️",
-  south: "⬇️",
-  east: "➡️",
-  west: "⬅️",
-  north_east: "↗️",
-  north_west: "↖️",
-  south_east: "↘️",
-  south_west: "↙️",
-};
-
-const TYPE_COLORS: Record<string, string> = {
-  apartment: "bg-blue-50 text-blue-700 border-blue-100",
-  house: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  villa: "bg-amber-50 text-amber-700 border-amber-100",
-  commercial: "bg-orange-50 text-orange-700 border-orange-100",
-  land: "bg-lime-50 text-lime-700 border-lime-100",
-  office: "bg-cyan-50 text-cyan-700 border-cyan-100",
-  studio: "bg-rose-50 text-rose-700 border-rose-100",
-};
-
-const parseList = (val?: string) =>
-  val
-    ? val
-        .split(",")
-        .map((v) => v.trim())
-        .filter(Boolean)
-    : [];
-
-const formatDate = (val?: string) => {
-  if (!val) return "—";
-  return new Date(val).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 };
 
 export default function PropertyDetailsPage() {
@@ -401,19 +350,19 @@ export default function PropertyDetailsPage() {
 
           {/* QUICK STATS BAR */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Stat
+            <PropertyDetailsStat
               icon={<BedDouble className="w-5 h-5" />}
               label="Bedrooms"
               value={property.bedrooms ?? "—"}
               color="blue"
             />
-            <Stat
+            <PropertyDetailsStat
               icon={<Bath className="w-5 h-5" />}
               label="Bathrooms"
               value={property.bathrooms ?? "—"}
               color="indigo"
             />
-            <Stat
+            <PropertyDetailsStat
               icon={<Maximize2 className="w-5 h-5" />}
               label="Interior"
               value={
@@ -421,19 +370,19 @@ export default function PropertyDetailsPage() {
               }
               color="emerald"
             />
-            <Stat
+            <PropertyDetailsStat
               icon={<Layers className="w-5 h-5" />}
               label="Gross Area"
               value={property.grossArea ? `${property.grossArea} m²` : "—"}
               color="slate"
             />
-            <Stat
+            <PropertyDetailsStat
               icon={<TreeDeciduous className="w-5 h-5" />}
               label="Land Area"
               value={property.landArea ? `${property.landArea} m²` : "—"}
               color="emerald"
             />
-            <Stat
+            <PropertyDetailsStat
               icon={<Square className="w-5 h-5" />}
               label="Balcony Area"
               value={property.balconyArea ? `${property.balconyArea} m²` : "—"}
@@ -441,85 +390,119 @@ export default function PropertyDetailsPage() {
             />
           </div>
 
-          <Section
+          <PropertyDetailsSection
             icon={<Info className="w-5 h-5 text-blue-500" />}
             title="Description"
           >
             <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
               "{property.description || "No description provided."}"
             </p>
-          </Section>
+          </PropertyDetailsSection>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Section
+            <PropertyDetailsSection
               icon={<Building2 className="w-5 h-5 text-slate-500" />}
               title="Property Classification"
             >
               <Grid>
-                <Item label="Main Type" value={property.mainType} capitalize />
-                <Item
+                <PropertyDetailsItem
+                  label="Main Type"
+                  value={property.mainType}
+                  capitalize
+                />
+                <PropertyDetailsItem
                   label="Property Type"
                   value={property.propertyType}
                   capitalize
                 />
-                <Item label="Availability" value={property.availability} />
-                <Item
+                <PropertyDetailsItem
+                  label="Availability"
+                  value={property.availability}
+                />
+                <PropertyDetailsItem
                   label="Furnished"
                   value={property.furnished?.replace(/_/g, " ")}
                   capitalize
                 />
-                <Item
+                <PropertyDetailsItem
                   label="Orientation"
                   value={property.propertyOrientation}
                 />
-                <Item label="Exclusive" value={property.exclusive} isBoolean />
+                <PropertyDetailsItem
+                  label="Exclusive"
+                  value={property.exclusive}
+                  isBoolean
+                />
               </Grid>
-            </Section>
+            </PropertyDetailsSection>
 
-            <Section
+            <PropertyDetailsSection
               icon={<Construction className="w-5 h-5 text-slate-500" />}
               title="Facilities & Timeline"
             >
               <Grid>
-                <Item label="Elevator" value={property.elevator} isYesNo />
-                <Item label="Parking" value={property.parking} isYesNo />
-                <Item label="Being Lived" value={property.beingLived} isYesNo />
-                <Item
+                <PropertyDetailsItem
+                  label="Elevator"
+                  value={property.elevator}
+                  isYesNo
+                />
+                <PropertyDetailsItem
+                  label="Parking"
+                  value={property.parking}
+                  isYesNo
+                />
+                <PropertyDetailsItem
+                  label="Being Lived"
+                  value={property.beingLived}
+                  isYesNo
+                />
+                <PropertyDetailsItem
                   label="Communal Charge"
                   value={property.communalCharger}
                   isYesNo
                 />
-                <Item label="Year Built" value={property.yearOfConstruction} />
-                <Item
+                <PropertyDetailsItem
+                  label="Year Built"
+                  value={property.yearOfConstruction}
+                />
+                <PropertyDetailsItem
                   label="Year Renovated"
                   value={property.yearOfRenovation}
                 />
               </Grid>
-            </Section>
+            </PropertyDetailsSection>
           </div>
 
-          <Section
+          <PropertyDetailsSection
             icon={<Info className="w-5 h-5 text-blue-500" />}
             title="Comments"
           >
             <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
               "{property.comments || "No description provided."}"
             </p>
-          </Section>
+          </PropertyDetailsSection>
         </div>
 
         {/* SIDEBAR */}
         <div className="space-y-6">
-          <Section
+          <PropertyDetailsSection
             icon={<MapPin className="w-5 h-5 text-red-500" />}
             title="Location Details"
           >
             <div className="space-y-3">
-              <Item label="Country" value={property.country} capitalize />
-              <Item label="Division" value={property.divisionName} capitalize />
-              <Item label="City" value={property.cityName} />
-              <Item label="Zone" value={property.zoneName} />
-              <Item
+              <PropertyDetailsItem
+                label="Country"
+                value={property.country}
+                capitalize
+              />
+              <PropertyDetailsItem
+                label="Division"
+                value={property.divisionName}
+                capitalize
+              />
+              <PropertyDetailsItem label="City" value={property.cityName} />
+              <PropertyDetailsItem label="Zone" value={property.zoneName} />
+              <PropertyDetailsItem
                 label="Street"
                 value={
                   property.streetName?.toLowerCase().includes("street")
@@ -527,7 +510,10 @@ export default function PropertyDetailsPage() {
                     : property.streetName
                 }
               />
-              <Item label="Floor" value={property.floor ?? "—"} />
+              <PropertyDetailsItem
+                label="Floor"
+                value={property.floor ?? "—"}
+              />
               {property.latitude && property.longitude ? (
                 <div className="mt-4 h-48 rounded-xl overflow-hidden border border-slate-200">
                   <MapContainer
@@ -561,16 +547,19 @@ export default function PropertyDetailsPage() {
                 </p>
               </div> */}
             </div>
-          </Section>
+          </PropertyDetailsSection>
 
-          <Section
+          <PropertyDetailsSection
             icon={<UserIcon className="w-5 h-5 text-indigo-500" />}
             title="Ownership & Agent"
           >
             <div className="space-y-3">
-              <Item label="Owner's Typology" value={property.ownersTypology} />
+              <PropertyDetailsItem
+                label="Owner's Typology"
+                value={property.ownersTypology}
+              />
 
-              <Item
+              <PropertyDetailsItem
                 label="Owner's Phone Number"
                 value={
                   user?.role == ERoles.Admin.toString() ||
@@ -595,7 +584,7 @@ export default function PropertyDetailsPage() {
                   )
                 }
               />
-              <Item
+              <PropertyDetailsItem
                 label="Owner's Name"
                 value={
                   property.propertyOwner?.firstName &&
@@ -611,7 +600,7 @@ export default function PropertyDetailsPage() {
 
               <div className="pt-4 mt-4 border-t border-slate-100">
                 {property.agentId != user?.id && (
-                  <Item
+                  <PropertyDetailsItem
                     label="Assigned Agent"
                     value={property.agent}
                     highlight
@@ -637,7 +626,7 @@ export default function PropertyDetailsPage() {
                     </span>
                   </div>
 
-                  {/* DOCUMENTS SECTION */}
+                  {/* DOCUMENTS PropertyDetailsSection */}
                   {property.fileUrls && property.fileUrls.length > 0 && (
                     <div className="flex flex-col gap-2">
                       {property.fileUrls.map((fileUrl: string, i: number) => {
@@ -674,14 +663,14 @@ export default function PropertyDetailsPage() {
                 </div>
               </div>
             </div>
-          </Section>
+          </PropertyDetailsSection>
 
-          <Section
+          <PropertyDetailsSection
             icon={<Clock className="w-5 h-5 text-slate-400" />}
             title="Portals & System"
           >
             <div className="space-y-3">
-              <Item
+              <PropertyDetailsItem
                 label="Published"
                 value={property.publishToPortal}
                 isBoolean
@@ -729,167 +718,43 @@ export default function PropertyDetailsPage() {
                 </div>
               </div>
             </div>
-          </Section>
+          </PropertyDetailsSection>
 
-          <Section
+          <PropertyDetailsSection
             icon={<Layers className="w-5 h-5 text-purple-500" />}
             title="More Features"
           >
             <div className="space-y-4">
-              <FeatureGroup
+              <PropertyDetailsFeatureGroup
                 label="View To"
                 values={parseList(property.withViewTo)}
                 color="blue"
               />
-              <FeatureGroup
+              <PropertyDetailsFeatureGroup
                 label="Equipment"
                 values={parseList(property.equipment)}
                 color="emerald"
               />
-              <FeatureGroup
+              <PropertyDetailsFeatureGroup
                 label="Infrastructures"
                 values={parseList(property.infrastructures)}
                 color="amber"
               />
-              <FeatureGroup
+              <PropertyDetailsFeatureGroup
                 label="Surroundings"
                 values={parseList(property.surroundings)}
                 color="indigo"
               />
             </div>
-          </Section>
+          </PropertyDetailsSection>
         </div>
       </div>
     </div>
   );
 }
 
-function Section({ title, icon, children }: any) {
-  return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-      <div className="flex items-center gap-2 mb-4">
-        {icon}
-        <h2 className="font-bold text-slate-800 uppercase tracking-tight text-xs">
-          {title}
-        </h2>
-      </div>
-      {children}
-    </div>
-  );
-}
-
 function Grid({ children }: any) {
   return <div className="space-y-3 text-sm">{children}</div>;
-}
-
-function Item({
-  label,
-  value,
-  isBoolean,
-  isYesNo,
-  capitalize,
-  highlight,
-}: any) {
-  if (value == null)
-    return (
-      <div className="flex justify-between items-center py-1 border-b border-slate-50 last:border-0">
-        <span className="text-slate-500 text-xs font-medium">{label}</span>
-        <span className="text-slate-300">—</span>
-      </div>
-    );
-
-  let displayValue: React.ReactNode = value;
-  const lowerValue = String(value).toLowerCase();
-
-  if (label.toLowerCase() === "country") {
-    displayValue = (
-      <span className="flex items-center gap-2">
-        <span>{countryFlags[lowerValue] || "🏳️"}</span>
-        <span className="capitalize">{value}</span>
-      </span>
-    );
-  } else if (label.toLowerCase() === "furnished") {
-    displayValue = (
-      <span className="flex items-center gap-2">
-        <span>{FURNISHED_ICONS[lowerValue] || "🏠"}</span>
-        <span className="capitalize">{value.replace(/_/g, " ")}</span>
-      </span>
-    );
-  } else if (label.toLowerCase().includes("orientation")) {
-    displayValue = (
-      <span className="flex items-center gap-2">
-        <span className="text-blue-500 font-bold">
-          {ORIENTATION_ICONS[lowerValue] || "🧭"}
-        </span>
-        <span className="capitalize">{value.replace(/_/g, " ")}</span>
-      </span>
-    );
-  } else if (label.toLowerCase().includes("type")) {
-    const colorClass =
-      TYPE_COLORS[lowerValue] || "bg-slate-50 text-slate-600 border-slate-100";
-    displayValue = (
-      <span
-        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${colorClass}`}
-      >
-        {value.replace(/_/g, " ")}
-      </span>
-    );
-  } else if (label.toLowerCase() === "availability") {
-    displayValue = (
-      <span
-        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${AVAILABILITY_STYLES[lowerValue] || "bg-slate-50 border-slate-200"}`}
-      >
-        {value.replace(/_/g, " ")}
-      </span>
-    );
-  } else if (isBoolean) {
-    displayValue = value ? (
-      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-    ) : (
-      <XCircle className="w-4 h-4 text-slate-300" />
-    );
-  } else if (isYesNo) {
-    displayValue =
-      value === true ? (
-        <span className="text-emerald-600 font-bold text-xs">Yes</span>
-      ) : value === false ? (
-        <span className="text-slate-400 text-xs">No</span>
-      ) : (
-        <span className="text-slate-300">—</span>
-      );
-  }
-
-  return (
-    <div className="flex justify-between items-center py-1 border-b border-slate-50 last:border-0">
-      <span className="text-slate-500 text-xs font-medium">{label}</span>
-      <span
-        className={`font-semibold text-slate-900 ${capitalize ? "capitalize" : ""} ${highlight ? "text-blue-600" : ""}`}
-      >
-        {displayValue}
-      </span>
-    </div>
-  );
-}
-
-function Stat({ icon, label, value, color }: any) {
-  const colors: any = {
-    blue: "bg-blue-50 text-blue-600",
-    emerald: "bg-emerald-50 text-emerald-600",
-    indigo: "bg-indigo-50 text-indigo-600",
-    slate: "bg-slate-50 text-slate-600",
-  };
-
-  return (
-    <div
-      className={`p-4 rounded-2xl ${colors[color]} flex flex-col items-center text-center gap-1`}
-    >
-      {icon}
-      <p className="text-[10px] font-bold uppercase opacity-70 tracking-tighter">
-        {label}
-      </p>
-      <p className="text-lg font-black">{value}</p>
-    </div>
-  );
 }
 
 function NotFound({ navigate }: any) {
@@ -907,93 +772,3 @@ function NotFound({ navigate }: any) {
     </div>
   );
 }
-
-function FeatureGroup({
-  label,
-  values,
-  color,
-}: {
-  label: string;
-  values: string[];
-  color: "blue" | "emerald" | "amber" | "indigo";
-}) {
-  const colorMap = {
-    blue: "bg-blue-50 text-blue-700 border-blue-100",
-    emerald: "bg-emerald-50 text-emerald-700 border-emerald-100",
-    amber: "bg-amber-50 text-amber-700 border-amber-100",
-    indigo: "bg-indigo-50 text-indigo-700 border-indigo-100",
-  };
-
-  return (
-    <div>
-      <p className="text-xs font-semibold text-slate-500 mb-2">{label}</p>
-      <div className="flex flex-wrap gap-2">
-        {values.length > 0 ? (
-          values.map((v) => (
-            <span
-              key={v}
-              className={`text-[11px] font-medium px-2.5 py-1 rounded-lg border ${colorMap[color]}`}
-            >
-              {v.replace(/_/g, " ")}
-            </span>
-          ))
-        ) : (
-          <div className="flex items-center gap-2 py-1.5 px-3 rounded-lg bg-slate-50 border border-dashed border-slate-200 w-fit">
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-              className="text-slate-300 shrink-0"
-            >
-              <circle
-                cx="6"
-                cy="6"
-                r="5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeDasharray="2 2"
-              />
-              <line
-                x1="4"
-                y1="6"
-                x2="8"
-                y2="6"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="text-[11px] text-slate-400 font-medium italic">
-              Not specified
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-const getPhoneWithPrefix = (phone?: string, nationality?: string) => {
-  if (!phone) return null;
-
-  const cleanedPhone = phone.trim();
-
-  if (cleanedPhone.startsWith("+")) return cleanedPhone;
-
-  if (cleanedPhone.startsWith("355") || cleanedPhone.startsWith("30")) {
-    return `+${cleanedPhone}`;
-  }
-
-  const prefixMap: Record<string, string> = {
-    AL: "+355",
-    GR: "+30",
-  };
-
-  const key = nationality?.toUpperCase();
-  const prefix = key ? prefixMap[key] : undefined;
-
-  if (!prefix) return cleanedPhone;
-
-  return `${prefix} ${cleanedPhone}`;
-};

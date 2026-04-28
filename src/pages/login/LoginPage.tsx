@@ -164,7 +164,7 @@ export default function LoginPage() {
                 }`}
               >
                 <img
-                  src="/images/flags/albanian.jpg"
+                  src="/images/flags/al.jpg"
                   alt="Albania"
                   className="w-8 h-6 object-cover rounded shadow-sm shrink-0"
                 />
@@ -192,7 +192,7 @@ export default function LoginPage() {
                 }`}
               >
                 <img
-                  src="/images/flags/greece.jpg"
+                  src="/images/flags/gr.jpg"
                   alt="Greece"
                   className="w-8 h-6 object-cover rounded shadow-sm shrink-0"
                 />
