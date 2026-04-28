@@ -12,6 +12,13 @@ const DivisionsPage = lazy(() => import("../pages/divisions/DivisionsPage"));
 const CountriesPage = lazy(() => import("../pages/countries/CountriesPage"));
 const ContactsPage = lazy(() => import("../pages/contacts/ContactsPage"));
 const StreetsPage = lazy(() => import("../pages/streets/StreetsPage"));
+const OpportunitiesPage = lazy(
+  () => import("../pages/opportunities/OpportunitiesPage"),
+);
+const OpportuniyDetailPage = lazy(
+  () =>
+    import("../pages/opportunities/opportunityDetails/OpportunityDetailsPage"),
+);
 
 export const dashboardRoutes = [
   {
@@ -81,10 +88,26 @@ export const dashboardRoutes = [
         ),
       },
       {
+        path: "opportunities",
+        element: (
+          <ProtectedRoute>
+            <OpportunitiesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "property/:id/details",
         element: (
           <ProtectedRoute>
             <PropertyDetailsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "opportunities/:id/details",
+        element: (
+          <ProtectedRoute>
+            <OpportuniyDetailPage />
           </ProtectedRoute>
         ),
       },

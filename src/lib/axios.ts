@@ -156,6 +156,11 @@ export const ENDPOINTS = {
     createOwner: "Property/create/owner",
     contacts: "Property/owners/get-all",
   },
+  opportunities: {
+    getAll: "Opportunity/get-all",
+    create: `Opportunity/create`,
+    getById: (id: number) => `Opportunity/${id}`,
+  },
   locationConfigurationList: {
     cities(divisionId?: number) {
       return `List/cities/${divisionId ?? ""}`;
