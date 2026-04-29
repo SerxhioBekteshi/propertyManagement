@@ -88,7 +88,7 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   publishGeoreference?: boolean;
 
   //Price, business type
-  businessType: "sale" | "rent";
+  businessType: "Sale" | "Rent";
   price: number;
   priceForM2?: number;
   priceUponRequest?: boolean;

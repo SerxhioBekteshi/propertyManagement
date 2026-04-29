@@ -4,31 +4,17 @@ import { PropertyResponseDTO } from "../../../types/properties";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ERoles } from "../../../assets/enums";
 import { motion } from "framer-motion";
+import {
+  AVAILABILITY_STYLES,
+  STATUS_COLORS,
+  TYPE_COLORS,
+} from "../../../utils/styles";
 
 interface PropertyCardProps {
   property: PropertyResponseDTO;
   onClick?: () => void;
   index?: number;
 }
-
-const propertyTypeColors: Record<string, string> = {
-  apartment: "bg-blue-50 text-blue-700 border-blue-100",
-  house: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  villa: "bg-amber-50 text-amber-700 border-amber-100",
-  commercial: "bg-orange-50 text-orange-700 border-orange-100",
-  land: "bg-lime-50 text-lime-700 border-lime-100",
-  office: "bg-cyan-50 text-cyan-700 border-cyan-100",
-  studio: "bg-rose-50 text-rose-700 border-rose-100",
-};
-
-export const statusColors: Record<string, string> = {
-  used: "bg-slate-500",
-  new: "bg-emerald-500",
-  under_construction: "bg-yellow-500",
-  in_project: "bg-blue-400",
-  refurbished: "bg-green-500",
-  for_refurbishment: "bg-orange-400",
-};
 
 export default function PropertyCard({
   property,
@@ -39,11 +25,15 @@ export default function PropertyCard({
   const { user } = useAuth();
 
   const typeClass =
-    propertyTypeColors[property.propertyType ?? ""] ||
+    TYPE_COLORS[property.propertyType ?? ""] ||
     "bg-slate-50 text-slate-700 border-slate-100";
 
   const statusColorClass =
-    statusColors[property.status ?? ""] || "bg-slate-400";
+    STATUS_COLORS[property.status ?? ""] || "bg-slate-400";
+
+  const availabilityClass =
+    AVAILABILITY_STYLES[property.availability ?? ""] ||
+    "bg-slate-100 text-slate-700 border-slate-200";
 
   const price = property.price
     ? new Intl.NumberFormat("en-EU", {
@@ -86,9 +76,9 @@ export default function PropertyCard({
           </span>
 
           <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded bg-black/70 text-white">
-            {property.businessType === "sale"
+            {property.businessType === "Sale"
               ? "For Sale"
-              : property.businessType === "rent"
+              : property.businessType === "Rent"
                 ? "For Rent"
                 : "—"}
           </span>
@@ -145,23 +135,30 @@ export default function PropertyCard({
 
         {/* AGENT + CTA */}
         <div className="flex items-center justify-between mt-4">
-          {user?.role !== ERoles.Agent.toString() && (
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
-                <User className="w-3 h-3 text-slate-400" />
+          <div className="flex items-center gap-2">
+            {user?.role !== ERoles.Agent.toString() && (
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                  <User className="w-3 h-3 text-slate-400" />
+                </div>
+                <span className="truncate max-w-[100px]">
+                  {property.agent ?? "No agent assigned"}
+                </span>
               </div>
-              <span className="truncate max-w-[100px]">
-                {property.agent ?? "No agent assigned"}
-              </span>
-            </div>
-          )}
+            )}
+            <span
+              className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border capitalize ${availabilityClass}`}
+            >
+              {property.availability?.replace(/_/g, " ") ?? "—"}
+            </span>
+          </div>
 
           <button
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/property/${property.id}/details`);
             }}
-            className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors ml-auto"
+            className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
           >
             <Eye className="w-3.5 h-3.5" />
             Details

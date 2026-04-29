@@ -22,7 +22,6 @@ import {
   Hand,
   FileText,
 } from "lucide-react";
-import { statusColors } from "../components/PropertyCard";
 import { PropertyResponseDTO } from "../../../types/properties";
 import { PropertiesService } from "../../../lib/Properties";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -39,6 +38,7 @@ import { formatDate, getPhoneWithPrefix, parseList } from "../helpers";
 import PropertyDetailsFeatureGroup from "../components/PropertyDetailsFeatureGroup";
 import PropertyDetailsSection from "../components/PropertyDetailsSection";
 import PropertyDetailsStat from "../components/PropertyDetailsStat";
+import { STATUS_COLORS } from "../../../utils/styles";
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
@@ -129,7 +129,7 @@ export default function PropertyDetailsPage() {
         <div className="flex gap-2">
           <span
             className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${
-              statusColors[property.status ?? ""] ||
+              STATUS_COLORS[property.status ?? ""] ||
               "bg-slate-100 border-slate-200"
             }`}
           >
@@ -287,7 +287,7 @@ export default function PropertyDetailsPage() {
                   {/* RIGHT — Price */}
                   <div className="flex flex-col items-end justify-center shrink-0 pl-1">
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] leading-none mb-1.5">
-                      {property.businessType === "rent"
+                      {property.businessType === "Rent"
                         ? "Monthly Rent"
                         : "Sale Price"}
                     </span>

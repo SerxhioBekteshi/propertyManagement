@@ -67,7 +67,7 @@ export default function Navbar() {
               <Building2 className="w-4 h-4 text-white" />
             </div>
             <span className="hidden sm:block text-base font-semibold text-slate-900">
-              EstateFlow
+              Property Estate
             </span>
           </div>
 

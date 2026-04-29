@@ -60,7 +60,7 @@ const PropertyDetailsItem = ({
     );
   } else if (label.toLowerCase().includes("type")) {
     const colorClass =
-      TYPE_COLORS[lowerValue] || "bg-slate-50 text-slate-600 border-slate-100";
+      TYPE_COLORS[value] || "bg-slate-50 text-slate-600 border-slate-100";
 
     displayValue = (
       <span
@@ -73,7 +73,7 @@ const PropertyDetailsItem = ({
     displayValue = (
       <span
         className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
-          AVAILABILITY_STYLES[lowerValue] || "bg-slate-50 border-slate-200"
+          AVAILABILITY_STYLES[value] || "bg-slate-50 border-slate-200"
         }`}
       >
         {String(value).replace(/_/g, " ")}

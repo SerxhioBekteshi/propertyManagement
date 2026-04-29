@@ -183,7 +183,11 @@ const PropertyForm = () => {
             render={({ field }) => (
               <div>
                 <Label>Title *</Label>
-                <input {...field} className={inputClass} />
+                <input
+                  {...field}
+                  value={field.value ?? ""}
+                  className={inputClass}
+                />
               </div>
             )}
           />
@@ -605,20 +609,6 @@ const PropertyForm = () => {
               )}
             />
           </div>
-
-          {/* Address */}
-          {/* <div>
-            <Controller
-              control={control}
-              name="address"
-              render={({ field }) => (
-                <>
-                  <Label>Address</Label>
-                  <input {...field} className={inputClass} />
-                </>
-              )}
-            />
-          </div> */}
 
           {/* Floor */}
           <div>

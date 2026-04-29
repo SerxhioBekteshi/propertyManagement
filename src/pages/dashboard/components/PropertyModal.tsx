@@ -14,15 +14,15 @@ interface IModalPropertyProp {
   onOpenChange: (open: boolean) => void;
 }
 const ModalProperty = (props: IModalPropertyProp) => {
-  const { open, onSave, model, onOpenChange } = props;
+  const { open, onSave, onOpenChange } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const methods = useForm<AddPropertyDTO>({
     // resolver: yupResolver(PropertyValidationSchema),
-    defaultValues: {
-      ...model,
-    },
+    // defaultValues: {
+    //   ...model,
+    // },
   });
 
   const {
