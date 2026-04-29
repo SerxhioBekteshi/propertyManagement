@@ -11,7 +11,7 @@ export const SALES_STAGE_OPTIONS = withDefault([
   { value: "Property Proposal", label: "Property Proposal" },
   { value: "Negotiation", label: "Negotiation" },
   { value: "Klient me kapar", label: "Klient me kapar" },
-  { value: "documentationPreparation", label: "Documentation Preparation" },
+  { value: "Documentation Preparation", label: "Documentation Preparation" },
   { value: "Closed Won", label: "Closed Won" },
   { value: "Closed Lost", label: "Closed Lost" },
 ]);
