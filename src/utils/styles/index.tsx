@@ -65,3 +65,13 @@ export const STATUS_COLORS: Record<string, string> = {
   "For Refurbishment": "bg-orange-400",
   Refurbished: "bg-green-500",
 };
+
+export const BUSINESS_TYPE_LABELS: Record<string, string> = {
+  Sale: "For Sale",
+  Rent: "For Rent",
+};
+
+export const BUSINESS_TYPE_COLORS: Record<string, string> = {
+  Sale: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  Rent: "bg-blue-50 text-blue-700 border-blue-200",
+};

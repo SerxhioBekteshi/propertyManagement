@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Building2,
   LogOut,
@@ -17,24 +17,51 @@ export const countryFlags: Record<string, string> = {
   AL: "/images/flags/al.png",
   GR: "/images/flags/gr.jpg",
 };
+type NavLink = {
+  to: string;
+  label: string;
+  icon?: React.ElementType;
+};
 
-const navLinks = [
+const primaryLinks: NavLink[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/contacts", label: "Contacts" },
+  { to: "/opportunities", label: "Opportunities" },
+];
+
+const secondaryLinks: NavLink[] = [
   { to: "/countries", label: "Countries" },
   { to: "/divisions", label: "Divisions" },
   { to: "/cities", label: "Cities" },
   { to: "/zones", label: "Zones" },
   { to: "/streets", label: "Streets" },
-  { to: "/contacts", label: "Contacts" },
-  { to: "/opportunities", label: "Opportunities" },
 ];
+
+const allLinks: NavLink[] = [...primaryLinks, ...secondaryLinks];
 
 export default function Navbar() {
   const { user, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (!moreRef.current?.contains(e.target as Node)) setMoreOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const navLinkClass = (isActive: boolean) =>
+    `flex items-center gap-1.5 text-sm ${
+      isActive
+        ? "text-slate-900 font-semibold border-b-2 border-slate-900 pb-1"
+        : "text-slate-600 hover:text-slate-900"
+    }`;
 
   return (
     <>
@@ -42,7 +69,7 @@ export default function Navbar() {
         <div className="max-w-screen mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* LEFT */}
           <div className="flex items-center gap-3 shrink-0">
-            {/* Mobile hamburger */}
+            {/* Hamburger — below md */}
             <button
               className="md:hidden p-1.5 rounded-lg hover:bg-slate-100"
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -58,32 +85,87 @@ export default function Navbar() {
             <div
               className="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center hover:cursor-pointer"
               onClick={() => {
-                if (location.pathname == "/dashboard") {
-                  return;
-                }
+                if (location.pathname === "/dashboard") return;
                 navigate("/dashboard");
               }}
             >
               <Building2 className="w-4 h-4 text-white" />
             </div>
-            <span className="hidden sm:block text-base font-semibold text-slate-900">
+            <span className="text-base font-semibold text-slate-900">
               Property Estate
             </span>
           </div>
 
-          {/* DESKTOP NAV */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navLinks.map(({ to, label, icon: Icon }) => (
+          {/* MD NAV — primary links + More dropdown */}
+          <nav className="hidden md:flex lg:hidden items-center gap-6">
+            {primaryLinks.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
-                className={({ isActive }) =>
-                  `flex items-center gap-1.5 text-sm ${
-                    isActive
-                      ? "text-slate-900 font-semibold border-b-2 border-slate-900 pb-1"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`
-                }
+                className={({ isActive }) => navLinkClass(isActive)}
+              >
+                {Icon && <Icon className="w-3.5 h-3.5" />}
+                {label}
+              </NavLink>
+            ))}
+
+            {/* More dropdown */}
+            <div ref={moreRef} className="relative">
+              <button
+                onClick={() => setMoreOpen((p) => !p)}
+                className={`flex items-center gap-1 text-sm ${
+                  secondaryLinks.some((l) => location.pathname === l.to)
+                    ? "text-slate-900 font-semibold border-b-2 border-slate-900 pb-1"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                More
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform ${moreOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {moreOpen &&
+                createPortal(
+                  <div
+                    className="fixed w-44 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-[99999]"
+                    style={{
+                      top:
+                        moreRef.current?.getBoundingClientRect().bottom ??
+                        0 + 8,
+                      left: moreRef.current?.getBoundingClientRect().left ?? 0,
+                    }}
+                  >
+                    {secondaryLinks.map(({ to, label }) => (
+                      <button
+                        key={to}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          setMoreOpen(false);
+                          navigate(to);
+                        }}
+                        className={`w-full text-left block px-4 py-2.5 text-sm ${
+                          location.pathname === to
+                            ? "text-slate-900 font-semibold bg-slate-50"
+                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>,
+                  document.body,
+                )}
+            </div>
+          </nav>
+
+          {/* LG+ NAV — all links */}
+          <nav className="hidden lg:flex items-center gap-6">
+            {allLinks.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) => navLinkClass(isActive)}
               >
                 {Icon && <Icon className="w-3.5 h-3.5" />}
                 {label}
@@ -154,16 +236,15 @@ export default function Navbar() {
                     Sign out
                   </button>
                 </div>,
-
                 document.body,
               )}
           </div>
         </div>
 
-        {/* MOBILE NAV DROPDOWN */}
+        {/* MOBILE DROPDOWN — below md */}
         {mobileOpen && (
           <div className="md:hidden border-t border-slate-100 bg-white px-4 py-3 flex flex-col gap-1">
-            {navLinks.map(({ to, label, icon: Icon }) => (
+            {allLinks.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -186,11 +267,11 @@ export default function Navbar() {
 
       {/* BACKDROPS */}
       {menuOpen && (
-        <div className="fixed inset-0 " onClick={() => setMenuOpen(false)} />
+        <div className="fixed inset-0" onClick={() => setMenuOpen(false)} />
       )}
       {mobileOpen && (
         <div
-          className="fixed inset-0  md:hidden"
+          className="fixed inset-0 md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}

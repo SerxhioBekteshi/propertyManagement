@@ -153,23 +153,17 @@ export default function PropertyDetailsPage() {
                   : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${img.url.replace(/^\//, "")}`;
 
                 return (
-                  <picture
+                  <img
                     key={img.url}
-                    className="absolute inset-0 w-full h-full"
+                    src={src}
+                    loading="eager"
+                    draggable={false}
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-200"
                     style={{
                       opacity: i === imgIndex ? 1 : 0,
                       zIndex: i === imgIndex ? 1 : 0,
                     }}
-                  >
-                    <source srcSet={src} type="image/avif" />
-                    <source srcSet={src} type="image/webp" />
-                    <img
-                      src={src}
-                      loading="eager"
-                      className="w-full h-full object-cover transition-opacity duration-200"
-                      draggable={false}
-                    />
-                  </picture>
+                  />
                 );
               })}
 

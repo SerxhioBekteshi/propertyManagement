@@ -6,6 +6,8 @@ import { ERoles } from "../../../assets/enums";
 import { motion } from "framer-motion";
 import {
   AVAILABILITY_STYLES,
+  BUSINESS_TYPE_COLORS,
+  BUSINESS_TYPE_LABELS,
   STATUS_COLORS,
   TYPE_COLORS,
 } from "../../../utils/styles";
@@ -75,12 +77,13 @@ export default function PropertyCard({
             {property.propertyType ?? "—"}
           </span>
 
-          <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded bg-black/70 text-white">
-            {property.businessType === "Sale"
-              ? "For Sale"
-              : property.businessType === "Rent"
-                ? "For Rent"
-                : "—"}
+          <span
+            className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full border ${
+              BUSINESS_TYPE_COLORS[property.businessType ?? ""] ??
+              "bg-slate-50 text-slate-700 border-slate-200"
+            }`}
+          >
+            {BUSINESS_TYPE_LABELS[property.businessType ?? ""] ?? "—"}
           </span>
         </div>
 

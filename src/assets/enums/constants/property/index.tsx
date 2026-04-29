@@ -17,20 +17,18 @@ export const withDefault = <T extends string>(
   return [DEFAULT_SELECT_OPTION, ...options];
 };
 
+export const withDefaultBoolean = (
+  options: IOption<boolean>[],
+): IOption<boolean | null>[] => {
+  return [{ value: null, label: "— Select an option —" }, ...options];
+};
+
 /**
  * BASE YES / NO
  */
-export const YES_NO_OPTIONS: IOption<string>[] = [
-  { value: "yes", label: "Yes" },
-  { value: "no", label: "No" },
-];
-
-/**
- * EXTENDED YES / NO EXAMPLES
- */
-export const YES_NO_IN_PROGRESS_OPTIONS: IOption<string>[] = [
-  ...YES_NO_OPTIONS,
-  { value: "in_progress", label: "In Progress" },
+export const YES_NO_OPTIONS: IOption<boolean>[] = [
+  { value: true, label: "Yes" },
+  { value: false, label: "No" },
 ];
 
 /**
@@ -114,17 +112,17 @@ export const PROPERTY_TYPE_OPTIONS = withDefault([
 /**
  * 6. ELEVATOR
  */
-export const PROPERTY_ELEVATOR_OPTIONS = withDefault(YES_NO_OPTIONS);
+export const PROPERTY_ELEVATOR_OPTIONS = withDefaultBoolean(YES_NO_OPTIONS);
 
 /**
  * 8. BEING LIVED
  */
-export const PROPERTY_BEING_LIVED_OPTIONS = withDefault(YES_NO_OPTIONS);
+export const PROPERTY_BEING_LIVED_OPTIONS = withDefaultBoolean(YES_NO_OPTIONS);
 
 /**
  * 9. PARKING
  */
-export const PROPERTY_PARKING_OPTIONS = withDefault(YES_NO_OPTIONS);
+export const PROPERTY_PARKING_OPTIONS = withDefaultBoolean(YES_NO_OPTIONS);
 
 /**
  * 10. ORIENTATION
@@ -161,7 +159,8 @@ export const PROPERTY_OWNER_TYPOLOGY_OPTIONS = withDefault([
  * 14. DOCUMENTATION
  */
 export const PROPERTY_DOCUMENTATION_OPTIONS = withDefault([
-  ...YES_NO_OPTIONS,
+  { value: "yes", label: "Yes" },
+  { value: "false", label: "No" },
   { value: "in_progress", label: "In Progress" },
 ]);
 

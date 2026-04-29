@@ -39,7 +39,8 @@ const BooleanSelect = ({
         onClick={() => !disabled && setOpen((p) => !p)}
         className={`${baseClass} text-left flex justify-between items-center ${
           disabled ? "opacity-60 cursor-not-allowed" : ""
-        } ${selected ? "text-slate-900" : "text-slate-400"}`}
+        } ${selected && selected.value !== null ? "text-slate-900" : "text-slate-400"}
+`}
       >
         <span className="truncate">{selected?.label ?? placeholder}</span>
 
