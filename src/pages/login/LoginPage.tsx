@@ -164,7 +164,7 @@ export default function LoginPage() {
                 }`}
               >
                 <img
-                  src="/images/flags/al.jpg"
+                  src="/images/flags/al.png"
                   alt="Albania"
                   className="w-8 h-6 object-cover rounded shadow-sm shrink-0"
                 />

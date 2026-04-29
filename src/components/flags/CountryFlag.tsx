@@ -7,7 +7,7 @@ interface CountryFlagProps extends ImgHTMLAttributes<HTMLImageElement> {
 const CountryFlag = ({ code, className, ...rest }: CountryFlagProps) => {
   if (!code) return <span className="text-slate-300 text-xs">—</span>;
 
-  const src = `/images/flags/${code.toLowerCase()}.jpg`;
+  const src = `/images/flags/${code.toLowerCase()}.png`;
 
   return (
     <img
