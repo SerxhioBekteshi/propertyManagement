@@ -308,52 +308,6 @@ const OpportunityDetails = () => {
               "{o.description || "No description provided."}"
             </p>
           </OpportunityCard>
-
-          {/* More Features */}
-          <OpportunityCard
-            icon={<Layers className="w-4 h-4" />}
-            title="More Features"
-            accent="bg-indigo-50 text-indigo-700"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
-                  View To
-                </p>
-                <OpportunityTagCloud
-                  values={parseList(o.withViewTo)}
-                  color="bg-blue-50 text-blue-700 border-blue-100"
-                />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
-                  Equipment
-                </p>
-                <OpportunityTagCloud
-                  values={parseList(o.equipment)}
-                  color="bg-emerald-50 text-emerald-700 border-emerald-100"
-                />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
-                  Infrastructures
-                </p>
-                <OpportunityTagCloud
-                  values={parseList(o.infrastructures)}
-                  color="bg-amber-50 text-amber-700 border-amber-100"
-                />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
-                  Surroundings
-                </p>
-                <OpportunityTagCloud
-                  values={parseList(o.surroundings)}
-                  color="bg-indigo-50 text-indigo-700 border-indigo-100"
-                />
-              </div>
-            </div>
-          </OpportunityCard>
         </div>
 
         {/* RIGHT SIDEBAR */}
@@ -414,6 +368,51 @@ const OpportunityDetails = () => {
             </OpportunityRow>
             <OpportunityRow label="City">{o.cityName ?? "—"}</OpportunityRow>
             <OpportunityRow label="Zone">{o.zoneName ?? "—"}</OpportunityRow>
+          </OpportunityCard>
+          {/* More Features */}
+          <OpportunityCard
+            icon={<Layers className="w-4 h-4" />}
+            title="More Features"
+            accent="bg-indigo-50 text-indigo-700"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                  View To
+                </p>
+                <OpportunityTagCloud
+                  values={parseList(o.withViewTo)}
+                  color="bg-blue-50 text-blue-700 border-blue-100"
+                />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                  Equipment
+                </p>
+                <OpportunityTagCloud
+                  values={parseList(o.equipment)}
+                  color="bg-emerald-50 text-emerald-700 border-emerald-100"
+                />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                  Infrastructures
+                </p>
+                <OpportunityTagCloud
+                  values={parseList(o.infrastructures)}
+                  color="bg-amber-50 text-amber-700 border-amber-100"
+                />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                  Surroundings
+                </p>
+                <OpportunityTagCloud
+                  values={parseList(o.surroundings)}
+                  color="bg-indigo-50 text-indigo-700 border-indigo-100"
+                />
+              </div>
+            </div>
           </OpportunityCard>
         </div>
       </div>
