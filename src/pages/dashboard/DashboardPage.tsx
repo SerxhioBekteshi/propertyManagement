@@ -51,19 +51,27 @@ export default function DashboardPage() {
   });
 
   // infinite scroll
+  const loadMoreRef = useRef(loadMore);
   useEffect(() => {
-    if (!sentinelRef.current) return;
+    loadMoreRef.current = loadMore;
+  }, [loadMore]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          loadMore();
+        if (entries[0].isIntersecting) {
+          loadMoreRef.current();
         }
       },
       { rootMargin: "200px" },
     );
-    observer.observe(sentinelRef.current);
+
+    observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, loadingMore, loadMore]);
+  }, [properties]);
 
   return (
     <div className="flex flex-col gap-4 mb-6">
