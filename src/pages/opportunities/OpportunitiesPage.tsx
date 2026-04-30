@@ -6,16 +6,17 @@ import { Eye, Plus } from "lucide-react";
 import ModalOpportunity from "./components/OpportunityModal";
 import { OpportunityResponseDTO } from "../../types/opportunities";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { ERoles } from "../../assets/enums";
 import { columns } from "./helpers";
 
 const OpportunitiesPage = () => {
-  //   const [filters, setFilters] =
-  //     useState<OpportunitiesFiltersDTO>(INITIAL_FILTERS);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const zoneFilter = searchParams.get("zone") ?? undefined;
+
   const [open, setOpen] = useState<boolean>(false);
   const tableRef = useRef<BaseTableRef<OpportunityResponseDTO>>(null);
   const isAdmin = user?.role === ERoles.Admin;
@@ -23,17 +24,17 @@ const OpportunitiesPage = () => {
   const visibleColumns = columns.filter(
     (col) => col.key !== "agentName" || isAdmin,
   );
-  const onAddClick = () => {
-    setOpen(true);
-  };
+
+  const onAddClick = () => setOpen(true);
 
   return (
     <div className="flex flex-col gap-4 mb-6">
       <BaseTable<OpportunityResponseDTO>
         ref={tableRef}
         onAddClick={onAddClick}
-        controller={ENDPOINTS.opportunities.getAll}
+        controller={ENDPOINTS.opportunities.getAll(zoneFilter ?? "")}
         columns={visibleColumns}
+        filters={zoneFilter ? { zoneName: zoneFilter } : undefined}
         renderActions={(row) => (
           <>
             <DropdownMenuItem
@@ -46,13 +47,8 @@ const OpportunitiesPage = () => {
           </>
         )}
         addButton={
-          <Button
-            onClick={onAddClick}
-            style={{
-              width: "fit-content",
-            }}
-          >
-            <Plus className=" h-4 w-4" />
+          <Button onClick={onAddClick} style={{ width: "fit-content" }}>
+            <Plus className="h-4 w-4" />
             Add New Opportunity
           </Button>
         }
@@ -60,9 +56,7 @@ const OpportunitiesPage = () => {
       {open && (
         <ModalOpportunity
           key={"create"}
-          onOpenChange={(open) => {
-            setOpen(open);
-          }}
+          onOpenChange={(open) => setOpen(open)}
           open={open}
           onSave={() => {
             setOpen(false);

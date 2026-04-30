@@ -48,6 +48,13 @@ export type OpportunityResponseDTO = BaseAuditableDTO & {
   equipment?: string;
   infrastructures?: string;
   surroundings?: string;
+
+  bedroomsFrom?: number;
+  bedroomsTo?: number;
+  bathroomsFrom?: number;
+  bathroomsTo?: number;
+  minimalArea?: number;
+  maximalArea?: number;
 };
 
 export type AddOpportunityDTO = Omit<
@@ -63,12 +70,4 @@ export type AddOpportunityDTO = Omit<
   | "divisionName"
   | "cityName"
   | "propertyOwnerName"
-> & {
-  priceFrom?: number;
-  bedroomsFrom?: number;
-  bedroomsTo?: number;
-  bathroomsFrom?: number;
-  bathroomsTo?: number;
-  minimalArea?: number;
-  maximalArea?: number;
-};
+> & {};

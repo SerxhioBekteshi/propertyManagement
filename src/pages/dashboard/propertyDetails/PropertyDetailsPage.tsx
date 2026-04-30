@@ -21,6 +21,7 @@ import {
   TreeDeciduous,
   Hand,
   FileText,
+  Sparkles,
 } from "lucide-react";
 import { PropertyResponseDTO } from "../../../types/properties";
 import { PropertiesService } from "../../../lib/Properties";
@@ -479,6 +480,38 @@ export default function PropertyDetailsPage() {
 
         {/* SIDEBAR */}
         <div className="space-y-6">
+          {typeof property.opportunityCount === "number" &&
+            property.opportunityCount > 0 && (
+              <PropertyDetailsSection
+                icon={<Sparkles className="w-5 h-5 text-emerald-500" />}
+                title="Opportunities in Zone"
+              >
+                <div
+                  className="cursor-pointer"
+                  onClick={() =>
+                    navigate(
+                      `/opportunities?zone=${encodeURIComponent(property.zoneName ?? "")}`,
+                    )
+                  }
+                >
+                  <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition-colors px-4 py-3">
+                    <span className="text-sm font-medium text-emerald-700">
+                      In <span className="font-bold">{property.zoneName}</span>{" "}
+                      zone
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-emerald-800 bg-white px-2.5 py-1 rounded-lg border border-emerald-200">
+                        {property.opportunityCount}
+                      </span>
+                      <span className="text-xs text-emerald-600 font-bold">
+                        View →
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </PropertyDetailsSection>
+            )}
+
           <PropertyDetailsSection
             icon={<MapPin className="w-5 h-5 text-red-500" />}
             title="Location Details"

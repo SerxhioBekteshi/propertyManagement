@@ -1,4 +1,12 @@
-import { BedDouble, Bath, Maximize2, MapPin, User, Eye } from "lucide-react";
+import {
+  BedDouble,
+  Bath,
+  Maximize2,
+  MapPin,
+  User,
+  Eye,
+  Sparkles,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PropertyResponseDTO } from "../../../types/properties";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -51,10 +59,16 @@ export default function PropertyCard({
     ? "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg"
     : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${property.mainImage}`;
 
+  const isAdmin = user?.role !== ERoles.Agent.toString();
+
   return (
     <motion.article
       onClick={onClick}
-      className="group bg-white rounded-2xl border border-slate-200 overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+      className={`group bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${
+        property.opportunityCount
+          ? "border-2 border-emerald-400 shadow-md shadow-emerald-100"
+          : "border border-slate-200"
+      }`}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: (index ?? 0) * 0.05 }}
@@ -136,10 +150,10 @@ export default function PropertyCard({
           </span>
         </div>
 
-        {/* AGENT + CTA */}
-        <div className="flex items-center justify-between mt-4">
+        {/* AGENT (admin only) + AVAILABILITY */}
+        <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2">
-            {user?.role !== ERoles.Agent.toString() && (
+            {isAdmin && (
               <div className="flex items-center gap-2 text-xs text-slate-500">
                 <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
                   <User className="w-3 h-3 text-slate-400" />
@@ -155,7 +169,35 @@ export default function PropertyCard({
               {property.availability?.replace(/_/g, " ") ?? "—"}
             </span>
           </div>
+        </div>
 
+        {/* OPPORTUNITIES IN ZONE — between status row and details CTA */}
+        {typeof property.opportunityCount === "number" && (
+          <div
+            className="mt-3 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(
+                `/opportunities?zone=${encodeURIComponent(property.zoneName ?? "")}`,
+              );
+            }}
+          >
+            <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition-colors px-3 py-2">
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-xs font-medium text-emerald-700">
+                  Opportunities in zone
+                </span>
+              </div>
+              <span className="text-sm font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-lg border border-emerald-200">
+                {property.opportunityCount}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* DETAILS CTA */}
+        <div className="flex justify-end mt-3">
           <button
             onClick={(e) => {
               e.stopPropagation();

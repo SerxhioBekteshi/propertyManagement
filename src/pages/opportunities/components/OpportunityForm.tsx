@@ -200,7 +200,12 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                   <input
                     type="number"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value ?? ""}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : undefined,
+                      )
+                    }
                     className={inputClass}
                     placeholder="Amount"
                   />
@@ -353,7 +358,12 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                     type="number"
                     {...field}
                     placeholder="Price From"
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value ?? ""}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : undefined,
+                      )
+                    }
                     className={inputClass}
                   />
                 </>
@@ -372,7 +382,12 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                     type="number"
                     {...field}
                     placeholder="Price To"
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value ?? ""}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : undefined,
+                      )
+                    }
                     className={inputClass}
                   />
                 </>
@@ -399,7 +414,12 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                       placeholder={label}
                       min={0}
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? Number(e.target.value) : undefined,
+                        )
+                      }
                       className={inputClass}
                     />
                   </>
@@ -419,7 +439,12 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                     placeholder="Minimal Area"
                     type="number"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value ?? ""}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : undefined,
+                      )
+                    }
                     className={inputClass}
                   />
                 </>
@@ -436,7 +461,12 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                   <input
                     type="number"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    value={field.value ?? ""}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : undefined,
+                      )
+                    }
                     className={inputClass}
                     placeholder="Maximal Area"
                   />
@@ -532,7 +562,12 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                 <input
                   {...field}
                   className={inputClass}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value ? Number(e.target.value) : undefined,
+                    )
+                  }
                   type="number"
                   placeholder="Floor"
                 />

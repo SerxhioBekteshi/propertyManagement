@@ -273,6 +273,19 @@ const OpportunityDetails = () => {
                 <OpportunityRow label="Price To">
                   {fmtMoney(o.priceTo)}
                 </OpportunityRow>
+
+                <OpportunityRow label="Bedrooms">
+                  {o.bedroomsFrom || o.bedroomsTo
+                    ? `${o.bedroomsFrom ?? 0} – ${o.bedroomsTo ?? "∞"}`
+                    : "—"}
+                </OpportunityRow>
+
+                <OpportunityRow label="Bathrooms">
+                  {o.bathroomsFrom || o.bathroomsTo
+                    ? `${o.bathroomsFrom ?? 0} – ${o.bathroomsTo ?? "∞"}`
+                    : "—"}
+                </OpportunityRow>
+
                 <OpportunityRow label="Property Type">
                   {o.propertyType ? (
                     <span className="text-[11px] font-bold uppercase px-2 py-0.5 rounded border bg-blue-50 text-blue-700 border-blue-100">
@@ -284,6 +297,11 @@ const OpportunityDetails = () => {
                 </OpportunityRow>
               </div>
               <div>
+                <OpportunityRow label="Area (m²)">
+                  {o.minimalArea || o.maximalArea
+                    ? `${o.minimalArea ?? 0} – ${o.maximalArea ?? "∞"}`
+                    : "—"}
+                </OpportunityRow>
                 <OpportunityRow label="Furnished">
                   {fmt(o.furnished)}
                 </OpportunityRow>

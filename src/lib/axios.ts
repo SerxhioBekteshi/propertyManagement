@@ -157,7 +157,9 @@ export const ENDPOINTS = {
     contacts: "Property/owners/get-all",
   },
   opportunities: {
-    getAll: "Opportunity/get-all",
+    getAll(zoneName?: string) {
+      return `Opportunity/get-all?zone=${zoneName}`;
+    },
     create: `Opportunity/create`,
     getById: (id: number) => `Opportunity/${id}`,
   },

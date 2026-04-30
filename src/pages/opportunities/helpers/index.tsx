@@ -37,7 +37,7 @@ export const columns: ColumnConfig[] = [
     render: (val: string) => (
       <span
         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide border ${
-          SALES_STAGE_STYLES[val?.toLowerCase()] ??
+          SALES_STAGE_STYLES[val] ??
           "bg-slate-100 text-slate-600 border-slate-200"
         }`}
       >
@@ -67,8 +67,7 @@ export const columns: ColumnConfig[] = [
     render: (val: string) => (
       <span
         className={`text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full ${
-          BUSINESS_TYPE_STYLES[val?.toLowerCase()] ??
-          "bg-slate-200 text-slate-700"
+          BUSINESS_TYPE_STYLES[val] ?? "bg-slate-200 text-slate-700"
         }`}
       >
         {val ?? "—"}
@@ -81,7 +80,7 @@ export const columns: ColumnConfig[] = [
     render: (val: string) => (
       <span
         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide border ${
-          AVAILABILITY_STYLES[val?.toLowerCase()] ??
+          AVAILABILITY_STYLES[val] ??
           "bg-slate-100 text-slate-600 border-slate-200"
         }`}
       >

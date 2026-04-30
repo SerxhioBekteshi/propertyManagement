@@ -172,6 +172,9 @@ const PropertyForm = () => {
     fetchPropertyOwners();
   }, []);
 
+  // const lat = useWatch({ control, name: "latitude" });
+  // const lng = useWatch({ control, name: "longitude" });
+
   return (
     <div className="space-y-8">
       {/* ===================== BASIC (full width) ===================== */}
@@ -632,6 +635,21 @@ const PropertyForm = () => {
               )}
             />
           </div>
+
+          {/* <div className="lg:col-span-2">
+            <Label>Pin Property Location</Label>
+            <div className="mt-2 overflow-hidden rounded-xl border border-slate-200">
+              <MapPicker
+                key={`${lat ?? "no"}-${lng ?? "no"}`} // 👈 force clean mount
+                initialLat={lat}
+                initialLng={lng}
+                onChange={(lat, lng) => {
+                  setValue("latitude", lat);
+                  setValue("longitude", lng);
+                }}
+              />
+            </div>
+          </div> */}
 
           {/* Latitude */}
           <div>
