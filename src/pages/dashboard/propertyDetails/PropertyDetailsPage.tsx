@@ -91,10 +91,6 @@ export default function PropertyDetailsPage() {
             url: "https://placehold.co/800x600/e2e8f0/94a3b8?text=No+Image+Available",
             private: false,
           },
-          {
-            url: "https://placehold.co/600x400?text=No+Image",
-            private: false,
-          },
         ];
 
   if (isLoading) {

@@ -34,6 +34,8 @@ import { Plus } from "lucide-react";
 import PropertyOwnerDrawer from "./PropertyOwnerDrawer";
 import { useAuth } from "../../../contexts/AuthContext";
 import { FileUploader } from "../../../components/upload-file";
+import MapPicker from "../../../components/MapPicker";
+import "leaflet/dist/leaflet.css";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -172,8 +174,8 @@ const PropertyForm = () => {
     fetchPropertyOwners();
   }, []);
 
-  // const lat = useWatch({ control, name: "latitude" });
-  // const lng = useWatch({ control, name: "longitude" });
+  const lat = useWatch({ control, name: "latitude" });
+  const lng = useWatch({ control, name: "longitude" });
 
   return (
     <div className="space-y-8">
@@ -636,11 +638,14 @@ const PropertyForm = () => {
             />
           </div>
 
-          {/* <div className="lg:col-span-2">
+          <div className="lg:col-span-2">
             <Label>Pin Property Location</Label>
-            <div className="mt-2 overflow-hidden rounded-xl border border-slate-200">
+            <div
+              className="mt-2 overflow-hidden rounded-xl border border-slate-200"
+              onWheel={(e) => e.stopPropagation()} // ✅ stops modal from scrolling when on map
+            >
               <MapPicker
-                key={`${lat ?? "no"}-${lng ?? "no"}`} // 👈 force clean mount
+                key="map-picker"
                 initialLat={lat}
                 initialLng={lng}
                 onChange={(lat, lng) => {
@@ -649,7 +654,7 @@ const PropertyForm = () => {
                 }}
               />
             </div>
-          </div> */}
+          </div>
 
           {/* Latitude */}
           <div>

@@ -48,10 +48,10 @@ function FixMapSize() {
   useEffect(() => {
     const fix = () => map.invalidateSize();
 
-    // run multiple times (handles animations)
     setTimeout(fix, 0);
     setTimeout(fix, 200);
     setTimeout(fix, 500);
+    setTimeout(fix, 800); // ✅ add this — catches slow modal animations
 
     window.addEventListener("resize", fix);
     return () => window.removeEventListener("resize", fix);
@@ -73,7 +73,11 @@ export default function MapPicker({ onChange, initialLat, initialLng }: Props) {
     <MapContainer
       center={position ?? [41.3275, 19.8187]} // default Tirana
       zoom={13}
+      scrollWheelZoom={false}
+      dragging={true}
+      touchZoom={false}
       className="h-[220px] w-full rounded-xl border border-slate-200"
+      style={{ zIndex: 0 }}
     >
       <TileLayer
         attribution="&copy; OpenStreetMap"

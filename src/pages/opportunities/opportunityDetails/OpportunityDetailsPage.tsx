@@ -350,22 +350,23 @@ const OpportunityDetails = () => {
                   </p>
                 </div>
               </div>
-              {user?.role == ERoles.Admin.toString() && (
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50">
-                  <div className="w-9 h-9 rounded-full bg-blue-200 flex items-center justify-center shrink-0">
-                    <Zap className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-blue-400 font-bold uppercase tracking-wide">
-                      Assigned Agent
-                    </p>
+              {user?.role == ERoles.Admin.toString() ||
+                (user?.id != o.agentId && (
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50">
+                    <div className="w-9 h-9 rounded-full bg-blue-200 flex items-center justify-center shrink-0">
+                      <Zap className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-blue-400 font-bold uppercase tracking-wide">
+                        Assigned Agent
+                      </p>
 
-                    <p className="text-sm font-bold text-blue-900">
-                      {o.agentName ?? "—"}
-                    </p>
+                      <p className="text-sm font-bold text-blue-900">
+                        {o.agentName ?? "—"}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                ))}
             </div>
           </OpportunityCard>
 

@@ -57,14 +57,16 @@ export default function PropertyCard({
     "localhost",
   )
     ? "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg"
-    : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${property.mainImage}`;
+    : property.mainImage
+      ? `${import.meta.env.VITE_APP_BACKEND_API_URL}/${property.mainImage}`
+      : "https://placehold.co/800x600/e2e8f0/94a3b8?text=No+Image+Available";
 
   const isAdmin = user?.role !== ERoles.Agent.toString();
 
   return (
     <motion.article
       onClick={onClick}
-      className={`group bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${
+      className={`group bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col ${
         property.opportunityCount
           ? "border-2 border-emerald-400 shadow-md shadow-emerald-100"
           : "border border-slate-200"
@@ -116,7 +118,7 @@ export default function PropertyCard({
       </div>
 
       {/* CONTENT */}
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         {/* TITLE */}
         <h3 className="font-semibold text-slate-900 text-sm line-clamp-1 group-hover:text-blue-600 transition-colors">
           {property.title ?? "—"}
@@ -172,32 +174,33 @@ export default function PropertyCard({
         </div>
 
         {/* OPPORTUNITIES IN ZONE — between status row and details CTA */}
-        {typeof property.opportunityCount === "number" && (
-          <div
-            className="mt-3 cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(
-                `/opportunities?zone=${encodeURIComponent(property.zoneName ?? "")}`,
-              );
-            }}
-          >
-            <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition-colors px-3 py-2">
-              <div className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
-                <span className="text-xs font-medium text-emerald-700">
-                  Opportunities in zone
+        {typeof property.opportunityCount === "number" &&
+          property.opportunityCount !== 0 && (
+            <div
+              className="mt-3 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(
+                  `/opportunities?zone=${encodeURIComponent(property.zoneName ?? "")}`,
+                );
+              }}
+            >
+              <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition-colors px-3 py-2">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-xs font-medium text-emerald-700">
+                    Opportunities in zone
+                  </span>
+                </div>
+                <span className="text-sm font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-lg border border-emerald-200">
+                  {property.opportunityCount}
                 </span>
               </div>
-              <span className="text-sm font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-lg border border-emerald-200">
-                {property.opportunityCount}
-              </span>
             </div>
-          </div>
-        )}
+          )}
 
         {/* DETAILS CTA */}
-        <div className="flex justify-end mt-3">
+        <div className="flex justify-end mt-auto pt-3">
           <button
             onClick={(e) => {
               e.stopPropagation();
