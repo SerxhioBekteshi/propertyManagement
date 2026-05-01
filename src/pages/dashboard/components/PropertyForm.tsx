@@ -668,6 +668,7 @@ const PropertyForm = () => {
                     type="number"
                     step="any"
                     {...field}
+                    value={field.value ?? ""}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                     placeholder="e.g. 41.3275"
                     className={inputClass}
@@ -689,6 +690,7 @@ const PropertyForm = () => {
                     type="number"
                     step="any"
                     {...field}
+                    value={field.value ?? ""}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                     placeholder="e.g. 19.8187"
                     className={inputClass}
