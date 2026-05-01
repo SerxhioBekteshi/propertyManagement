@@ -149,8 +149,8 @@ export default function PropertyFilters({
         <Label>Owner</Label>
         <SingleSelect
           options={owners}
-          value={filters.ownerId}
-          onChange={(val) => update("ownerId", val)}
+          value={filters.propertyOwnerId}
+          onChange={(val) => update("propertyOwnerId", val)}
         />
       </div>
     </>
@@ -247,8 +247,8 @@ export default function PropertyFilters({
         <Label>Owner</Label>
         <SingleSelect
           options={owners}
-          value={draft.ownerId}
-          onChange={(val) => updateDraft("ownerId", val)}
+          value={draft.propertyOwnerId}
+          onChange={(val) => updateDraft("propertyOwnerId", val)}
         />
       </div>
     </>

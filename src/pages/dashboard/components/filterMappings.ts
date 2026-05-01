@@ -59,8 +59,8 @@ export const filterMappings: FilterMapping<any>[] = [
     operation: LookupFilterOperation.Equals,
   },
   {
-    key: "owner",
-    column: "owner",
-    operation: LookupFilterOperation.Contains,
+    key: "propertyOwnerId",
+    column: "propertyOwnerId",
+    operation: LookupFilterOperation.Equals,
   },
 ];
