@@ -76,7 +76,7 @@ export default function MapPicker({ onChange, initialLat, initialLng }: Props) {
       scrollWheelZoom={false}
       dragging={true}
       touchZoom={false}
-      className="h-[220px] w-full rounded-xl border border-slate-200"
+      className="h-[350px] w-full rounded-xl border border-slate-200"
       style={{ zIndex: 0 }}
     >
       <TileLayer
