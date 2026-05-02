@@ -92,7 +92,7 @@ export default function Navbar() {
               <Building2 className="w-4 h-4 text-white" />
             </div>
             <span className="text-base font-semibold text-slate-900">
-              Property Estate
+              C21 Everest Property
             </span>
           </div>
 

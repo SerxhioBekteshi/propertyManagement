@@ -1,7 +1,7 @@
 import { useState, FormEvent } from "react";
-import { Building2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const { signIn, loading } = useAuth();
@@ -20,38 +20,38 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left panel — hero image */}
+      {/* Left panel — hero */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <img
           src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
           alt="Luxury property"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-700/40" />
-        <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30">
-              <Building2 className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-semibold tracking-tight">
-              Property Estate
-            </span>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-slate-800/65 to-slate-700/40" />
+
+        <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white w-full gap-8">
+          {/* Large centered company logo */}
+          <div className="w-72 h-72 rounded-3xl overflow-hidden bg-black/20 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-2xl">
+            <img
+              src="/images/c21Everest.jpg"
+              alt="C21 Everest Property"
+              className="w-full h-full object-contain mix-blend-screen scale-95"
+            />
           </div>
-          <div>
-            <blockquote className="text-3xl font-light leading-relaxed mb-6 text-white/95">
-              "The finest properties across Albania and Greece, managed by
-              trusted professionals."
-            </blockquote>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 border border-white/30" />
-              <div>
-                <p className="font-medium text-sm">Property Estate Platform</p>
-                <p className="text-white/60 text-xs">
-                  Internal Management System
-                </p>
-              </div>
-            </div>
+
+          {/* Company name */}
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold tracking-tight mb-1">
+              C21 Everest Property
+            </h2>
+            <p className="text-white/50 text-sm">Internal Management System</p>
           </div>
+
+          {/* Quote */}
+          <blockquote className="text-xl font-light leading-relaxed text-white/80 text-center max-w-sm">
+            "The finest properties across Albania and Greece, managed by trusted
+            professionals."
+          </blockquote>
         </div>
       </div>
 
@@ -59,12 +59,16 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center bg-slate-50 p-8">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-white" />
+          <div className="flex flex-col items-center gap-3 mb-10 lg:hidden">
+            <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-900 flex items-center justify-center shadow-lg">
+              <img
+                src="/images/c21Everest.jpg"
+                alt="C21 Everest"
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="text-xl font-semibold text-slate-900">
-              Property Estate
+              C21 Everest Property
             </span>
           </div>
 
@@ -181,13 +185,6 @@ export default function LoginPage() {
                 </div>
               </div>
             </div>
-
-            {/* {error && (
-              <div className="flex items-center gap-2.5 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
-                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-                <p className="text-red-600 text-sm">{error}</p>
-              </div>
-            )} */}
 
             <button
               type="submit"
