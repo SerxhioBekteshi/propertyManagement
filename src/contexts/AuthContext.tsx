@@ -10,8 +10,6 @@ import { eLocalStorage } from "../assets/enums";
 import { useNavigate } from "react-router-dom";
 import { TUserResponse } from "../types/auth";
 import { AuthenticationService } from "../lib/Authentication";
-import { enqueueSnackbar } from "notistack";
-import { IApiError } from "../lib/axios";
 
 interface AuthContextType {
   user: TUserResponse | null;
@@ -56,11 +54,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       localStorage.setItem(eLocalStorage.AccessToken, res.accessToken);
       localStorage.setItem(eLocalStorage.RefreshToken, res.refreshToken);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: any) {
-      enqueueSnackbar({
-        variant: "error",
-        message: (error.response?.data as IApiError)?.Errors ?? error.message,
-      });
       setLoading(false);
     }
 

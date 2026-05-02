@@ -15,7 +15,7 @@ import { createPortal } from "react-dom";
 
 export const countryFlags: Record<string, string> = {
   AL: "/images/flags/al.png",
-  GR: "/images/flags/gr.jpg",
+  GR: "/images/flags/gr.png",
 };
 type NavLink = {
   to: string;

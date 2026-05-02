@@ -162,7 +162,7 @@ export default function LoginPage() {
                     }`}
                   >
                     <img
-                      src="/images/flags/gr.jpg"
+                      src="/images/flags/gr.png"
                       alt="Greece"
                       className="w-8 h-6 object-cover rounded shadow-sm shrink-0"
                     />
