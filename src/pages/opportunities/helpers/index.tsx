@@ -18,6 +18,9 @@ import {
 } from "../../../utils/styles";
 import OpportunityBadge from "../components/OpportunityBadge";
 import CountryFlag from "../../../components/flags/CountryFlag";
+import { OpportunitiesFiltersDTO } from "../../../types/opportunities";
+import { LookupFilterOperation } from "../../../assets/enums";
+import { FilterMapping } from "../../../types/database";
 
 export const columns: ColumnConfig[] = [
   { key: "title", header: "Title" },
@@ -238,3 +241,51 @@ export const renderLeadSource = (value?: string) => {
     </span>
   );
 };
+
+export const INITIAL_FILTERS: OpportunitiesFiltersDTO = {
+  orderBy: "newest",
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const filterMappings: FilterMapping<any>[] = [
+  {
+    key: "businessType",
+    column: "businessType",
+    operation: LookupFilterOperation.Equals,
+  },
+  {
+    key: "propertyType",
+    column: "propertyType",
+    operation: LookupFilterOperation.Equals,
+  },
+  {
+    key: "priceFrom",
+    column: "priceFrom",
+    operation: LookupFilterOperation.MoreOrEquals,
+  },
+  {
+    key: "priceTo",
+    column: "priceTo",
+    operation: LookupFilterOperation.LessOrEquals,
+  },
+  {
+    key: "bedroomsFrom",
+    column: "bedroomsFrom",
+    operation: LookupFilterOperation.Equals,
+  },
+  {
+    key: "cityId",
+    column: "cityId",
+    operation: LookupFilterOperation.Equals,
+  },
+  {
+    key: "zoneId",
+    column: "zoneId",
+    operation: LookupFilterOperation.Equals,
+  },
+  {
+    key: "salesStage",
+    column: "salesStage",
+    operation: LookupFilterOperation.Equals,
+  },
+];

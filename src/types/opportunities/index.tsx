@@ -71,3 +71,18 @@ export type AddOpportunityDTO = Omit<
   | "cityName"
   | "propertyOwnerName"
 > & {};
+
+export interface OpportunitiesFiltersDTO {
+  businessType?: string;
+  propertyType?: string;
+  priceFrom?: number;
+  priceTo?: number;
+  bedroomsFrom?: number;
+
+  // Row 2 in Image
+  salesStage?: string;
+  cityId?: number;
+  zoneId?: number;
+
+  orderBy: "newest" | "oldest" | "price_asc" | "price_desc";
+}

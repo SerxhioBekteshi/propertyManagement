@@ -1,18 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useEffect, useRef } from "react";
 import { BaseTableService } from "../lib/Table";
-import { LookupFilterOperation, LookupSortingDirection } from "../assets/enums";
+import { LookupSortingDirection } from "../assets/enums";
 import {
+  FilterMapping,
   LookupFilterDTO,
   LookupRepositoryDTO,
   LookupSortingDTO,
 } from "../types/database";
-
-export interface FilterMapping<T> {
-  key: keyof T;
-  column: string;
-  operation: LookupFilterOperation;
-}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Props<_T, F> {

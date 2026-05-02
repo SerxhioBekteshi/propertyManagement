@@ -46,3 +46,9 @@ export interface PagedListResponse<T> {
   hasNext: boolean;
   key: string;
 }
+
+export interface FilterMapping<T> {
+  key: keyof T;
+  column: string;
+  operation: LookupFilterOperation;
+}

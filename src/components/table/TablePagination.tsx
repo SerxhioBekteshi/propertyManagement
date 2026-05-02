@@ -14,7 +14,7 @@ interface TablePaginationProps<_T> {
   error: string | null;
   currentPage: number;
   itemsPerPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentPage: (page: number) => void;
   totalPages: number;
 }
 
@@ -75,7 +75,7 @@ const TablePagination = <T,>(props: TablePaginationProps<T>) => {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+              onClick={() => setCurrentPage(Math.max(currentPage - 1, 0))}
               disabled={currentPage === 0 || loading}
               aria-label="Previous page"
             >
@@ -107,7 +107,7 @@ const TablePagination = <T,>(props: TablePaginationProps<T>) => {
               variant="outline"
               size="icon"
               onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+                setCurrentPage(Math.min(currentPage + 1, totalPages - 1))
               }
               disabled={currentPage === totalPages - 1 || loading}
               aria-label="Next page"

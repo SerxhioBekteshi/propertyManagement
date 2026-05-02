@@ -1,18 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export interface FilterMapping {
-  filterKey: string;
-  paramKey: string;
-  defaultValue?: any;
-  lookupArray?: any[];
-  lookupField?: string;
-  lookupReturnField?: string;
-  transform?: (value: any) => string;
-  isBoolean?: boolean;
-  booleanCondition?: (value: any) => boolean;
-  isDate?: boolean;
-}
-
 export const buildDynamicFilterParams = (
   filterMappings?: FilterMapping[],
   filters?: any,

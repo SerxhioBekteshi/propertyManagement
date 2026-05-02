@@ -1,16 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   useEffect,
   useState,
   useMemo,
-  forwardRef,
   useImperativeHandle,
   useCallback,
+  useRef,
+  forwardRef,
 } from "react";
-
 import { useDebouncedSearch } from "../../hooks/useDebounce";
-
 import {
   Table,
   TableBody,
@@ -19,16 +17,20 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/baseTable";
-
 import TableToolbar from "./TableToolbar";
 import TablePagination from "./TablePagination";
 import { TableSkeleton } from "../skeleton";
 import { ErrorState } from "../error-state";
 import NoResults from "../no-results";
-
 import { motion } from "framer-motion";
 import { BaseTableService } from "../../lib/Table";
-import { LookupFilterDTO, LookupRepositoryDTO } from "../../types/database";
+import {
+  FilterMapping,
+  LookupFilterDTO,
+  LookupRepositoryDTO,
+  LookupSortingDTO,
+} from "../../types/database";
+import { LookupSortingDirection } from "../../assets/enums";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import React from "react";
 
 export interface ColumnConfig {
   key: string;
@@ -49,39 +52,40 @@ export interface BaseTableRef<T> {
   reset: () => void;
 }
 
-interface BaseTableProps<T> {
+interface BaseTableProps<T, F = any> {
   controller?: string;
   staticData?: T[];
   columns: ColumnConfig[];
-  filters?: any;
-  defaultFilters?: any;
-  filterMappings?: any;
+  initialFilters?: F;
+  filterMappings?: FilterMapping<F>[];
+  renderFilters?: (filters: F, onChange: (f: F) => void) => React.ReactNode;
+  onReset?: () => void;
   addButton?: React.ReactNode;
   clickableRow?: boolean;
   navigateToDetails?: (row: T) => void;
-  setFilters?: (val: any) => void;
   onAddClick?: () => void;
   renderActions?: (row: T) => React.ReactNode;
 }
 
 const ITEMS_PER_PAGE = 10;
 
-const BaseTableComponent = <T extends Record<string, any>>(
-  props: BaseTableProps<T>,
+const BaseTableComponent = <T extends Record<string, any>, F = any>(
+  props: BaseTableProps<T, F>,
   ref: React.ForwardedRef<BaseTableRef<T>>,
 ) => {
   const {
     controller,
     columns,
-    filters,
-    defaultFilters,
+    initialFilters,
     filterMappings,
+    renderFilters,
     addButton,
     clickableRow = false,
     navigateToDetails,
     onAddClick,
     staticData,
     renderActions,
+    onReset,
   } = props;
 
   const { searchTerm, immediateValue, updateSearch } = useDebouncedSearch();
@@ -90,55 +94,121 @@ const BaseTableComponent = <T extends Record<string, any>>(
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const isStatic = !!staticData;
+  const pageRef = useRef(0);
+  const filtersRef = useRef<F | undefined>(initialFilters);
+
+  const buildFilters = useCallback(
+    (currentFilters?: F): LookupFilterDTO[] => {
+      if (!filterMappings || !currentFilters) return [];
+      return filterMappings
+        .map((m) => {
+          const value = currentFilters[m.key];
+          if (value === undefined || value === null || value === "")
+            return null;
+          return {
+            columnName: m.column,
+            value:
+              typeof value === "string" && !isNaN(Number(value))
+                ? Number(value)
+                : value,
+            operation: m.operation,
+          };
+        })
+        .filter(Boolean) as LookupFilterDTO[];
+    },
+    [filterMappings],
+  );
+
+  const buildSorting = useCallback((orderBy?: string): LookupSortingDTO[] => {
+    switch (orderBy) {
+      case "newest":
+        return [
+          {
+            columnName: "createdDateTime",
+            direction: LookupSortingDirection.Desc,
+          },
+        ];
+      case "oldest":
+        return [
+          {
+            columnName: "createdDateTime",
+            direction: LookupSortingDirection.Asc,
+          },
+        ];
+      case "price_asc":
+        return [{ columnName: "Price", direction: LookupSortingDirection.Asc }];
+      case "price_desc":
+        return [
+          { columnName: "Price", direction: LookupSortingDirection.Desc },
+        ];
+      default:
+        return [];
+    }
+  }, []);
 
   const fetchData = useCallback(
-    async (currentFilters: any) => {
+    async (pageNumber: number, currentFilters?: F) => {
       if (isStatic) return;
       try {
         setLoading(true);
-
-        const mappedFilters: LookupFilterDTO[] = filterMappings?.length
-          ? filterMappings.map((f: any) => ({
-              columnName: f.column,
-              value: currentFilters?.[f.key],
-              operation: f.operation,
-            }))
-          : [];
-
         const body: LookupRepositoryDTO = {
           searchTerm: searchTerm ?? "",
-          pageNumber: currentPage,
+          pageNumber,
           pageSize: ITEMS_PER_PAGE,
-          filters: mappedFilters,
-          sorting: [],
+          filters: buildFilters(currentFilters),
+          sorting: buildSorting((currentFilters as any)?.orderBy),
         };
-
         const result = await BaseTableService.getAllItems<T>(
           controller ?? "",
           body,
         );
-
         setData(result.items);
         setTotalPages(result.totalPages);
         setTotalCount(result.totalCount);
         setCurrentPage(result.currentPage);
         setError(null);
-      } catch (e) {
+      } catch {
         setError("Failed to load data");
       } finally {
         setLoading(false);
       }
     },
-    [controller, currentPage, searchTerm, isStatic],
+    [controller, searchTerm, isStatic, buildFilters, buildSorting],
   );
 
+  // ✅ Initial fetch on mount
   useEffect(() => {
-    fetchData(filters);
-  }, [fetchData]);
+    fetchData(0, filtersRef.current);
+  }, []);
+
+  // ✅ Re-fetch when search changes — resets to page 0
+  useEffect(() => {
+    pageRef.current = 0;
+    fetchData(0, filtersRef.current);
+  }, [searchTerm]);
+
+  // ✅ Called by toolbar when filters are committed (desktop: on change, tablet: on apply)
+  const handleFiltersChange = useCallback(
+    (newFilters: F) => {
+      pageRef.current = 0;
+      filtersRef.current = newFilters;
+      fetchData(0, newFilters);
+    },
+    [fetchData],
+  );
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      pageRef.current = page;
+      setCurrentPage(page);
+      fetchData(page, filtersRef.current);
+    },
+    [fetchData],
+  );
 
   useEffect(() => {
     if (staticData) {
@@ -149,8 +219,12 @@ const BaseTableComponent = <T extends Record<string, any>>(
   }, [staticData]);
 
   useImperativeHandle(ref, () => ({
-    refresh: () => fetchData(filters),
-    reset: () => fetchData(defaultFilters),
+    refresh: () => fetchData(pageRef.current, filtersRef.current),
+    reset: () => {
+      pageRef.current = 0;
+      filtersRef.current = initialFilters;
+      fetchData(0, initialFilters);
+    },
     getData: () => data,
   }));
 
@@ -178,7 +252,6 @@ const BaseTableComponent = <T extends Record<string, any>>(
                     <MoreHorizontal size={18} />
                   </button>
                 </DropdownMenuTrigger>
-
                 <DropdownMenuPortal>
                   <DropdownMenuContent
                     align="end"
@@ -194,7 +267,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
         )}
       </motion.tr>
     ));
-  }, [data, columns]);
+  }, [data, columns, clickableRow, navigateToDetails, renderActions]);
 
   return (
     <div className="w-full">
@@ -203,12 +276,10 @@ const BaseTableComponent = <T extends Record<string, any>>(
         searchValue={immediateValue}
         onSearchChange={updateSearch}
         addButton={addButton}
-        onFiltersSubmit={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-        resetFilters={function (): void {
-          throw new Error("Function not implemented.");
-        }}
+        renderFilters={renderFilters}
+        initialFilters={initialFilters}
+        onFiltersChange={handleFiltersChange}
+        onReset={onReset}
       />
 
       <div className="border rounded-md overflow-auto">
@@ -220,8 +291,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
               ))}
               {renderActions && (
                 <TableHead className="w-[60px] text-right sticky right-0 bg-white z-10">
-                  {" "}
-                  Actions{" "}
+                  Actions
                 </TableHead>
               )}
             </TableRow>
@@ -235,11 +305,13 @@ const BaseTableComponent = <T extends Record<string, any>>(
                 <TableCell colSpan={columns.length}>
                   <ErrorState
                     message={error}
-                    onRetry={() => fetchData(filters)}
+                    onRetry={() =>
+                      fetchData(pageRef.current, filtersRef.current)
+                    }
                   />
                 </TableCell>
               </TableRow>
-            ) : data.length != 0 ? (
+            ) : data.length !== 0 ? (
               tableRows
             ) : (
               <TableRow>
@@ -261,7 +333,7 @@ const BaseTableComponent = <T extends Record<string, any>>(
           currentPage={currentPage}
           totalPages={totalPages}
           totalRows={totalCount}
-          setCurrentPage={setCurrentPage}
+          setCurrentPage={handlePageChange}
           loading={loading}
           error={error}
           itemsPerPage={ITEMS_PER_PAGE}
@@ -271,10 +343,10 @@ const BaseTableComponent = <T extends Record<string, any>>(
   );
 };
 
-export const BaseTable = forwardRef(BaseTableComponent) as <
-  T extends Record<string, any>,
->(
-  props: BaseTableProps<T> & {
-    ref?: React.ForwardedRef<BaseTableRef<T>>;
-  },
-) => ReturnType<typeof BaseTableComponent>;
+type BaseTableType = <T extends Record<string, any>, F = any>(
+  props: BaseTableProps<T, F> & { ref?: React.Ref<BaseTableRef<T>> },
+) => React.ReactElement | null;
+
+export const BaseTable = forwardRef(
+  BaseTableComponent,
+) as unknown as BaseTableType;

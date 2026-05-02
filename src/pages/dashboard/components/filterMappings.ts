@@ -1,5 +1,5 @@
 import { LookupFilterOperation } from "../../../assets/enums";
-import { FilterMapping } from "../../../hooks/usePagedList";
+import { FilterMapping } from "../../../types/database";
 import { PropertyFiltersDTO } from "../../../types/properties";
 
 export const INITIAL_FILTERS: PropertyFiltersDTO = {
