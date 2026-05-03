@@ -13,7 +13,7 @@ const Badge = ({
 }: BadgeProps) => {
   if (!value) return <span className="text-slate-300 text-sm">—</span>;
 
-  const cls = map[value.toLowerCase()] ?? fallback;
+  const cls = map[value] ?? fallback;
 
   return (
     <span
