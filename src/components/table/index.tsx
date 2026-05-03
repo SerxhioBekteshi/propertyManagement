@@ -39,6 +39,8 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import React from "react";
+import { NAVBAR_HEIGHT } from "../../assets/enums/constants/navbar";
+import { useIsTablet } from "../../hooks/useBreakpoint";
 
 export interface ColumnConfig {
   key: string;
@@ -96,6 +98,8 @@ const BaseTableComponent = <T extends Record<string, any>, F = any>(
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toolbarHeight, setToolbarHeight] = useState(0);
+  const isTablet = useIsTablet();
 
   const isStatic = !!staticData;
   const pageRef = useRef(0);
@@ -272,18 +276,23 @@ const BaseTableComponent = <T extends Record<string, any>, F = any>(
   return (
     <div className="w-full">
       <TableToolbar
-        showSearch={immediateValue !== "" || data.length !== 0}
         searchValue={immediateValue}
-        onSearchChange={updateSearch}
         addButton={addButton}
-        renderFilters={renderFilters}
         initialFilters={initialFilters}
+        onSearchChange={updateSearch}
+        renderFilters={renderFilters}
         onFiltersChange={handleFiltersChange}
         onReset={onReset}
+        setToolbarHeight={setToolbarHeight}
       />
 
-      <div className="border rounded-md overflow-auto">
-        <Table>
+      <div
+        className="border rounded-md overflow-auto"
+        style={{
+          maxHeight: `calc(100vh - (${isTablet ? toolbarHeight + 74 : 0}px + ${NAVBAR_HEIGHT}px))`,
+        }}
+      >
+        <Table className="min-w-max w-full">
           <TableHeader>
             <TableRow>
               {columns.map((c) => (
