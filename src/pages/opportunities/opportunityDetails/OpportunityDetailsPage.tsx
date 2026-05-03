@@ -35,6 +35,7 @@ import {
   SALES_STAGE_STYLES,
 } from "../../../utils/styles";
 import CountryFlag from "../../../components/flags/CountryFlag";
+import { FURNISHED_ICONS } from "../../dashboard/helpers";
 
 const OpportunityDetails = () => {
   const { id } = useParams();
@@ -285,16 +286,6 @@ const OpportunityDetails = () => {
                     ? `${o.bathroomsFrom ?? 0} – ${o.bathroomsTo ?? "∞"}`
                     : "—"}
                 </OpportunityRow>
-
-                <OpportunityRow label="Property Type">
-                  {o.propertyType ? (
-                    <span className="text-[11px] font-bold uppercase px-2 py-0.5 rounded border bg-blue-50 text-blue-700 border-blue-100">
-                      {fmt(o.propertyType)}
-                    </span>
-                  ) : (
-                    "—"
-                  )}
-                </OpportunityRow>
               </div>
               <div>
                 <OpportunityRow label="Area (m²)">
@@ -303,14 +294,24 @@ const OpportunityDetails = () => {
                     : "—"}
                 </OpportunityRow>
                 <OpportunityRow label="Furnished">
-                  {fmt(o.furnished)}
+                  <div className="flex gap-2">
+                    <span>
+                      {FURNISHED_ICONS[String(o.furnished).toLowerCase()] ||
+                        "🏠"}
+                    </span>
+
+                    {fmt(o.furnished)}
+                  </div>
                 </OpportunityRow>
                 <OpportunityRow label="Floor">{o.floor ?? "—"}</OpportunityRow>
-                <OpportunityRow label="Availability">
-                  <OpportunityBadge
-                    value={o.availability}
-                    map={AVAILABILITY_STYLES}
-                  />
+                <OpportunityRow label="Property Type">
+                  {o.propertyType ? (
+                    <span className="text-[11px] font-bold uppercase px-2 py-0.5 rounded border bg-blue-50 text-blue-700 border-blue-100">
+                      {fmt(o.propertyType)}
+                    </span>
+                  ) : (
+                    "—"
+                  )}
                 </OpportunityRow>
               </div>
             </div>
