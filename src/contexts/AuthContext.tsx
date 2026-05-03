@@ -75,13 +75,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const profile = await AuthenticationService.getMe();
 
-      // ✅ IMPORTANT FIX: unwrap if API returns {data, result}
       const actualUser = (profile as any)?.data ?? profile;
-
       setUser(actualUser);
-      if (window.location.pathname === "/") {
-        navigate("/dashboard");
-      }
+
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err: any) {
       setUser(null);
