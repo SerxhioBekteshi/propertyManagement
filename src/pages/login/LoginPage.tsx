@@ -1,10 +1,11 @@
 import { useState, FormEvent } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { Spinner } from "../../components/spinner";
 
 export default function LoginPage() {
-  const { signIn, loading } = useAuth();
+  const { signIn, loading, user } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,6 +18,8 @@ export default function LoginPage() {
     await signIn(email, password, country);
     navigate("/dashboard");
   }
+  if (loading) return <Spinner fullScreen />;
+  if (user) return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="min-h-screen flex">
