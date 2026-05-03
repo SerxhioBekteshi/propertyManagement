@@ -99,7 +99,7 @@ const OpportunityDetails = () => {
           )}
           {o.businessType && (
             <span
-              className={`text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full ${BUSINESS_TYPE_STYLES[o.businessType?.toLowerCase()] ?? "bg-slate-200 text-slate-700"}`}
+              className={`text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full ${BUSINESS_TYPE_STYLES[o.businessType] ?? "bg-slate-200 text-slate-700"}`}
             >
               {o.businessType}
             </span>
