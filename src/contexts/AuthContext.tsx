@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const token = localStorage.getItem(eLocalStorage.AccessToken);
       if (!token) {
         setUser(null);
+        setLoading(false);
         return;
       }
 
@@ -95,13 +96,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const init = async () => {
-      const token = localStorage.getItem(eLocalStorage.AccessToken);
-
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
       await refreshProfile(); // ✅ wait properly
       setLoading(false);
     };
