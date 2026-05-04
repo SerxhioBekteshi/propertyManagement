@@ -323,22 +323,21 @@ const BaseTableComponent = <T extends Record<string, any>, F = any>(
                   />
                 </TableCell>
               </TableRow>
-            ) : data.length !== 0 ? (
-              tableRows
             ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <NoResults
-                    title="No data found"
-                    titleButton="Add new record"
-                    onAddClick={onAddClick}
-                  />
-                </TableCell>
-              </TableRow>
+              tableRows
             )}
           </TableBody>
         </Table>
       </div>
+
+      {/* Rendered outside the scrollable table so it always fills the visible width on mobile */}
+      {!loading && !error && data.length === 0 && (
+        <NoResults
+          title="No data found"
+          titleButton="Add new record"
+          onAddClick={onAddClick}
+        />
+      )}
 
       {data.length != 0 && (
         <TablePagination
