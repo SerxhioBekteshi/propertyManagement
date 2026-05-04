@@ -52,6 +52,7 @@ const OpportunitiesPage = () => {
         columns={visibleColumns}
         initialFilters={INITIAL_FILTERS}
         filterMappings={filterMappings}
+        showSearch={false}
         renderFilters={(filters, onChange) => (
           <OpportunityFilters
             filters={filters}

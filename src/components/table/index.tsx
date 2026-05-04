@@ -67,6 +67,7 @@ interface BaseTableProps<T, F = any> {
   navigateToDetails?: (row: T) => void;
   onAddClick?: () => void;
   renderActions?: (row: T) => React.ReactNode;
+  showSearch?: boolean;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -88,6 +89,7 @@ const BaseTableComponent = <T extends Record<string, any>, F = any>(
     staticData,
     renderActions,
     onReset,
+    showSearch = true,
   } = props;
 
   const { searchTerm, immediateValue, updateSearch } = useDebouncedSearch();
@@ -278,6 +280,7 @@ const BaseTableComponent = <T extends Record<string, any>, F = any>(
       <TableToolbar
         searchValue={immediateValue}
         addButton={addButton}
+        showSearch={showSearch}
         initialFilters={initialFilters}
         onSearchChange={updateSearch}
         renderFilters={renderFilters}
