@@ -162,7 +162,7 @@ const TableToolbar = (props: TableToolbarProps) => {
           title="Filter results"
           onOpenChange={setIsOpen}
           description="Apply filters to narrow down results."
-          fitContentHeight={true}
+          fitContentHeight={false}
           onSave={handleApplyDraft}
           footerActions={
             <Button
