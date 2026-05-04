@@ -108,7 +108,7 @@ const TableToolbar = (props: TableToolbarProps) => {
     <>
       <div
         ref={componentRef}
-        className="flex flex-col gap-3 border-b border-gray-200 bg-white py-4"
+        className="flex flex-col gap-3 border-b border-gray-200 bg-white p-4"
       >
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           {showSearch && (
