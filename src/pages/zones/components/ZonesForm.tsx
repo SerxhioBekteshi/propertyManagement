@@ -50,7 +50,7 @@ const ZonesForm = ({ cities }: ZonesFormProps) => {
         name="cityId"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <Label>Zone</Label>
+            <Label>City</Label>
             <SingleSelect
               options={cities}
               onChange={onChange}

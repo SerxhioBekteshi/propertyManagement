@@ -49,7 +49,7 @@ const StreetsForm = ({ zones }: StreetsFormProps) => {
         name="zoneId"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div>
-            <Label>Street</Label>
+            <Label>Zone</Label>
             <SingleSelect
               options={zones}
               onChange={onChange}

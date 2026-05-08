@@ -28,7 +28,7 @@ const CitiesModal = (props: CitiesModalProps) => {
   const { divisions, loadingDivisions } = useLocationConfigBase({
     open: open,
     fetch: {
-      zones: true,
+      divisions: true,
     },
   });
 
