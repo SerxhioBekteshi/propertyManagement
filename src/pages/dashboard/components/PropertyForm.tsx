@@ -36,12 +36,42 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { FileUploader } from "../../../components/upload-file";
 import MapPicker from "../../../components/MapPicker";
 import "leaflet/dist/leaflet.css";
+import * as yup from "yup";
+import ErrorMessage from "../../../components/hook-form/error-message";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
 
 const checkboxClass =
   "h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer";
+
+const getInputClass = (hasError?: boolean) =>
+  `w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent placeholder-slate-400 transition-all
+  ${
+    hasError
+      ? "border-red-500 focus:ring-red-500"
+      : "border-slate-200 focus:ring-slate-900"
+  }`;
+
+export const PropertyValidationSchema = yup.object({
+  title: yup
+    .string()
+    .required("Title is required")
+    .min(3, "Title must be at least 3 characters")
+    .max(50, "Title must not exceed 50 characters")
+    .trim(),
+
+  streetId: yup.number().required("Street is required"),
+
+  mainImage: yup
+    .mixed<File>()
+    .required("Main image is required")
+    .test("filePresent", "Main image is required", (value) => {
+      return value instanceof File;
+    }),
+});
+
+export type PropertyFormValues = yup.InferType<typeof PropertyValidationSchema>;
 
 const PropertyForm = () => {
   const { control, setValue } = useFormContext();
@@ -185,14 +215,15 @@ const PropertyForm = () => {
           <Controller
             control={control}
             name="title"
-            render={({ field }) => (
+            render={({ field, fieldState: { error } }) => (
               <div>
                 <Label>Title *</Label>
                 <input
                   {...field}
                   value={field.value ?? ""}
-                  className={inputClass}
+                  className={getInputClass(!!error)}
                 />
+                <ErrorMessage message={error?.message} />
               </div>
             )}
           />
@@ -212,12 +243,16 @@ const PropertyForm = () => {
             <Controller
               control={control}
               name="mainImage"
-              render={({ field }) => (
-                <SingleImageUploader
-                  value={field.value}
-                  onChange={field.onChange}
-                  label="Main Image"
-                />
+              render={({ field, fieldState: { error } }) => (
+                <div className="flex flex-col">
+                  <SingleImageUploader
+                    value={field.value}
+                    onChange={field.onChange}
+                    label="Main Image *"
+                    error={!!error}
+                  />
+                  <ErrorMessage message={error?.message} />
+                </div>
               )}
             />
 
@@ -596,20 +631,24 @@ const PropertyForm = () => {
             <Controller
               control={control}
               name="streetId"
-              render={({ field }) => (
+              render={({ field, fieldState: { error } }) => (
                 <>
-                  <Label>Street</Label>
-
-                  <SingleSelect
-                    value={field.value}
-                    disabled={!selectedZoneId || loadingStreets}
-                    loading={loadingStreets}
-                    options={streets}
-                    onChange={(value) =>
-                      field.onChange(value ? Number(value) : undefined)
-                    }
-                    placeholder="— Select —"
-                  />
+                  <Label>Street *</Label>
+                  <div
+                    className={error ? "rounded-xl ring-2 ring-red-500" : ""}
+                  >
+                    <SingleSelect
+                      value={field.value}
+                      disabled={!selectedZoneId || loadingStreets}
+                      loading={loadingStreets}
+                      options={streets}
+                      onChange={(value) =>
+                        field.onChange(value ? Number(value) : undefined)
+                      }
+                      placeholder="— Select —"
+                    />
+                  </div>
+                  <ErrorMessage message={error?.message} />
                 </>
               )}
             />

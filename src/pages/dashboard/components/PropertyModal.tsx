@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import PropertyForm from "./PropertyForm";
+import PropertyForm, { PropertyValidationSchema } from "./PropertyForm";
 import FormProvider from "../../../components/hook-form/form-provider";
 import Modal from "../../../components/modal";
 import { AddPropertyDTO, PropertyResponseDTO } from "../../../types/properties";
 import { PropertiesService } from "../../../lib/Properties";
 import { enqueueSnackbar } from "notistack";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 interface IModalPropertyProp {
   open: boolean;
@@ -19,7 +20,7 @@ const ModalProperty = (props: IModalPropertyProp) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const methods = useForm<AddPropertyDTO>({
-    // resolver: yupResolver(PropertyValidationSchema),
+    resolver: yupResolver(PropertyValidationSchema),
     // defaultValues: {
     //   ...model,
     // },

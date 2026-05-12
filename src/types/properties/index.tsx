@@ -48,7 +48,7 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
 
   // Core
   title: string;
-  description: string;
+  description?: string;
   comments?: string;
 
   // Classification, property information
@@ -82,15 +82,15 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   zoneId?: number;
   zoneName?: string;
 
-  streetId?: number;
+  streetId: number;
   streetName?: string;
 
   floor?: number;
   publishGeoreference?: boolean;
 
   //Price, business type
-  businessType: "Sale" | "Rent";
-  price: number;
+  businessType?: "Sale" | "Rent" | null;
+  price?: number;
   priceForM2?: number;
   priceUponRequest?: boolean;
 
@@ -128,6 +128,6 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   privateImageUrls?: string[];
   fileUrls?: string[];
 
-  mainImage?: File | null;
+  mainImage: File;
   opportunityCount?: number;
 };

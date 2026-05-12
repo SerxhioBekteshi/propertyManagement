@@ -21,6 +21,7 @@ interface SingleImageUploaderProps {
   onChange?: (file: File | null) => void;
   label?: string;
   className?: string;
+  error?: boolean; // 👈 add this
 }
 
 export const ImageUploader = ({
@@ -121,6 +122,7 @@ export const SingleImageUploader = ({
   onChange,
   label,
   className = "",
+  error, // 👈 add this
 }: SingleImageUploaderProps) => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -145,11 +147,14 @@ export const SingleImageUploader = ({
         <div
           {...getRootProps()}
           className={`flex items-center justify-center gap-2 w-full h-24 rounded-xl border border-dashed transition cursor-pointer text-xs
-          ${isDragActive ? "border-slate-900 bg-slate-100" : "border-slate-300 hover:bg-slate-50"}`}
+          ${isDragActive ? "border-slate-900 bg-slate-100" : ""}
+          ${error ? "border-red-500 bg-red-50 hover:bg-red-50" : "border-slate-300 hover:bg-slate-50"}`} // 👈 error styles
         >
           <input {...getInputProps()} />
-          <Upload className="w-4 h-4 text-slate-500" />
-          <span className="text-slate-600">
+          <Upload
+            className={`w-4 h-4 ${error ? "text-red-400" : "text-slate-500"}`}
+          />
+          <span className={`${error ? "text-red-400" : "text-slate-600"}`}>
             {isDragActive ? "Drop..." : "Upload"}
           </span>
         </div>
