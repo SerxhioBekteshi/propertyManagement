@@ -54,12 +54,12 @@ const getInputClass = (hasError?: boolean) =>
   }`;
 
 export const PropertyValidationSchema = yup.object({
-  title: yup
-    .string()
-    .required("Title is required")
-    .min(3, "Title must be at least 3 characters")
-    .max(50, "Title must not exceed 50 characters")
-    .trim(),
+  // title: yup
+  //   .string()
+  //   .required("Title is required")
+  //   .min(3, "Title must be at least 3 characters")
+  //   .max(50, "Title must not exceed 50 characters")
+  //   .trim(),
 
   streetId: yup.number().required("Street is required"),
 
@@ -223,7 +223,7 @@ const PropertyForm = () => {
                   value={field.value ?? ""}
                   className={getInputClass(!!error)}
                 />
-                <ErrorMessage message={error?.message} />
+                {/* <ErrorMessage message={error?.message} /> */}
               </div>
             )}
           />

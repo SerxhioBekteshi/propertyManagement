@@ -47,7 +47,7 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   id: number;
 
   // Core
-  title: string;
+  title?: string;
   description?: string;
   comments?: string;
 
