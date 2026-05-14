@@ -2,7 +2,7 @@ import { useState, FormEvent } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { Spinner } from "../../components/spinner";
+import SplashScreen from "../../components/splash-screen";
 
 export default function LoginPage() {
   const { signIn, loading, user } = useAuth();
@@ -18,7 +18,7 @@ export default function LoginPage() {
     await signIn(email, password, country);
     navigate("/dashboard");
   }
-  if (loading) return <Spinner fullScreen />;
+  if (loading) return <SplashScreen />;
   if (user) return <Navigate to="/dashboard" replace />;
 
   return (

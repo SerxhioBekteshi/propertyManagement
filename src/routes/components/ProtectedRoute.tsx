@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { Spinner } from "../../components/spinner";
+import SplashScreen from "../../components/splash-screen";
 
 export type TProtectedRoute = {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ const ProtectedRoute = (props: TProtectedRoute) => {
   const hasAccess = user;
 
   if (loading) {
-    return <Spinner fullScreen={true} />;
+    return <SplashScreen />;
   }
 
   if (!user) return <Navigate to="/" />;

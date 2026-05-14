@@ -789,6 +789,23 @@ const PropertyForm = () => {
           <div>
             <Controller
               control={control}
+              name="expirationDate"
+              render={({ field }) => (
+                <>
+                  <Label>Expiration Date</Label>
+                  <input
+                    type="date"
+                    {...field}
+                    value={field.value ?? ""}
+                    className={inputClass}
+                  />
+                </>
+              )}
+            />
+          </div>
+          <div>
+            <Controller
+              control={control}
               name="price"
               render={({ field }) => (
                 <>

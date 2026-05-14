@@ -130,4 +130,6 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
 
   mainImage: File;
   opportunityCount?: number;
+
+  expirationDate?: Date;
 };

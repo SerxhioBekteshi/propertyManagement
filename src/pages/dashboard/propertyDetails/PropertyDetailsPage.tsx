@@ -62,11 +62,14 @@ export default function PropertyDetailsPage() {
 
   const getPropertyDetails = async () => {
     setIsLoading(true);
-    const res = await PropertiesService.getPropertyById(Number(id));
-    if (res.data) {
-      setProperty(res.data);
+    try {
+      const res = await PropertiesService.getPropertyById(Number(id));
+      if (res.data) {
+        setProperty(res.data);
+      }
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -404,6 +407,11 @@ export default function PropertyDetailsPage() {
                 <PropertyDetailsItem
                   label="Property Type"
                   value={property.propertyType}
+                  capitalize
+                />
+                <PropertyDetailsItem
+                  label="Expiration Date"
+                  value={formatDate(property.expirationDate?.toString())}
                   capitalize
                 />
                 <PropertyDetailsItem
