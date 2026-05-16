@@ -292,7 +292,7 @@ const BaseTableComponent = <T extends Record<string, any>, F = any>(
       <div
         className="border rounded-md overflow-auto"
         style={{
-          maxHeight: `calc(100vh - (${isTablet ? toolbarHeight + 74 : 0}px + ${NAVBAR_HEIGHT}px))`,
+          maxHeight: `calc(100vh - (${isTablet ? toolbarHeight + 74 : toolbarHeight + NAVBAR_HEIGHT}px + ${NAVBAR_HEIGHT}px))`,
         }}
       >
         <Table className="min-w-max w-full">
