@@ -242,27 +242,29 @@ export default function Navbar() {
         </div>
 
         {/* MOBILE DROPDOWN — below md */}
-        {mobileOpen && (
-          <div className="md:hidden border-t border-slate-100 bg-white px-4 py-3 flex flex-col gap-1">
-            {allLinks.map(({ to, label, icon: Icon }) => (
-              <NavLink
-                key={to}
-                to={to}
-                onClick={() => setMobileOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-slate-900 text-white"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  }`
-                }
-              >
-                {Icon && <Icon className="w-4 h-4" />}
-                {label}
-              </NavLink>
-            ))}
-          </div>
-        )}
+        {mobileOpen &&
+          createPortal(
+            <div className="fixed top-16 left-0 right-0 md:hidden border-t border-slate-100 bg-white px-4 py-3 flex flex-col gap-1 z-[999]">
+              {allLinks.map(({ to, label, icon: Icon }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={() => setMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`
+                  }
+                >
+                  {Icon && <Icon className="w-4 h-4" />}
+                  {label}
+                </NavLink>
+              ))}
+            </div>,
+            document.body,
+          )}
       </header>
 
       {/* BACKDROPS */}
