@@ -242,9 +242,10 @@ export default function Navbar() {
         </div>
 
         {/* MOBILE DROPDOWN — below md */}
+        {/* MOBILE DROPDOWN — below md */}
         {mobileOpen &&
           createPortal(
-            <div className="fixed top-16 left-0 right-0 md:hidden border-t border-b border-slate-100 bg-white px-4 py-3 flex flex-col gap-1 z-[999]">
+            <div className="fixed top-16 left-0 right-0 md:hidden border-t border-b-2 border-slate-300 bg-slate-50 px-4 py-3 flex flex-col gap-1 z-[999]">
               {allLinks.map(({ to, label, icon: Icon }) => (
                 <NavLink
                   key={to}
