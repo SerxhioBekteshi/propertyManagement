@@ -95,7 +95,7 @@ axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     return response.data;
   },
-  async (error: AxiosError) => {
+  async (error: AxiosError<IApiError>) => {
     const originalRequest: IAxiosRequestConfigRetry =
       error.config as IAxiosRequestConfigRetry;
 
@@ -104,9 +104,8 @@ axiosInstance.interceptors.response.use(
     }
 
     if (error.response) {
-      console.log(error, "ERROR");
       const statusCode = error.response?.status;
-
+      const errorMessage = error.response?.data?.Errors ?? error.message;
       if (
         statusCode === eHttpResponse.Unauthorized &&
         !originalRequest._retry
@@ -128,11 +127,11 @@ axiosInstance.interceptors.response.use(
           message: "Something went wrong. Please try again later",
         });
       } else if (statusCode === eHttpResponse.NotFound) {
-        enqueueSnackbar({ variant: "error", message: "Not Found" });
+        enqueueSnackbar({ variant: "error", message: errorMessage });
       } else if (statusCode !== eHttpResponse.Unauthorized) {
         enqueueSnackbar({
           variant: "error",
-          message: (error.response?.data as IApiError)?.Errors ?? error.message,
+          message: errorMessage ?? error.message,
         });
       }
     }

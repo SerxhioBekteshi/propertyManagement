@@ -72,6 +72,31 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
+
+  /* iPhone Safari zoom fix */
+  html {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font-size: 16px !important;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: inherit;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
 }
 
 /* Optional utilities */
