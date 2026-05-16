@@ -11,7 +11,3 @@ createRoot(document.getElementById("root")!).render(
     </Suspense>
   </BrowserRouter>,
 );
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js");
-}

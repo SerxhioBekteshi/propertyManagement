@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { PropertyResponseDTO } from "../../../types/properties";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ERoles } from "../../../assets/enums";
-import { motion } from "framer-motion";
 import {
   AVAILABILITY_STYLES,
   BUSINESS_TYPE_COLORS,
@@ -26,11 +25,7 @@ interface PropertyCardProps {
   index?: number;
 }
 
-export default function PropertyCard({
-  property,
-  onClick,
-  index,
-}: PropertyCardProps) {
+export default function PropertyCard({ property, onClick }: PropertyCardProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -64,16 +59,13 @@ export default function PropertyCard({
   const isAdmin = user?.role !== ERoles.Agent.toString();
 
   return (
-    <motion.article
+    <article
       onClick={onClick}
       className={`group bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col ${
         property.opportunityCount
           ? "border-2 border-emerald-400 shadow-md shadow-emerald-100"
           : "border border-slate-200"
       }`}
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: (index ?? 0) * 0.05 }}
     >
       {/* IMAGE */}
       <div className="relative h-52 overflow-hidden">
@@ -213,6 +205,6 @@ export default function PropertyCard({
           </button>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }

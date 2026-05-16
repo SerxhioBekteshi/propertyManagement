@@ -12,6 +12,7 @@ import { IOption } from "../../../types";
 import { INITIAL_FILTERS } from "./filterMappings";
 import Label from "../../../components/label";
 import { SingleSelect } from "../../../components/single-select";
+import { Button } from "../../../components/ui/button";
 
 interface PropertyFiltersProps {
   filters: PropertyFiltersDTO;
@@ -258,48 +259,48 @@ export default function PropertyFilters({
     <div className="bg-white/95 backdrop-blur-md p-2 shadow-sm border-b border-slate-200 rounded-2xl border">
       <div className="max-w-screen p-4 mx-auto">
         {/* MOBILE FILTER + CLEAR BUTTONS */}
-        <div className="md:hidden flex items-center gap-2 mb-3">
-          <button
+        <div className="md:hidden flex items-center gap-2 mb-3 ">
+          <Button
             onClick={() => {
               setDraft(filters); // sync draft with current applied filters
               setFiltersOpen(true);
             }}
-            className="flex-1 h-[38px] flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-sm"
+            className="flex-1  flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-sm"
           >
             <Search className="w-4 h-4" />
             Filters
-          </button>
+          </Button>
 
-          <button
-            onClick={clearFilters}
-            className="relative h-[38px] px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
-          >
-            Clear
-            {countActiveFilters() > 0 && (
+          {countActiveFilters() > 0 && ( // ✅ Add this condition
+            <Button
+              onClick={clearFilters}
+              className="relative  px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
+            >
+              Clear
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
                 {countActiveFilters()}
               </span>
-            )}
-          </button>
+            </Button>
+          )}
         </div>
 
         {/* DESKTOP GRID */}
         <div className="hidden md:grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           {desktopFilterFields}
 
-          <div className="flex items-end gap-2">
-            <button
-              onClick={clearFilters}
-              className="relative h-[38px] px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
-            >
-              Clear
-              {countActiveFilters() > 0 && (
+          {countActiveFilters() > 0 && ( // ✅ Add this condition
+            <div className="flex items-end gap-2">
+              <Button
+                onClick={clearFilters}
+                className="relative  px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
+              >
+                Clear
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
                   {countActiveFilters()}
                 </span>
-              )}
-            </button>
-          </div>
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* ORDER BY */}
@@ -336,21 +337,21 @@ export default function PropertyFilters({
         }}
         fitContentHeight={false}
         footerActions={
-          <button
-            onClick={() => {
-              setDraft(INITIAL_FILTERS);
-              onChange(INITIAL_FILTERS);
-              setFiltersOpen(false);
-            }}
-            className="relative h-[38px] px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
-          >
-            Clear
-            {countActiveFilters() > 0 && (
+          countActiveFilters() > 0 && (
+            <Button
+              onClick={() => {
+                setDraft(INITIAL_FILTERS);
+                onChange(INITIAL_FILTERS);
+                setFiltersOpen(false);
+              }}
+              className="relative px-4 flex items-center justify-center rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-100 transition"
+            >
+              Clear
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
                 {countActiveFilters()}
               </span>
-            )}
-          </button>
+            </Button>
+          )
         }
       >
         <div className="grid grid-cols-1 gap-4">{mobileFilterFields}</div>
