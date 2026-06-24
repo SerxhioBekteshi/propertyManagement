@@ -18,7 +18,7 @@ export const streetsSchema = yup.object({
     .required("Name is required")
     .trim()
     .min(2, "Name must be at least 2 characters"),
-  zoneId: yup.number().required("Zone is required"),
+  zoneId: yup.number().nullable().notRequired(),
 });
 
 const StreetsForm = ({ zones }: StreetsFormProps) => {

@@ -1,5 +1,5 @@
 import * as Select from "@radix-ui/react-select";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
 import { IOption } from "../../types";
 
 export function SingleSelect<T extends string | number>({
@@ -20,6 +20,8 @@ export function SingleSelect<T extends string | number>({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error?: any;
 }) {
+  const hasValue = value !== undefined && value !== null && value !== "";
+
   return (
     <Select.Root
       value={value !== undefined && value !== null ? String(value) : ""}
@@ -36,14 +38,34 @@ export function SingleSelect<T extends string | number>({
       <Select.Trigger
         className={`w-full px-3 py-2.5 text-sm bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all flex justify-between items-center
           ${loading ? "opacity-60 cursor-not-allowed" : ""}
-          ${!value ? "text-slate-400" : "text-slate-900"}
+          ${!hasValue ? "text-slate-400" : "text-slate-900"}
           ${error ? "border-red-500 focus:ring-red-500" : "border-slate-200"}
         `}
       >
         <Select.Value placeholder={loading ? "Loading..." : placeholder} />
-        <Select.Icon>
-          <ChevronDown className="w-4 h-4 text-slate-400" />
-        </Select.Icon>
+        <div className="flex items-center gap-1">
+          {hasValue && !disabled && !loading && (
+            <button
+              type="button"
+              aria-label="Clear selected value"
+              className="p-0.5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+              onPointerDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onChange(null);
+              }}
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+          <Select.Icon>
+            <ChevronDown className="w-4 h-4 text-slate-400" />
+          </Select.Icon>
+        </div>
       </Select.Trigger>
 
       <Select.Portal>

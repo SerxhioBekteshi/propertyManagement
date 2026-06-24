@@ -111,6 +111,11 @@ export default function PropertyDetailsPage() {
 
   if (!property) return <NotFound navigate={navigate} />;
 
+  const canViewOwnerDetails =
+    user?.role == ERoles.Admin.toString() ||
+    user?.id == property.agentId ||
+    user?.id == property.propertyOwner?.assignedToId;
+
   const nextImg = () => setImgIndex((prev) => (prev + 1) % images.length);
   const prevImg = () =>
     setImgIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -593,9 +598,7 @@ export default function PropertyDetailsPage() {
               <PropertyDetailsItem
                 label="Owner's Phone Number"
                 value={
-                  user?.role == ERoles.Admin.toString() ||
-                  user?.id == property.agentId ||
-                  user?.id == property.propertyOwner?.assignedToId ? (
+                  canViewOwnerDetails ? (
                     <span className="flex items-center gap-2">
                       <span className="text-base">
                         {nationalityFlags[
@@ -618,6 +621,7 @@ export default function PropertyDetailsPage() {
               <PropertyDetailsItem
                 label="Owner's Name"
                 value={
+                  canViewOwnerDetails &&
                   property.propertyOwner?.firstName &&
                   property.propertyOwner?.lastName ? (
                     property.propertyOwner?.firstName +

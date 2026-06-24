@@ -32,6 +32,7 @@ import { IOption } from "../../../types";
 import { SingleSelect } from "../../../components/single-select";
 import { Plus } from "lucide-react";
 import PropertyOwnerDrawer from "./PropertyOwnerDrawer";
+import StreetDrawer from "./StreetDrawer";
 import { useAuth } from "../../../contexts/AuthContext";
 import { FileUploader } from "../../../components/upload-file";
 import MapPicker from "../../../components/MapPicker";
@@ -61,7 +62,7 @@ export const PropertyValidationSchema = yup.object({
   //   .max(50, "Title must not exceed 50 characters")
   //   .trim(),
 
-  streetId: yup.number().required("Street is required"),
+  zoneId: yup.number().required("Zone is required"),
 
   mainImage: yup
     .mixed<File>()
@@ -80,7 +81,6 @@ const PropertyForm = () => {
   const selectedCountry = useWatch({ control, name: "country" });
   const selectedDivisionId = useWatch({ control, name: "divisionId" });
   const selectedCityId = useWatch({ control, name: "cityId" });
-  const selectedZoneId = useWatch({ control, name: "zoneId" });
 
   const [divisions, setDivisions] = useState<IOption<number>[]>([]);
   const [cities, setCities] = useState<IOption<number>[]>([]);
@@ -89,6 +89,7 @@ const PropertyForm = () => {
 
   const [propertyOwners, setPropertyOwners] = useState<IOption<number>[]>([]);
   const [ownerDrawerOpen, setOwnerDrawerOpen] = useState(false);
+  const [streetDrawerOpen, setStreetDrawerOpen] = useState(false);
   const [loadingDivisions, setLoadingDivisions] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingZones, setLoadingZones] = useState(false);
@@ -97,6 +98,12 @@ const PropertyForm = () => {
   // Fetch divisions when country changes
   useEffect(() => {
     if (!selectedCountry) {
+      setValue("divisionId", undefined);
+      setValue("cityId", undefined);
+      setValue("zoneId", undefined, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
       setDivisions([]);
       setCities([]);
       setZones([]);
@@ -107,7 +114,10 @@ const PropertyForm = () => {
       setLoadingDivisions(true);
       setValue("divisionId", undefined);
       setValue("cityId", undefined);
-      setValue("zone", undefined);
+      setValue("zoneId", undefined, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
       setCities([]);
       setZones([]);
       try {
@@ -125,6 +135,11 @@ const PropertyForm = () => {
   // Fetch cities when division changes
   useEffect(() => {
     if (!selectedDivisionId) {
+      setValue("cityId", undefined);
+      setValue("zoneId", undefined, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
       setCities([]);
       setZones([]);
       return;
@@ -133,7 +148,10 @@ const PropertyForm = () => {
     const fetch = async () => {
       setLoadingCities(true);
       setValue("cityId", undefined);
-      setValue("zone", undefined);
+      setValue("zoneId", undefined, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
       setZones([]);
       try {
         const res =
@@ -150,13 +168,20 @@ const PropertyForm = () => {
   // Fetch zones when city changes
   useEffect(() => {
     if (!selectedCityId) {
+      setValue("zoneId", undefined, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
       setZones([]);
       return;
     }
 
     const fetch = async () => {
       setLoadingZones(true);
-      setValue("zoneId", undefined);
+      setValue("zoneId", undefined, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
       try {
         const res = await LocationConfigurationService.getZones(selectedCityId);
         setZones(res.data ?? []);
@@ -168,26 +193,19 @@ const PropertyForm = () => {
     fetch();
   }, [selectedCityId]);
 
-  useEffect(() => {
-    if (!selectedZoneId) {
-      setStreets([]);
-      return;
+  const fetchStreets = async () => {
+    setLoadingStreets(true);
+    try {
+      const res = await LocationConfigurationService.getStreets();
+      setStreets(res.data ?? []);
+    } finally {
+      setLoadingStreets(false);
     }
+  };
 
-    const fetch = async () => {
-      setLoadingStreets(true);
-      setValue("streetId", undefined);
-      try {
-        const res =
-          await LocationConfigurationService.getStreets(selectedZoneId);
-        setStreets(res.data ?? []);
-      } finally {
-        setLoadingStreets(false);
-      }
-    };
-
-    fetch();
-  }, [selectedZoneId]);
+  useEffect(() => {
+    fetchStreets();
+  }, []);
 
   const fetchPropertyOwners = async () => {
     setLoadingZones(true);
@@ -609,37 +627,42 @@ const PropertyForm = () => {
             <Controller
               control={control}
               name="zoneId"
-              render={({ field }) => (
-                <>
-                  <Label>Zone</Label>
-                  <SingleSelect
-                    value={field.value}
-                    disabled={!selectedCityId || loadingZones}
-                    loading={loadingZones}
-                    options={zones}
-                    onChange={(value) =>
-                      field.onChange(value ? Number(value) : undefined)
-                    }
-                    placeholder="— Select —"
-                  />
-                </>
-              )}
-            />
-          </div>
-
-          <div>
-            <Controller
-              control={control}
-              name="streetId"
               render={({ field, fieldState: { error } }) => (
-                <>
-                  <Label>Street *</Label>
+                <div>
+                  <Label>Zone *</Label>
                   <div
                     className={error ? "rounded-xl ring-2 ring-red-500" : ""}
                   >
                     <SingleSelect
                       value={field.value}
-                      disabled={!selectedZoneId || loadingStreets}
+                      disabled={!selectedCityId || loadingZones}
+                      loading={loadingZones}
+                      options={zones}
+                      onChange={(value) =>
+                        field.onChange(value ? Number(value) : undefined)
+                      }
+                      placeholder="— Select —"
+                    />
+                  </div>
+                  <ErrorMessage message={error?.message} />
+                </div>
+              )}
+            />
+          </div>
+
+          <div className="flex justify-between gap-3 items-end">
+            <Controller
+              control={control}
+              name="streetId"
+              render={({ field, fieldState: { error } }) => (
+                <div className="w-full">
+                  <Label>Street</Label>
+                  <div
+                    className={error ? "rounded-xl ring-2 ring-red-500" : ""}
+                  >
+                    <SingleSelect
+                      value={field.value}
+                      disabled={loadingStreets}
                       loading={loadingStreets}
                       options={streets}
                       onChange={(value) =>
@@ -649,9 +672,17 @@ const PropertyForm = () => {
                     />
                   </div>
                   <ErrorMessage message={error?.message} />
-                </>
+                </div>
               )}
             />
+
+            <button
+              type="button"
+              onClick={() => setStreetDrawerOpen(true)}
+              className="shrink-0 w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all text-slate-600"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Floor */}
@@ -1157,6 +1188,15 @@ const PropertyForm = () => {
         }}
         open={ownerDrawerOpen}
         onSave={() => fetchPropertyOwners()}
+      />
+
+      <StreetDrawer
+        key={"createStreet"}
+        onOpenChange={(open) => {
+          setStreetDrawerOpen(open);
+        }}
+        open={streetDrawerOpen}
+        onSave={() => fetchStreets()}
       />
     </div>
   );
