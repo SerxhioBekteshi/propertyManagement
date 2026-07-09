@@ -7,7 +7,7 @@ import SplashScreen from "../../components/splash-screen";
 export default function LoginPage() {
   const { signIn, loading, user } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [country, setCountry] = useState("");
@@ -15,7 +15,7 @@ export default function LoginPage() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    await signIn(email, password, country);
+    await signIn(username, password, country);
     navigate("/dashboard");
   }
   if (loading) return <SplashScreen />;
@@ -87,14 +87,14 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Email address
+                Username
               </label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
-                placeholder="name@company.com"
+                placeholder="Enter your username"
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all text-sm"
               />
             </div>

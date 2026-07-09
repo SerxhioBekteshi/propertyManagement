@@ -15,7 +15,7 @@ interface AuthContextType {
   user: TUserResponse | null;
   loading: boolean;
   signIn: (
-    email: string,
+    username: string,
     password: string,
     country: string | "",
   ) => Promise<{ error: Error | null }>;
@@ -32,18 +32,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true); // ✅ start true
 
   async function signIn(
-    email: string,
+    username: string,
     password: string,
     country: string | "",
   ): Promise<{ error: Error | null }> {
-    if (!email || !password) {
-      return { error: new Error("Email and password are required.") };
+    if (!username || !password) {
+      return { error: new Error("Username and password are required.") };
     }
 
     setLoading(true);
     try {
       const res = await AuthenticationService.login({
-        email,
+        username,
         password,
         country,
       });

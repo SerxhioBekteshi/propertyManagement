@@ -10,7 +10,7 @@ export type TUserResponse = {
 };
 
 export type TLoginPayload = {
-  email: string;
+  username: string;
   password: string;
   country: string | "";
 };
