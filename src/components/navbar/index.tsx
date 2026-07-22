@@ -205,7 +205,6 @@ export default function Navbar() {
 
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </button>
-
             {menuOpen &&
               createPortal(
                 <div className="fixed right-4 top-16 w-52 bg-white rounded-2xl border border-slate-200 shadow-lg py-2 z-[99999]">
@@ -223,6 +222,11 @@ export default function Navbar() {
                     <p className="text-xs text-slate-400 capitalize">
                       {user?.role}
                     </p>
+                    {user?.description && (
+                      <p className="text-xs text-slate-400 mt-1 leading-snug">
+                        {user.description}
+                      </p>
+                    )}
                   </div>
 
                   <button

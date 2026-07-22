@@ -7,6 +7,7 @@ export type TUserResponse = {
   phoneNumber?: string;
   role: string;
   country?: string;
+  description?: string;
 };
 
 export type TLoginPayload = {
