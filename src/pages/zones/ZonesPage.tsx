@@ -2,12 +2,13 @@ import { useRef, useState } from "react";
 import { BaseTable, BaseTableRef } from "../../components/table";
 import { Button } from "../../components/ui/button";
 import { Plus, Pencil } from "lucide-react";
-import { EFormMode } from "../../assets/enums";
+import { EFormMode, ERoles } from "../../assets/enums";
 import ZonesModal from "./components/ZonesModal";
 import { ZonesResponseDTO } from "../../types/location-configuration";
 import { ENDPOINTS } from "../../lib/axios";
 import { formatDate } from "../../utils";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { useAuth } from "../../contexts/AuthContext";
 
 const columns = [
   { key: "name", header: "Zone" },
@@ -33,6 +34,8 @@ export default function ZonesPage() {
     null,
   );
   const tableRef = useRef<BaseTableRef<ZonesResponseDTO>>(null);
+  const { user } = useAuth();
+  const isAdmin = user?.role === ERoles.Admin;
 
   const onAddClick = () => {
     setSelectedZone(null);
@@ -53,15 +56,17 @@ export default function ZonesPage() {
         onAddClick={onAddClick}
         controller={ENDPOINTS.zones.getAll}
         columns={columns}
-        renderActions={(row) => (
-          <DropdownMenuItem
-            className="cursor-pointer flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted"
-            onClick={() => onEditClick(row)}
-          >
-            <Pencil size={14} />
-            Edit
-          </DropdownMenuItem>
-        )}
+        renderActions={(row) =>
+          isAdmin && (
+            <DropdownMenuItem
+              onClick={() => onEditClick(row)}
+              className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit
+            </DropdownMenuItem>
+          )
+        }
         addButton={
           <Button
             onClick={onAddClick}

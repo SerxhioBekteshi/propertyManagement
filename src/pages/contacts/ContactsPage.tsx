@@ -72,15 +72,17 @@ export default function ContactsPage() {
         controller={ENDPOINTS.properties.contacts}
         columns={visibleColumns}
         onAddClick={onAddClick}
-        renderActions={(row) => (
-          <DropdownMenuItem
-            className="cursor-pointer flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted"
-            onClick={() => onEditClick(row)}
-          >
-            <Pencil size={14} />
-            Edit
-          </DropdownMenuItem>
-        )}
+        renderActions={(row) =>
+          isAdmin && (
+            <DropdownMenuItem
+              onClick={() => onEditClick(row)}
+              className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit
+            </DropdownMenuItem>
+          )
+        }
         addButton={
           <Button onClick={onAddClick} style={{ width: "fit-content" }}>
             <Plus className="h-4 w-4" />

@@ -2,12 +2,13 @@ import { useRef, useState } from "react";
 import { BaseTable, BaseTableRef } from "../../components/table";
 import { Button } from "../../components/ui/button";
 import { Plus, Pencil } from "lucide-react";
-import { EFormMode } from "../../assets/enums";
+import { EFormMode, ERoles } from "../../assets/enums";
 import { StreetsResponseDTO } from "../../types/location-configuration";
 import { ENDPOINTS } from "../../lib/axios";
 import { formatDate } from "../../utils";
 import StreetsModal from "./components/StreetsModal";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { useAuth } from "../../contexts/AuthContext";
 
 const columns = [
   { key: "name", header: "Street" },
@@ -32,6 +33,8 @@ export default function StreetsPage() {
   const [selectedStreet, setSelectedStreet] =
     useState<StreetsResponseDTO | null>(null);
   const tableRef = useRef<BaseTableRef<StreetsResponseDTO>>(null);
+  const { user } = useAuth();
+  const isAdmin = user?.role === ERoles.Admin;
 
   const onAddClick = () => {
     setSelectedStreet(null);
@@ -52,15 +55,17 @@ export default function StreetsPage() {
         onAddClick={onAddClick}
         controller={ENDPOINTS.streets.getAll}
         columns={columns}
-        renderActions={(row) => (
-          <DropdownMenuItem
-            className="cursor-pointer flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted"
-            onClick={() => onEditClick(row)}
-          >
-            <Pencil size={14} />
-            Edit
-          </DropdownMenuItem>
-        )}
+        renderActions={(row) =>
+          isAdmin && (
+            <DropdownMenuItem
+              onClick={() => onEditClick(row)}
+              className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit
+            </DropdownMenuItem>
+          )
+        }
         addButton={
           <Button
             onClick={onAddClick}

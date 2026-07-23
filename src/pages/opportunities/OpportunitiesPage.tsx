@@ -54,7 +54,6 @@ const OpportunitiesPage = () => {
   };
 
   const onEditClick = (row: OpportunityResponseDTO) => {
-    console.log(row, "ROW");
     setSelectedOpportunity(row);
     setFormMode(EFormMode.Edit);
     setOpen(true);
@@ -89,13 +88,15 @@ const OpportunitiesPage = () => {
               Details
             </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onClick={() => onEditClick(row)}
-              className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer"
-            >
-              <Pencil className="w-4 h-4" />
-              Edit
-            </DropdownMenuItem>
+            {isAdmin && (
+              <DropdownMenuItem
+                onClick={() => onEditClick(row)}
+                className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit
+              </DropdownMenuItem>
+            )}
           </>
         )}
         addButton={
