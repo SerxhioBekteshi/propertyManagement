@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { enqueueSnackbar } from "notistack";
 import BaseDrawer from "../../../components/base-drawer";
@@ -7,7 +7,7 @@ import FormProvider from "../../../components/hook-form/form-provider";
 import { Spinner } from "../../../components/spinner";
 import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import { useLocationConfigBase } from "../../../hooks/useLocationConfiguration";
-import { CreateStreetDTO } from "../../../types/location-configuration";
+import { CreateUpdateStreetDTO } from "../../../types/location-configuration";
 import StreetsForm, {
   streetsSchema,
 } from "../../streets/components/StreetsForm";
@@ -28,9 +28,8 @@ const StreetDrawer = ({ open, onOpenChange, onSave }: StreetDrawerProps) => {
     },
   });
 
-  const methods = useForm<CreateStreetDTO>({
-    resolver: yupResolver(streetsSchema),
-    defaultValues: {},
+  const methods = useForm<CreateUpdateStreetDTO>({
+    resolver: yupResolver(streetsSchema) as Resolver<CreateUpdateStreetDTO>,
   });
 
   const {

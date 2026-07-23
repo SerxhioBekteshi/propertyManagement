@@ -56,7 +56,8 @@ export default function ZonesPage() {
         onAddClick={onAddClick}
         controller={ENDPOINTS.zones.getAll}
         columns={columns}
-           renderActions: (row) => (
+        {...(isAdmin && {
+          renderActions: (row) => (
             <DropdownMenuItem
               onClick={() => onEditClick(row)}
               className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer"

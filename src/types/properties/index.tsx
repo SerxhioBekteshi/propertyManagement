@@ -37,7 +37,9 @@ export type AddPropertyDTO = Omit<
   | "fileUrls"
   | "properyOwner"
   | "opportunityCount"
+  | "zoneId" //because it will be required
 > & {
+  zoneId: number;
   images?: File[];
   privateImages?: File[];
   files?: File[];
@@ -82,7 +84,7 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   zoneId?: number;
   zoneName?: string;
 
-  streetId: number;
+  streetId?: number;
   streetName?: string;
 
   floor?: number;

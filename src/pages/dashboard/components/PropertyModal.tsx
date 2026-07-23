@@ -70,18 +70,6 @@ const ModalProperty = (props: IModalPropertyProp) => {
           <PropertyForm />
         </FormProvider>
       </Modal>
-      {/* <BaseDialog
-        fitContentHeight={true}
-        open={open.open && open.formMode == EFormMode.DELETE}
-        onClose={handleClose}
-        title={`Delete news`}
-        onOpenChange={handleClose}
-        isDeleteDialog={true}
-        isSubmitLoading={isSubmitting}
-        onSave={handleDelete}
-      >
-        Are you sure you want to delete this news
-      </BaseDialog> */}
     </>
   );
 };

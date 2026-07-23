@@ -39,6 +39,7 @@ import MapPicker from "../../../components/MapPicker";
 import "leaflet/dist/leaflet.css";
 import * as yup from "yup";
 import ErrorMessage from "../../../components/hook-form/error-message";
+import { EFormMode } from "../../../assets/enums";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -1188,6 +1189,7 @@ const PropertyForm = () => {
         }}
         open={ownerDrawerOpen}
         onSave={() => fetchPropertyOwners()}
+        formMode={EFormMode.Create}
       />
 
       <StreetDrawer
