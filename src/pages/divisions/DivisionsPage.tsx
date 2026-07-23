@@ -56,8 +56,8 @@ export default function DivisionsPage() {
         controller={ENDPOINTS.division.getAll}
         columns={columns}
         onAddClick={onAddClick}
-        renderActions={(row) =>
-          isAdmin && (
+        {...(isAdmin && {
+          renderActions: (row: DivisionsResponseDTO) => (
             <DropdownMenuItem
               onClick={() => onEditClick(row)}
               className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer"
@@ -65,8 +65,8 @@ export default function DivisionsPage() {
               <Pencil className="w-4 h-4" />
               Edit
             </DropdownMenuItem>
-          )
-        }
+          ),
+        })}
         addButton={
           <Button
             onClick={onAddClick}
