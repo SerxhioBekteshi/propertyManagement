@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { CreateStreetDTO } from "../../../types/location-configuration";
+import { Resolver, useForm } from "react-hook-form";
+import {
+  CreateUpdateStreetDTO,
+  StreetsResponseDTO,
+} from "../../../types/location-configuration";
 import { EFormMode } from "../../../assets/enums";
 import Modal from "../../../components/modal";
 import FormProvider from "../../../components/hook-form/form-provider";
@@ -16,11 +19,14 @@ interface StreetsModalProps {
   onOpenChange: (open: boolean) => void;
   onSave: () => void;
   formMode?: EFormMode | null;
+  defaultValues: StreetsResponseDTO | null;
 }
 
 const StreetsModal = (props: StreetsModalProps) => {
-  const { open, onOpenChange, onSave } = props;
+  const { open, onOpenChange, onSave, formMode, defaultValues } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const isEdit = formMode === EFormMode.Edit;
+
   const { zones, loadingZones } = useLocationConfigBase({
     open: open,
     fetch: {
@@ -28,8 +34,9 @@ const StreetsModal = (props: StreetsModalProps) => {
     },
   });
 
-  const methods = useForm<CreateStreetDTO>({
-    resolver: yupResolver(streetsSchema),
+  const methods = useForm<CreateUpdateStreetDTO>({
+    resolver: yupResolver(streetsSchema) as Resolver<CreateUpdateStreetDTO>,
+    defaultValues: { ...defaultValues },
   });
 
   const {
@@ -42,13 +49,18 @@ const StreetsModal = (props: StreetsModalProps) => {
     setIsSubmitting(true);
 
     try {
-      const res = await LocationConfigurationService.addStreet(data);
+      const res = isEdit
+        ? await LocationConfigurationService.updateStreet(
+            defaultValues!.id,
+            data,
+          )
+        : await LocationConfigurationService.addStreet(data);
 
       if (res.result) {
         onSave();
         enqueueSnackbar({
           variant: "success",
-          message: `Street added`,
+          message: isEdit ? "Street updated" : "Street added",
         });
       }
     } finally {
@@ -69,15 +81,13 @@ const StreetsModal = (props: StreetsModalProps) => {
       onOpenChange={onOpenChange}
       isSubmitLoading={isSubmitting}
       onSave={onSubmit}
-      title={"Add new street"}
-      description="Configure new street"
+      title={isEdit ? "Edit street" : "Add new street"}
+      description={isEdit ? "Update street details" : "Configure new street"}
       disabledSubmitButton={!isDirty}
       size="2xl"
     >
       {loadingZones ? (
-        <>
-          <Spinner />
-        </>
+        <Spinner />
       ) : (
         <FormProvider methods={methods}>
           <StreetsForm zones={zones} />

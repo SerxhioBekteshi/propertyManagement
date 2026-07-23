@@ -1,12 +1,13 @@
 import { useRef, useState } from "react";
 import { BaseTable, BaseTableRef } from "../../components/table";
 import { Button } from "../../components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import { EFormMode } from "../../assets/enums";
 import { DivisionsResponseDTO } from "../../types/location-configuration";
 import DivisionsModal from "./components/DivisionsModal";
 import { ENDPOINTS } from "../../lib/axios";
 import { formatDate } from "../../utils";
+import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 
 const columns = [
   { key: "name", header: "Division" },
@@ -28,11 +29,20 @@ const columns = [
 export default function DivisionsPage() {
   const [formMode, setFormMode] = useState<EFormMode | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedDivision, setSelectedDivision] =
+    useState<DivisionsResponseDTO | null>(null);
   const tableRef = useRef<BaseTableRef<DivisionsResponseDTO>>(null);
 
   const onAddClick = () => {
+    setSelectedDivision(null);
     setDialogOpen(true);
     setFormMode(EFormMode.Create);
+  };
+
+  const onEditClick = (row: DivisionsResponseDTO) => {
+    setSelectedDivision(row);
+    setDialogOpen(true);
+    setFormMode(EFormMode.Edit);
   };
 
   return (
@@ -42,6 +52,15 @@ export default function DivisionsPage() {
         controller={ENDPOINTS.division.getAll}
         columns={columns}
         onAddClick={onAddClick}
+        renderActions={(row) => (
+          <DropdownMenuItem
+            className="cursor-pointer flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted"
+            onClick={() => onEditClick(row)}
+          >
+            <Pencil size={14} />
+            Edit
+          </DropdownMenuItem>
+        )}
         addButton={
           <Button
             onClick={onAddClick}
@@ -56,10 +75,10 @@ export default function DivisionsPage() {
       />
       {formMode && (
         <DivisionsModal
-          key={"create"}
+          key={selectedDivision?.id ?? "create"}
           open={dialogOpen}
           onOpenChange={(open) => {
-            if (open) setFormMode(null);
+            if (!open) setFormMode(null);
             setDialogOpen(open);
           }}
           onSave={() => {
@@ -68,7 +87,7 @@ export default function DivisionsPage() {
             setFormMode(null);
           }}
           formMode={formMode}
-          defaultValues={null}
+          defaultValues={selectedDivision}
         />
       )}
     </>

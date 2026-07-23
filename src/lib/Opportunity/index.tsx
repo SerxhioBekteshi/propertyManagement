@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  AddOpportunityDTO,
+  AddUpdateOpportunityDTO,
   OpportunityResponseDTO,
 } from "../../types/opportunities";
 import { axiosInstance, ENDPOINTS, TBaseResponse } from "../axios";
@@ -13,7 +13,7 @@ export const OpportunitieService = {
   },
 
   async createOpportunity(
-    row: AddOpportunityDTO,
+    row: AddUpdateOpportunityDTO,
   ): Promise<TBaseResponse<boolean>> {
     const BOOLEAN_FIELDS = ["elevator"]; // only real booleans
 
@@ -41,5 +41,36 @@ export const OpportunitieService = {
     );
 
     return axiosInstance.post(ENDPOINTS.opportunities.create, normalizedRow);
+  },
+
+  async updateOpportunity(
+    id: number,
+    row: AddUpdateOpportunityDTO,
+  ): Promise<TBaseResponse<boolean>> {
+    const BOOLEAN_FIELDS = ["elevator"];
+
+    const normalizedRow = Object.fromEntries(
+      Object.entries(row).map(([key, value]) => {
+        if (value == null) return [key, value];
+
+        if (BOOLEAN_FIELDS.includes(key)) {
+          if (value === "yes") return [key, true];
+          if (value === "no") return [key, false];
+          return [key, Boolean(value)];
+        }
+
+        if (Array.isArray(value)) {
+          return [key, value.join(",")];
+        }
+
+        if (!isNaN(value as any) && value !== "") {
+          return [key, Number(value)];
+        }
+
+        return [key, value];
+      }),
+    );
+
+    return axiosInstance.put(ENDPOINTS.opportunities.update(id), normalizedRow);
   },
 };

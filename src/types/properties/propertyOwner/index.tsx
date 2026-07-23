@@ -11,7 +11,7 @@ export interface ProperyOwnerDTO {
   ssn?: string;
 }
 
-export type CreatePropertyOwnerDTO = Omit<
+export type CreateUpdatePropertyOwnerDTO = Omit<
   ProperyOwnerDTO,
   "id" | "assignedToName"
 >;

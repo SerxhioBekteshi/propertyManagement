@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { BaseTable, BaseTableRef } from "../../components/table";
 import { ENDPOINTS } from "../../lib/axios";
 import { Button } from "../../components/ui/button";
-import { Eye, Plus } from "lucide-react";
+import { Eye, Pencil, Plus } from "lucide-react";
 import ModalOpportunity from "./components/OpportunityModal";
 import {
   OpportunitiesFiltersDTO,
@@ -11,7 +11,7 @@ import {
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { ERoles } from "../../assets/enums";
+import { EFormMode, ERoles } from "../../assets/enums";
 import { columns, filterMappings, INITIAL_FILTERS } from "./helpers";
 import OpportunityFilters from "./components/OpportunitiesFilter";
 import { useLocationConfigBase } from "../../hooks/useLocationConfiguration";
@@ -23,6 +23,10 @@ const OpportunitiesPage = () => {
   const zoneFilter = searchParams.get("zone") ?? undefined;
 
   const [open, setOpen] = useState(false);
+  const [formMode, setFormMode] = useState<EFormMode | null>(null);
+  const [selectedOpportunity, setSelectedOpportunity] =
+    useState<OpportunityResponseDTO | null>(null);
+
   const tableRef = useRef<BaseTableRef<OpportunityResponseDTO>>(null);
   const isAdmin = user?.role === ERoles.Admin;
 
@@ -43,11 +47,24 @@ const OpportunitiesPage = () => {
     },
   });
 
+  const onAddClick = () => {
+    setSelectedOpportunity(null);
+    setFormMode(EFormMode.Create);
+    setOpen(true);
+  };
+
+  const onEditClick = (row: OpportunityResponseDTO) => {
+    console.log(row, "ROW");
+    setSelectedOpportunity(row);
+    setFormMode(EFormMode.Edit);
+    setOpen(true);
+  };
+
   return (
     <div className="flex flex-col gap-4 mb-6">
       <BaseTable<OpportunityResponseDTO, OpportunitiesFiltersDTO>
         ref={tableRef}
-        onAddClick={() => setOpen(true)}
+        onAddClick={onAddClick}
         controller={ENDPOINTS.opportunities.getAll(zoneFilter ?? "")}
         columns={visibleColumns}
         initialFilters={INITIAL_FILTERS}
@@ -63,32 +80,45 @@ const OpportunitiesPage = () => {
           />
         )}
         renderActions={(row) => (
-          <DropdownMenuItem
-            onClick={() => navigate(`/opportunities/${row.id}/details`)}
-            className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 rounded-md cursor-pointer hover:bg-slate-100 focus:bg-slate-100 outline-none"
-          >
-            <Eye className="w-4 h-4 text-slate-500" />
-            Details
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem
+              onClick={() => navigate(`/opportunities/${row.id}/details`)}
+              className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer"
+            >
+              <Eye className="w-4 h-4" />
+              Details
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => onEditClick(row)}
+              className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit
+            </DropdownMenuItem>
+          </>
         )}
         addButton={
-          <Button
-            onClick={() => setOpen(true)}
-            style={{ width: "fit-content" }}
-          >
+          <Button onClick={onAddClick} style={{ width: "fit-content" }}>
             <Plus className="h-4 w-4" />
             Add New Opportunity
           </Button>
         }
       />
 
-      {open && (
+      {formMode && (
         <ModalOpportunity
-          key="create"
-          onOpenChange={setOpen}
+          key={selectedOpportunity?.id ?? "create"}
           open={open}
+          formMode={formMode}
+          defaultValues={selectedOpportunity}
+          onOpenChange={(open) => {
+            if (!open) setFormMode(null);
+            setOpen(open);
+          }}
           onSave={() => {
             setOpen(false);
+            setFormMode(null);
             tableRef.current?.refresh();
           }}
         />

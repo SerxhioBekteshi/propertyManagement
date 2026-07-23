@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  CreateDivionDTO,
+  CreateUpdateDivisionDTO,
   DivisionsResponseDTO,
 } from "../../../types/location-configuration";
 import { EFormMode } from "../../../assets/enums";
@@ -21,12 +21,13 @@ interface DivisionsModalProps {
 }
 
 const DivisionsModal = (props: DivisionsModalProps) => {
-  const { open, onOpenChange, onSave } = props;
+  const { open, onOpenChange, onSave, formMode, defaultValues } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const isEdit = formMode === EFormMode.Edit;
 
-  const methods = useForm<CreateDivionDTO>({
+  const methods = useForm<CreateUpdateDivisionDTO>({
     resolver: yupResolver(divionsSchema),
-    defaultValues: {},
+    defaultValues: { ...defaultValues },
   });
 
   const {
@@ -39,12 +40,18 @@ const DivisionsModal = (props: DivisionsModalProps) => {
     setIsSubmitting(true);
 
     try {
-      const res = await LocationConfigurationService.addDivision(data);
+      const res = isEdit
+        ? await LocationConfigurationService.updateDivision(
+            defaultValues!.id,
+            data,
+          )
+        : await LocationConfigurationService.addDivision(data);
+
       if (res.result) {
         onSave();
         enqueueSnackbar({
           variant: "success",
-          message: `Division was added`,
+          message: isEdit ? "Division was updated" : "Division was added",
         });
       }
     } finally {
@@ -65,8 +72,10 @@ const DivisionsModal = (props: DivisionsModalProps) => {
       onOpenChange={onOpenChange}
       isSubmitLoading={isSubmitting}
       onSave={onSubmit}
-      title={"Add new division"}
-      description="Configure new division"
+      title={isEdit ? "Edit division" : "Add new division"}
+      description={
+        isEdit ? "Update division details" : "Configure new division"
+      }
       disabledSubmitButton={!isDirty}
       size="2xl"
     >

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  CreateZoneDTO,
-  DivisionsResponseDTO,
+  CreateUpdateZoneDTO,
+  ZonesResponseDTO,
 } from "../../../types/location-configuration";
 import { EFormMode } from "../../../assets/enums";
 import Modal from "../../../components/modal";
@@ -17,14 +17,15 @@ import { useLocationConfigBase } from "../../../hooks/useLocationConfiguration";
 interface ZonesModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  defaultValues: DivisionsResponseDTO | null;
+  defaultValues: ZonesResponseDTO | null; // ✅ fixed — was DivisionsResponseDTO
   onSave: () => void;
   formMode?: EFormMode | null;
 }
 
 const ZonesModal = (props: ZonesModalProps) => {
-  const { open, onOpenChange, onSave } = props;
+  const { open, onOpenChange, onSave, formMode, defaultValues } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const isEdit = formMode === EFormMode.Edit;
 
   const { cities, loadingCities } = useLocationConfigBase({
     open: open,
@@ -33,9 +34,9 @@ const ZonesModal = (props: ZonesModalProps) => {
     },
   });
 
-  const methods = useForm<CreateZoneDTO>({
+  const methods = useForm<CreateUpdateZoneDTO>({
     resolver: yupResolver(zonesSchema),
-    defaultValues: {},
+    defaultValues: { ...defaultValues },
   });
 
   const {
@@ -48,13 +49,15 @@ const ZonesModal = (props: ZonesModalProps) => {
     setIsSubmitting(true);
 
     try {
-      const res = await LocationConfigurationService.addZone(data);
+      const res = isEdit
+        ? await LocationConfigurationService.updateZone(defaultValues!.id, data)
+        : await LocationConfigurationService.addZone(data);
 
       if (res.result) {
         onSave();
         enqueueSnackbar({
           variant: "success",
-          message: `Zone added`,
+          message: isEdit ? "Zone updated" : "Zone added",
         });
       }
     } finally {
@@ -75,15 +78,13 @@ const ZonesModal = (props: ZonesModalProps) => {
       onOpenChange={onOpenChange}
       isSubmitLoading={isSubmitting}
       onSave={onSubmit}
-      title={"Add new zone"}
-      description="Configure new zone"
+      title={isEdit ? "Edit zone" : "Add new zone"}
+      description={isEdit ? "Update zone details" : "Configure new zone"}
       disabledSubmitButton={!isDirty}
       size="2xl"
     >
       {loadingCities ? (
-        <>
-          <Spinner />
-        </>
+        <Spinner />
       ) : (
         <FormProvider methods={methods}>
           <ZonesForm cities={cities} />

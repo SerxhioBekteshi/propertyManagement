@@ -615,12 +615,19 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                 <Label>View To</Label>
                 <MultiSelect
                   options={PROPERTY_VIEW_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
             )}
           />
+
           <Controller
             control={control}
             name="equipment"
@@ -629,12 +636,19 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                 <Label>Equipment</Label>
                 <MultiSelect
                   options={PROPERTY_EQUIPMENT_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
             )}
           />
+
           <Controller
             control={control}
             name="infrastructures"
@@ -643,12 +657,19 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                 <Label>Infrastructures</Label>
                 <MultiSelect
                   options={PROPERTY_INFRASTRUCTURE_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
             )}
           />
+
           <Controller
             control={control}
             name="surroundings"
@@ -657,7 +678,13 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
                 <Label>Surroundings</Label>
                 <MultiSelect
                   options={PROPERTY_SURROUNDINGS_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>

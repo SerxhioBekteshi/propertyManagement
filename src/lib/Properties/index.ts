@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AddPropertyDTO, PropertyResponseDTO } from "../../types/properties";
-import { CreatePropertyOwnerDTO } from "../../types/properties/propertyOwner";
+import { CreateUpdatePropertyOwnerDTO } from "../../types/properties/propertyOwner";
 import { axiosInstance, ENDPOINTS, TBaseResponse } from "../axios";
 
 export const PropertiesService = {
@@ -9,9 +9,16 @@ export const PropertiesService = {
   },
 
   async createPropertyOwner(
-    payload: CreatePropertyOwnerDTO,
+    payload: CreateUpdatePropertyOwnerDTO,
   ): Promise<TBaseResponse<boolean>> {
     return axiosInstance.post(ENDPOINTS.properties.createOwner, payload);
+  },
+
+  async updatePropertyOwner(
+    id: number,
+    payload: CreateUpdatePropertyOwnerDTO,
+  ): Promise<TBaseResponse<boolean>> {
+    return axiosInstance.put(ENDPOINTS.properties.updateOwner(id), payload);
   },
 
   async getPropertyById(

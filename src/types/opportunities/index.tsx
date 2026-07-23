@@ -57,7 +57,7 @@ export type OpportunityResponseDTO = BaseAuditableDTO & {
   maximalArea?: number;
 };
 
-export type AddOpportunityDTO = Omit<
+export type AddUpdateOpportunityDTO = Omit<
   OpportunityResponseDTO,
   | "id"
   | "agentId"

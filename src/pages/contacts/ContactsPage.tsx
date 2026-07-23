@@ -1,14 +1,15 @@
 import { useRef, useState } from "react";
 import { BaseTable, BaseTableRef, ColumnConfig } from "../../components/table";
 import { Button } from "../../components/ui/button";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import { ENDPOINTS } from "../../lib/axios";
 import { formatDate } from "../../utils";
 import PropertyOwnerDrawer from "../dashboard/components/PropertyOwnerDrawer";
 import { useAuth } from "../../contexts/AuthContext";
-import { ERoles } from "../../assets/enums";
+import { EFormMode, ERoles } from "../../assets/enums";
 import { ProperyOwnerDTO } from "../../types/properties/propertyOwner";
 import CountryFlag from "../../components/flags/CountryFlag";
+import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 
 const columns: ColumnConfig[] = [
   { key: "firstName", header: "First Name" },
@@ -39,6 +40,10 @@ const columns: ColumnConfig[] = [
 
 export default function ContactsPage() {
   const [open, setOpen] = useState(false);
+  const [formMode, setFormMode] = useState<EFormMode | null>(null);
+  const [selectedContact, setSelectedContact] =
+    useState<ProperyOwnerDTO | null>(null);
+
   const tableRef = useRef<BaseTableRef<ProperyOwnerDTO>>(null);
 
   const { user } = useAuth();
@@ -47,7 +52,16 @@ export default function ContactsPage() {
   const visibleColumns = columns.filter(
     (col) => col.key !== "assignedToName" || isAdmin,
   );
+
   const onAddClick = () => {
+    setSelectedContact(null);
+    setFormMode(EFormMode.Create);
+    setOpen(true);
+  };
+
+  const onEditClick = (row: ProperyOwnerDTO) => {
+    setSelectedContact(row);
+    setFormMode(EFormMode.Edit);
     setOpen(true);
   };
 
@@ -55,32 +69,43 @@ export default function ContactsPage() {
     <>
       <BaseTable<ProperyOwnerDTO>
         ref={tableRef}
-        onAddClick={onAddClick}
         controller={ENDPOINTS.properties.contacts}
         columns={visibleColumns}
-        addButton={
-          <Button
-            onClick={onAddClick}
-            style={{
-              width: "fit-content",
-            }}
+        onAddClick={onAddClick}
+        renderActions={(row) => (
+          <DropdownMenuItem
+            className="cursor-pointer flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted"
+            onClick={() => onEditClick(row)}
           >
-            <Plus className=" h-4 w-4" />
+            <Pencil size={14} />
+            Edit
+          </DropdownMenuItem>
+        )}
+        addButton={
+          <Button onClick={onAddClick} style={{ width: "fit-content" }}>
+            <Plus className="h-4 w-4" />
             Add Contact
           </Button>
         }
       />
-      <PropertyOwnerDrawer
-        key={"createOwner"}
-        onOpenChange={(open) => {
-          setOpen(open);
-        }}
-        open={open}
-        onSave={() => {
-          tableRef.current?.refresh();
-          setOpen(false);
-        }}
-      />
+
+      {formMode && (
+        <PropertyOwnerDrawer
+          key={selectedContact?.id ?? "createOwner"}
+          open={open}
+          formMode={formMode}
+          defaultValues={selectedContact}
+          onOpenChange={(open) => {
+            if (!open) setFormMode(null);
+            setOpen(open);
+          }}
+          onSave={() => {
+            tableRef.current?.refresh();
+            setOpen(false);
+            setFormMode(null);
+          }}
+        />
+      )}
     </>
   );
 }

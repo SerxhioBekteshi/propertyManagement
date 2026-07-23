@@ -1,9 +1,9 @@
 import { IOption } from "../../types";
 import {
-  CreateCityDTO,
-  CreateDivionDTO,
-  CreateStreetDTO,
-  CreateZoneDTO,
+  CreateUpdateCityDTO,
+  CreateUpdateZoneDTO,
+  CreateUpdateStreetDTO,
+  CreateUpdateDivisionDTO,
 } from "../../types/location-configuration";
 import { axiosInstance, ENDPOINTS, TBaseResponse } from "../axios";
 
@@ -44,19 +44,51 @@ export const LocationConfigurationService = {
     );
   },
 
-  async addCity(payload: CreateCityDTO): Promise<TBaseResponse<boolean>> {
+  async addCity(payload: CreateUpdateCityDTO): Promise<TBaseResponse<boolean>> {
     return axiosInstance.post(ENDPOINTS.cities.create, payload);
   },
 
-  async addZone(payload: CreateZoneDTO): Promise<TBaseResponse<boolean>> {
+  async updateCity(
+    id: number,
+    payload: CreateUpdateCityDTO,
+  ): Promise<TBaseResponse<boolean>> {
+    return axiosInstance.put(ENDPOINTS.cities.update(id), payload);
+  },
+
+  async addZone(payload: CreateUpdateZoneDTO): Promise<TBaseResponse<boolean>> {
     return axiosInstance.post(ENDPOINTS.zones.create, payload);
   },
 
-  async addStreet(payload: CreateStreetDTO): Promise<TBaseResponse<boolean>> {
+  async updateZone(
+    id: number,
+    payload: CreateUpdateZoneDTO,
+  ): Promise<TBaseResponse<boolean>> {
+    return axiosInstance.put(ENDPOINTS.zones.update(id), payload);
+  },
+
+  async addStreet(
+    payload: CreateUpdateStreetDTO,
+  ): Promise<TBaseResponse<boolean>> {
     return axiosInstance.post(ENDPOINTS.streets.create, payload);
   },
 
-  async addDivision(payload: CreateDivionDTO): Promise<TBaseResponse<boolean>> {
+  async updateStreet(
+    id: number,
+    payload: CreateUpdateStreetDTO,
+  ): Promise<TBaseResponse<boolean>> {
+    return axiosInstance.put(ENDPOINTS.streets.update(id), payload);
+  },
+
+  async addDivision(
+    payload: CreateUpdateDivisionDTO,
+  ): Promise<TBaseResponse<boolean>> {
     return axiosInstance.post(ENDPOINTS.division.create, payload);
+  },
+
+  async updateDivision(
+    id: number,
+    payload: CreateUpdateDivisionDTO,
+  ): Promise<TBaseResponse<boolean>> {
+    return axiosInstance.put(ENDPOINTS.division.update(id), payload);
   },
 };

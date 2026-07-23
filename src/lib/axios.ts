@@ -153,6 +153,9 @@ export const ENDPOINTS = {
     create: `Property/create`,
     getById: (id: number) => `Property/${id}`,
     createOwner: "Property/create/owner",
+    updateOwner(id: number) {
+      return `Property/owners/${id}`;
+    },
     contacts: "Property/owners/get-all",
   },
   opportunities: {
@@ -161,6 +164,9 @@ export const ENDPOINTS = {
     },
     create: `Opportunity/create`,
     getById: (id: number) => `Opportunity/${id}`,
+    update(id: number) {
+      return `Opportunity/${id}`;
+    },
   },
   locationConfigurationList: {
     cities(divisionId?: number) {
@@ -180,18 +186,30 @@ export const ENDPOINTS = {
   },
   cities: {
     create: "City/create",
+    update(id: number) {
+      return `City/${id}`;
+    },
     getAll: "City/get-all",
   },
   zones: {
     create: "Zones/create",
+    update(id: number) {
+      return `Zones/${id}`;
+    },
     getAll: "Zones/get-all",
   },
   streets: {
     create: "Street/create",
+    update(id: number) {
+      return `Street/${id}`;
+    },
     getAll: "Street/get-all",
   },
   division: {
     create: "Division/create",
+    update(id: number) {
+      return `Division/${id}`;
+    },
     getAll: "Division/get-all",
   },
 };

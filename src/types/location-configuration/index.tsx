@@ -24,22 +24,22 @@ export interface StreetsResponseDTO extends BaseAuditableDTO {
   zone: string;
 }
 
-export interface CreateCityDTO {
+export interface CreateUpdateCityDTO {
   name: string;
   divisionId: number;
 }
 
-export interface CreateZoneDTO {
+export interface CreateUpdateZoneDTO {
   name: string;
   cityId: number;
 }
 
-export interface CreateDivionDTO {
+export interface CreateUpdateDivisionDTO {
   name: string;
   country: string;
 }
 
-export interface CreateStreetDTO {
+export interface CreateUpdateStreetDTO {
   name: string;
-  zoneId: number;
+  zoneId: number | null | undefined;
 }

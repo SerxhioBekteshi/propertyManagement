@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   CitiesResponseDTO,
-  CreateCityDTO,
+  CreateUpdateCityDTO,
 } from "../../../types/location-configuration";
 import { EFormMode } from "../../../assets/enums";
 import Modal from "../../../components/modal";
@@ -23,8 +23,10 @@ interface CitiesModalProps {
 }
 
 const CitiesModal = (props: CitiesModalProps) => {
-  const { open, onOpenChange, onSave } = props;
+  const { open, onOpenChange, onSave, defaultValues, formMode } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const isEdit = formMode === EFormMode.Edit;
+
   const { divisions, loadingDivisions } = useLocationConfigBase({
     open: open,
     fetch: {
@@ -32,9 +34,9 @@ const CitiesModal = (props: CitiesModalProps) => {
     },
   });
 
-  const methods = useForm<CreateCityDTO>({
+  const methods = useForm<CreateUpdateCityDTO>({
     resolver: yupResolver(citiesSchema),
-    defaultValues: {},
+    defaultValues: { ...defaultValues },
   });
 
   const {
@@ -47,12 +49,15 @@ const CitiesModal = (props: CitiesModalProps) => {
     setIsSubmitting(true);
 
     try {
-      const res = await LocationConfigurationService.addCity(data);
+      const res = isEdit
+        ? await LocationConfigurationService.updateCity(defaultValues!.id, data)
+        : await LocationConfigurationService.addCity(data);
+
       if (res.result) {
         onSave();
         enqueueSnackbar({
           variant: "success",
-          message: `City was added`,
+          message: isEdit ? "City was updated" : "City was added",
         });
       }
     } finally {
@@ -73,15 +78,13 @@ const CitiesModal = (props: CitiesModalProps) => {
       onOpenChange={onOpenChange}
       isSubmitLoading={isSubmitting}
       onSave={onSubmit}
-      title={"Add new city"}
-      description="Configure new city"
+      title={isEdit ? "Edit city" : "Add new city"}
+      description={isEdit ? "Update city details" : "Configure new city"}
       disabledSubmitButton={!isDirty}
       size="2xl"
     >
       {loadingDivisions ? (
-        <>
-          <Spinner />
-        </>
+        <Spinner />
       ) : (
         <FormProvider methods={methods}>
           <CitiesForm divisions={divisions} />
