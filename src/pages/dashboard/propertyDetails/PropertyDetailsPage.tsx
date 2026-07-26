@@ -63,7 +63,7 @@ export default function PropertyDetailsPage() {
   const getPropertyDetails = async () => {
     setIsLoading(true);
     try {
-      const res = await PropertiesService.getPropertyById(Number(id));
+      const res = await PropertiesService.getPropertyById(Number(id), true);
       if (res.data) {
         setProperty(res.data);
       }

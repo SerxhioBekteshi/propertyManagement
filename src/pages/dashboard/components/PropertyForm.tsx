@@ -307,7 +307,9 @@ const PropertyForm = () => {
                     <input
                       type="checkbox"
                       checked={field.value ?? false}
-                      onChange={(e) => console.log("clicked", e.target.checked)}
+                      onChange={(e) => {
+                        field.onChange(e.target.checked);
+                      }}
                       className={checkboxClass}
                     />
                   )}
