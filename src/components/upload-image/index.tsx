@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X } from "lucide-react";
 
@@ -17,7 +17,7 @@ interface ImageUploaderProps {
 }
 
 interface SingleImageUploaderProps {
-  value?: File | null;
+  value?: File | string | null;
   onChange?: (file: File | null) => void;
   label?: string;
   className?: string;
@@ -137,7 +137,19 @@ export const SingleImageUploader = ({
     maxFiles: 1,
   });
 
-  const preview = value ? URL.createObjectURL(value) : null;
+  const preview = !value
+    ? null
+    : value instanceof File
+      ? URL.createObjectURL(value)
+      : value;
+
+  useEffect(() => {
+    return () => {
+      if (value instanceof File && preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [value, preview]);
 
   return (
     <div className={`space-y-2 ${className}`}>

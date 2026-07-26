@@ -19,7 +19,7 @@ export interface PropertyFiltersDTO {
   orderBy: "newest" | "oldest" | "price_asc" | "price_desc";
 }
 
-export type AddPropertyDTO = Omit<
+export type AddUpdatePropertyDTO = Omit<
   PropertyResponseDTO,
   | "id"
   | "agentId"

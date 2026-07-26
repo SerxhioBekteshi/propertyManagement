@@ -62,9 +62,7 @@ export const PropertyValidationSchema = yup.object({
   //   .min(3, "Title must be at least 3 characters")
   //   .max(50, "Title must not exceed 50 characters")
   //   .trim(),
-
   zoneId: yup.number().required("Zone is required"),
-
   mainImage: yup
     .mixed<File>()
     .required("Main image is required")
@@ -492,33 +490,38 @@ const PropertyForm = () => {
                 control={control}
                 name="portalsToPublish"
                 render={({ field }) => {
-                  const values: string[] = field.value ?? [];
+                  const values: string[] = field.value
+                    ? field.value.split(",").filter(Boolean)
+                    : [];
+
                   const addValue = (val: string) => {
                     const trimmed = val.trim();
                     if (!trimmed || values.includes(trimmed)) return;
-                    field.onChange([...values, trimmed]);
+                    field.onChange([...values, trimmed].join(","));
                   };
+
                   const removeValue = (val: string) => {
-                    field.onChange(values.filter((v) => v !== val));
+                    field.onChange(values.filter((v) => v !== val).join(","));
                   };
                   return (
                     <div className="border rounded-md p-2 min-h-[40px]">
                       <div className="flex flex-wrap gap-2 ">
-                        {values.map((v) => (
-                          <span
-                            key={v}
-                            className="flex items-center gap-1 px-2 py-1 text-sm bg-slate-100 rounded-md"
-                          >
-                            {v}
-                            <button
-                              type="button"
-                              onClick={() => removeValue(v)}
-                              className="text-slate-500 hover:text-red-500"
+                        {values &&
+                          values.map((v) => (
+                            <span
+                              key={v}
+                              className="flex items-center gap-1 px-2 py-1 text-sm bg-slate-100 rounded-md"
                             >
-                              ×
-                            </button>
-                          </span>
-                        ))}
+                              {v}
+                              <button
+                                type="button"
+                                onClick={() => removeValue(v)}
+                                className="text-slate-500 hover:text-red-500"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
                       </div>
                       <input
                         type="text"
@@ -634,7 +637,7 @@ const PropertyForm = () => {
                   <div
                     className={error ? "rounded-xl ring-2 ring-red-500" : ""}
                   >
-                    <SingleSelect
+                    <SingleSelect<number>
                       value={field.value}
                       disabled={!selectedCityId || loadingZones}
                       loading={loadingZones}
@@ -1017,23 +1020,6 @@ const PropertyForm = () => {
               )}
             />
           </div>
-
-          {/* <div>
-            <Controller
-              control={control}
-              name="ownersPhoneNumber"
-              render={({ field }) => (
-                <>
-                  <Label>Owner's Phone Number</Label>
-                  <input
-                    {...field}
-                    placeholder="Owner phone number"
-                    className={inputClass}
-                  />
-                </>
-              )}
-            />
-          </div> */}
         </div>
       </Section>
 
@@ -1131,7 +1117,13 @@ const PropertyForm = () => {
                 <Label>View To</Label>
                 <MultiSelect
                   options={PROPERTY_VIEW_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
@@ -1145,7 +1137,13 @@ const PropertyForm = () => {
                 <Label>Equipment</Label>
                 <MultiSelect
                   options={PROPERTY_EQUIPMENT_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
@@ -1159,7 +1157,13 @@ const PropertyForm = () => {
                 <Label>Infrastructures</Label>
                 <MultiSelect
                   options={PROPERTY_INFRASTRUCTURE_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
@@ -1173,7 +1177,13 @@ const PropertyForm = () => {
                 <Label>Surroundings</Label>
                 <MultiSelect
                   options={PROPERTY_SURROUNDINGS_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>

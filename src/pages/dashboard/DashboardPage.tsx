@@ -13,6 +13,7 @@ import { ENDPOINTS } from "../../lib/axios";
 import { filterMappings, INITIAL_FILTERS } from "./components/filterMappings";
 import { ErrorState } from "../../components/error-state";
 import { useLocationConfigBase } from "../../hooks/useLocationConfiguration";
+import { EFormMode } from "../../assets/enums";
 
 export default function DashboardPage() {
   const [filters, setFilters] = useState<PropertyFiltersDTO>(INITIAL_FILTERS);
@@ -174,7 +175,8 @@ export default function DashboardPage() {
             setUploadOpen(false);
             refresh();
           }}
-          model={null}
+          formMode={EFormMode.Create}
+          defaultValues={null}
         />
       )}
     </div>
