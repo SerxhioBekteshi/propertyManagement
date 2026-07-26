@@ -152,7 +152,10 @@ const PropertyForm = () => {
               name="agentDescription"
               render={({ field }) => (
                 <div>
-                  <Label>Description</Label>
+                  <Label>
+                    Your Description (This is visible only to you and
+                    Administrator)*{" "}
+                  </Label>
                   <textarea {...field} rows={3} className={inputClass} />
                 </div>
               )}

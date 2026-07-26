@@ -393,15 +393,36 @@ export default function PropertyDetailsPage() {
             icon={<Info className="w-5 h-5 text-blue-500" />}
             title="Description"
           >
-            <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
-              "{property.description || "No description provided."}"
-            </p>
-            {user?.role == ERoles.Admin ||
-              (property.agentId == user?.id && (
-                <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
-                  "{property.description || "No description provided."}"
-                </p>
-              ))}
+            {(() => {
+              const canSeeAgentDesc =
+                user?.role == ERoles.Admin || property.agentId == user?.id;
+              const hasPropertyDesc = !!property.description;
+              const hasAgentDesc =
+                canSeeAgentDesc && !!property.agentDescription;
+              const bothEmpty = !hasPropertyDesc && !hasAgentDesc;
+
+              return (
+                <>
+                  {hasPropertyDesc && (
+                    <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
+                      "{property.description}"
+                    </p>
+                  )}
+
+                  {canSeeAgentDesc && hasAgentDesc && (
+                    <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
+                      "{property.agentDescription}"
+                    </p>
+                  )}
+
+                  {bothEmpty && (
+                    <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
+                      No description provided.
+                    </p>
+                  )}
+                </>
+              );
+            })()}
           </PropertyDetailsSection>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -488,7 +509,7 @@ export default function PropertyDetailsPage() {
             title="Comments"
           >
             <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
-              "{property.comments || "No description provided."}"
+              "{property.comments || "No comments provided."}"
             </p>
           </PropertyDetailsSection>
         </div>

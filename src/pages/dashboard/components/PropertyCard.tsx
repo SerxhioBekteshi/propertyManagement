@@ -132,15 +132,17 @@ export default function PropertyCard({
           </div>
 
           {/* EDIT BUTTON */}
-          <button
-            type="button"
-            onClick={handleEditClick}
-            disabled={isFetchingEdit}
-            className="absolute top-3 right-3 flex items-center justify-center w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors disabled:opacity-50"
-            aria-label="Edit property"
-          >
-            <Pencil className="w-3.5 h-3.5 text-slate-700" />
-          </button>
+          {user?.role == ERoles.Admin && (
+            <button
+              type="button"
+              onClick={handleEditClick}
+              disabled={isFetchingEdit}
+              className="absolute top-3 right-3 flex items-center justify-center w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors disabled:opacity-50"
+              aria-label="Edit property"
+            >
+              <Pencil className="w-3.5 h-3.5 text-slate-700" />
+            </button>
+          )}
 
           {/* PRICE */}
           <div className="absolute bottom-3 left-3 text-white font-bold text-lg">

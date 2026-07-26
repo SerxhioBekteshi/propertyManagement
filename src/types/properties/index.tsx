@@ -51,6 +51,7 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   // Core
   title?: string;
   description?: string;
+  agentDescription?: string;
   comments?: string;
 
   // Classification, property information
