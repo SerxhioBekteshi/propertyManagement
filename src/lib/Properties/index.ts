@@ -37,8 +37,8 @@ export const PropertiesService = {
 
     Object.entries(row).forEach(([key, value]) => {
       if (
-        key === "images" ||
-        key === "privateImages" ||
+        key === "imageUrls" ||
+        key === "privateImageUrls" ||
         key === "files" ||
         key === "mainImage"
       )
@@ -54,11 +54,11 @@ export const PropertiesService = {
     if (row.mainImage) {
       formData.append("mainImage", row.mainImage);
     }
-    row.images?.forEach((item: any) => {
-      formData.append("images", item.file);
+    row.imageUrls?.forEach((item: any) => {
+      formData.append("imageUrls", item.file);
     });
-    row.privateImages?.forEach((item: any) => {
-      formData.append("PrivateImages", item.file);
+    row.privateImageUrls?.forEach((item: any) => {
+      formData.append("privateImageUrls", item.file);
     });
     row.files?.forEach((item: any) => {
       formData.append("files", item.file);
@@ -76,8 +76,8 @@ export const PropertiesService = {
 
     Object.entries(row).forEach(([key, value]) => {
       if (
-        key === "images" ||
-        key === "privateImages" ||
+        key === "imageUrls" ||
+        key === "privateImageUrls" ||
         key === "files" ||
         key === "mainImage"
       )
@@ -93,11 +93,11 @@ export const PropertiesService = {
     if (row.mainImage) {
       formData.append("mainImage", row.mainImage);
     }
-    row.images?.forEach((item: any) => {
-      formData.append("images", item.file);
+    row.imageUrls?.forEach((item: any) => {
+      formData.append("imageUrls", item.file);
     });
-    row.privateImages?.forEach((item: any) => {
-      formData.append("PrivateImages", item.file);
+    row.privateImageUrls?.forEach((item: any) => {
+      formData.append("privateImageUrls", item.file);
     });
     row.files?.forEach((item: any) => {
       formData.append("files", item.file);

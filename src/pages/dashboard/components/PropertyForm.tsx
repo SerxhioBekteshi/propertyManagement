@@ -64,17 +64,19 @@ export const PropertyValidationSchema = yup.object({
   //   .trim(),
   zoneId: yup.number().required("Zone is required"),
   mainImage: yup
-    .mixed<File>()
+    .mixed<File | string>()
     .required("Main image is required")
     .test("filePresent", "Main image is required", (value) => {
-      return value instanceof File;
+      if (value instanceof File) return true;
+      if (typeof value === "string") return value.trim().length > 0;
+      return false;
     }),
 });
 
 export type PropertyFormValues = yup.InferType<typeof PropertyValidationSchema>;
 
 const PropertyForm = () => {
-  const { control, setValue } = useFormContext();
+  const { control, setValue, getValues } = useFormContext();
 
   const { user } = useAuth();
 
@@ -100,6 +102,8 @@ const PropertyForm = () => {
       setLoadingStreets(false);
     }
   };
+
+  console.log(getValues(), "GALUE");
 
   const fetchPropertyOwners = async () => {
     setLoadingContacts(true);
@@ -165,7 +169,7 @@ const PropertyForm = () => {
 
             <Controller
               control={control}
-              name="images"
+              name="imageUrls"
               render={({ field }) => (
                 <ImageUploader
                   value={field.value ?? []}
@@ -178,7 +182,7 @@ const PropertyForm = () => {
             {user?.role == "Agent" && (
               <Controller
                 control={control}
-                name="privateImages"
+                name="privateImageUrls"
                 render={({ field }) => (
                   <ImageUploader
                     value={field.value ?? []}

@@ -40,8 +40,8 @@ export type AddUpdatePropertyDTO = Omit<
   | "zoneId" //because it will be required
 > & {
   zoneId: number;
-  images?: File[];
-  privateImages?: File[];
+  imageUrls?: File[];
+  privateImageUrls?: File[];
   files?: File[];
 };
 
