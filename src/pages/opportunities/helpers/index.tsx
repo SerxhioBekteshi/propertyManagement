@@ -27,7 +27,7 @@ export const columns: ColumnConfig[] = [
   {
     key: "amount",
     header: "Amount (€)",
-    render: (val: number) => val?.toLocaleString(),
+    render: (val: number) => val?.toLocaleString() ?? "—",
   },
   {
     key: "propertyOwnerName",
@@ -37,88 +37,95 @@ export const columns: ColumnConfig[] = [
   {
     key: "salesStage",
     header: "Sales Stage",
-    render: (val: string) => (
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide border ${
-          SALES_STAGE_STYLES[val] ??
-          "bg-slate-100 text-slate-600 border-slate-200"
-        }`}
-      >
-        {val?.replace(/_/g, " ") ?? "—"}
-      </span>
-    ),
+    render: (val: string) => {
+      if (!val) return "—";
+      return (
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide border ${
+            SALES_STAGE_STYLES[val] ??
+            "bg-slate-100 text-slate-600 border-slate-200"
+          }`}
+        >
+          {val.replace(/_/g, " ")}
+        </span>
+      );
+    },
   },
   {
     key: "country",
     header: "Country",
-    render: (val: string) => <CountryFlag code={val} />,
+    render: (val: string) => (val ? <CountryFlag code={val} /> : "—"),
   },
   {
     key: "priceFrom",
     header: "Price From",
-    render: (val: number) => val?.toLocaleString(),
+    render: (val: number) => val?.toLocaleString() ?? "—",
   },
   {
     key: "priceTo",
     header: "Price To",
-    render: (val: number) => val?.toLocaleString(),
+    render: (val: number) => val?.toLocaleString() ?? "—",
   },
-
   {
     key: "businessType",
     header: "Business Type",
-    render: (val: string) => (
-      <span
-        className={`text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full ${
-          BUSINESS_TYPE_STYLES[val] ?? "bg-slate-200 text-slate-700"
-        }`}
-      >
-        {val ?? "—"}
-      </span>
-    ),
+    render: (val: string) => {
+      if (!val) return "—";
+      return (
+        <span
+          className={`text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full ${
+            BUSINESS_TYPE_STYLES[val] ?? "bg-slate-200 text-slate-700"
+          }`}
+        >
+          {val}
+        </span>
+      );
+    },
   },
   {
     key: "availability",
     header: "Availability",
-    render: (val: string) => (
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide border ${
-          AVAILABILITY_STYLES[val] ??
-          "bg-slate-100 text-slate-600 border-slate-200"
-        }`}
-      >
-        {val?.replace(/_/g, " ") ?? "—"}
-      </span>
-    ),
+    render: (val: string) => {
+      if (!val) return "—";
+      return (
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide border ${
+            AVAILABILITY_STYLES[val] ??
+            "bg-slate-100 text-slate-600 border-slate-200"
+          }`}
+        >
+          {val.replace(/_/g, " ")}
+        </span>
+      );
+    },
   },
   {
     key: "paymentType",
     header: "Payment Type",
-    render: (val: string) => (
-      <OpportunityBadge value={val} map={PAYMENT_TYPE_STYLES} />
-    ),
+    render: (val: string) =>
+      val ? <OpportunityBadge value={val} map={PAYMENT_TYPE_STYLES} /> : "—",
   },
   { key: "mainLeadSource", header: "Main Lead Source" },
   {
     key: "leadSource",
     header: "Lead Source",
-    render: (val: string) => renderLeadSource(val),
+    render: (val: string) => (val ? renderLeadSource(val) : "—"),
   },
   {
     key: "expectedCloseDate",
     header: "Expected Close Date",
-    render: (val: string) => formatDate(val),
+    render: (val: string) => (val ? formatDate(val) : "—"),
   },
   {
     key: "createdDateTime",
     header: "Created At",
-    render: (val: string) => formatDate(val),
+    render: (val: string) => (val ? formatDate(val) : "—"),
   },
   { key: "createdBy", header: "Created By" },
   {
     key: "modifiedDateTime",
     header: "Modified At",
-    render: (val: string) => formatDate(val),
+    render: (val: string) => (val ? formatDate(val) : "—"),
   },
   { key: "modifiedBy", header: "Modified By" },
 ];

@@ -141,6 +141,7 @@ export default function DashboardPage() {
                 key={property.id}
                 property={property}
                 index={index}
+                onSaved={() => refresh()}
               />
             ))}
           </div>
