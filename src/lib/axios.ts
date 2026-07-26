@@ -151,6 +151,9 @@ export const ENDPOINTS = {
   properties: {
     getAll: "Property/get-all",
     create: `Property/create`,
+    update(id: number) {
+      return `Property/${id}`;
+    },
     getById: (id: number) => `Property/${id}`,
     createOwner: "Property/create/owner",
     updateOwner(id: number) {

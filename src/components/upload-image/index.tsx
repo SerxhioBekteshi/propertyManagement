@@ -1,10 +1,10 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X } from "lucide-react";
 
 interface PreviewFile {
   id: string;
-  file: File;
+  file: File | string;
   url: string;
 }
 
@@ -17,12 +17,19 @@ interface ImageUploaderProps {
 }
 
 interface SingleImageUploaderProps {
-  value?: File | null;
+  value?: File | string | null;
   onChange?: (file: File | null) => void;
   label?: string;
   className?: string;
   error?: boolean; // 👈 add this
 }
+
+const resolveImageUrl = (url: string) =>
+  import.meta.env.VITE_APP_BACKEND_API_URL?.includes("localhost")
+    ? "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg"
+    : url.startsWith("http")
+      ? url
+      : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${url}`;
 
 export const ImageUploader = ({
   value = [],
@@ -31,19 +38,26 @@ export const ImageUploader = ({
   label,
   className = "",
 }: ImageUploaderProps) => {
+  // normalize: turn any raw string entries into PreviewFile objects
+  const items: PreviewFile[] = value.map((item) =>
+    typeof item === "string"
+      ? { id: item, file: item, url: resolveImageUrl(item) }
+      : item,
+  );
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const newFiles: PreviewFile[] = acceptedFiles
-        .slice(0, maxFiles - value.length)
+        .slice(0, maxFiles - items.length)
         .map((file) => ({
           id: `${file.name}-${Date.now()}-${Math.random()}`,
           file,
           url: URL.createObjectURL(file),
         }));
 
-      onChange?.([...value, ...newFiles]);
+      onChange?.([...items, ...newFiles]);
     },
-    [value, onChange, maxFiles],
+    [items, onChange, maxFiles],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -52,17 +66,17 @@ export const ImageUploader = ({
   });
 
   const remove = (id: string) => {
-    const item = value.find((f) => f.id === id);
-    if (item) URL.revokeObjectURL(item.url);
-    onChange?.(value.filter((f) => f.id !== id));
+    const item = items.find((f) => f.id === id);
+    if (item && item.file instanceof File) {
+      URL.revokeObjectURL(item.url); // only revoke blob URLs we actually created
+    }
+    onChange?.(items.filter((f) => f.id !== id));
   };
 
   return (
     <div className={`space-y-2 ${className}`}>
-      {/* Label */}
       {label && <p className="text-sm font-medium text-slate-700">{label}</p>}
 
-      {/* Dropzone */}
       <div
         {...getRootProps()}
         className={`flex items-center justify-center gap-2 w-full h-24 rounded-xl border border-dashed transition cursor-pointer text-xs
@@ -71,7 +85,7 @@ export const ImageUploader = ({
             ? "border-slate-900 bg-slate-100"
             : "border-slate-300 hover:bg-slate-50"
         }
-        ${value.length >= maxFiles ? "opacity-50 pointer-events-none" : ""}
+        ${items.length >= maxFiles ? "opacity-50 pointer-events-none" : ""}
       `}
       >
         <input {...getInputProps()} />
@@ -80,28 +94,25 @@ export const ImageUploader = ({
           {isDragActive ? "Drop..." : "Upload"}
         </span>
         <span className="text-slate-400">
-          {value.length}/{maxFiles}
+          {items.length}/{maxFiles}
         </span>
       </div>
 
-      {/* Preview */}
-      {value.length > 0 && (
+      {items.length > 0 && (
         <div className="grid grid-cols-3 gap-1.5">
-          {value.map((item, index) => (
+          {items.map((item, index) => (
             <div
               key={item.id}
               className="relative group rounded-lg overflow-hidden aspect-square"
             >
               <img src={item.url} className="w-full h-full object-cover" />
 
-              {/* Cover */}
               {index === 0 && (
                 <span className="absolute bottom-1 left-1 text-[9px] bg-black text-white px-1 rounded">
                   Cover
                 </span>
               )}
 
-              {/* Remove */}
               <button
                 type="button"
                 onClick={() => remove(item.id)}
@@ -116,7 +127,6 @@ export const ImageUploader = ({
     </div>
   );
 };
-
 export const SingleImageUploader = ({
   value,
   onChange,
@@ -137,7 +147,23 @@ export const SingleImageUploader = ({
     maxFiles: 1,
   });
 
-  const preview = value ? URL.createObjectURL(value) : null;
+  const preview = !value
+    ? null
+    : value instanceof File
+      ? URL.createObjectURL(value)
+      : import.meta.env.VITE_APP_BACKEND_API_URL?.includes("localhost")
+        ? "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg"
+        : value.startsWith("http")
+          ? value
+          : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${value}`;
+
+  useEffect(() => {
+    return () => {
+      if (value instanceof File && preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [value, preview]);
 
   return (
     <div className={`space-y-2 ${className}`}>

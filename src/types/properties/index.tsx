@@ -19,7 +19,7 @@ export interface PropertyFiltersDTO {
   orderBy: "newest" | "oldest" | "price_asc" | "price_desc";
 }
 
-export type AddPropertyDTO = Omit<
+export type AddUpdatePropertyDTO = Omit<
   PropertyResponseDTO,
   | "id"
   | "agentId"
@@ -40,8 +40,8 @@ export type AddPropertyDTO = Omit<
   | "zoneId" //because it will be required
 > & {
   zoneId: number;
-  images?: File[];
-  privateImages?: File[];
+  imageUrls?: File[];
+  privateImageUrls?: File[];
   files?: File[];
 };
 

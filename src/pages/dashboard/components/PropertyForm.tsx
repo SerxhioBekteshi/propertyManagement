@@ -2,7 +2,6 @@ import { Controller, useFormContext, useWatch } from "react-hook-form";
 import Label from "../../../components/label";
 import Section from "../../../components/section";
 import {
-  COUNTRY_OPTIONS,
   PROPERTY_AVAILABILITY_OPTIONS,
   PROPERTY_BEING_LIVED_OPTIONS,
   PROPERTY_BUSINESS_TYPE_OPTIONS,
@@ -40,12 +39,13 @@ import "leaflet/dist/leaflet.css";
 import * as yup from "yup";
 import ErrorMessage from "../../../components/hook-form/error-message";
 import { EFormMode } from "../../../assets/enums";
+import LocationCascadeFields from "./LocationCascadeFields";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
 
 const checkboxClass =
-  "h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer";
+  "h-4 w-4 rounded border border-slate-300 accent-slate-900 cursor-pointer";
 
 const getInputClass = (hasError?: boolean) =>
   `w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent placeholder-slate-400 transition-all
@@ -62,137 +62,36 @@ export const PropertyValidationSchema = yup.object({
   //   .min(3, "Title must be at least 3 characters")
   //   .max(50, "Title must not exceed 50 characters")
   //   .trim(),
-
   zoneId: yup.number().required("Zone is required"),
-
   mainImage: yup
-    .mixed<File>()
+    .mixed<File | string>()
     .required("Main image is required")
     .test("filePresent", "Main image is required", (value) => {
-      return value instanceof File;
+      if (value instanceof File) return true;
+      if (typeof value === "string") return value.trim().length > 0;
+      return false;
     }),
 });
 
 export type PropertyFormValues = yup.InferType<typeof PropertyValidationSchema>;
 
 const PropertyForm = () => {
-  const { control, setValue } = useFormContext();
+  const { control, setValue, getValues } = useFormContext();
 
   const { user } = useAuth();
-  const selectedCountry = useWatch({ control, name: "country" });
-  const selectedDivisionId = useWatch({ control, name: "divisionId" });
-  const selectedCityId = useWatch({ control, name: "cityId" });
 
-  const [divisions, setDivisions] = useState<IOption<number>[]>([]);
-  const [cities, setCities] = useState<IOption<number>[]>([]);
-  const [zones, setZones] = useState<IOption<number>[]>([]);
   const [streets, setStreets] = useState<IOption<number>[]>([]);
 
   const [propertyOwners, setPropertyOwners] = useState<IOption<number>[]>([]);
   const [ownerDrawerOpen, setOwnerDrawerOpen] = useState(false);
   const [streetDrawerOpen, setStreetDrawerOpen] = useState(false);
-  const [loadingDivisions, setLoadingDivisions] = useState(false);
-  const [loadingCities, setLoadingCities] = useState(false);
-  const [loadingZones, setLoadingZones] = useState(false);
   const [loadingStreets, setLoadingStreets] = useState(false);
+  const [loadingContacts, setLoadingContacts] = useState(false);
 
-  // Fetch divisions when country changes
   useEffect(() => {
-    if (!selectedCountry) {
-      setValue("divisionId", undefined);
-      setValue("cityId", undefined);
-      setValue("zoneId", undefined, {
-        shouldValidate: true,
-        shouldTouch: true,
-      });
-      setDivisions([]);
-      setCities([]);
-      setZones([]);
-      return;
-    }
-
-    const fetch = async () => {
-      setLoadingDivisions(true);
-      setValue("divisionId", undefined);
-      setValue("cityId", undefined);
-      setValue("zoneId", undefined, {
-        shouldValidate: true,
-        shouldTouch: true,
-      });
-      setCities([]);
-      setZones([]);
-      try {
-        const res =
-          await LocationConfigurationService.getDivisions(selectedCountry);
-        setDivisions(res.data ?? []);
-      } finally {
-        setLoadingDivisions(false);
-      }
-    };
-
-    fetch();
-  }, [selectedCountry]);
-
-  // Fetch cities when division changes
-  useEffect(() => {
-    if (!selectedDivisionId) {
-      setValue("cityId", undefined);
-      setValue("zoneId", undefined, {
-        shouldValidate: true,
-        shouldTouch: true,
-      });
-      setCities([]);
-      setZones([]);
-      return;
-    }
-
-    const fetch = async () => {
-      setLoadingCities(true);
-      setValue("cityId", undefined);
-      setValue("zoneId", undefined, {
-        shouldValidate: true,
-        shouldTouch: true,
-      });
-      setZones([]);
-      try {
-        const res =
-          await LocationConfigurationService.getCities(selectedDivisionId);
-        setCities(res.data ?? []);
-      } finally {
-        setLoadingCities(false);
-      }
-    };
-
-    fetch();
-  }, [selectedDivisionId]);
-
-  // Fetch zones when city changes
-  useEffect(() => {
-    if (!selectedCityId) {
-      setValue("zoneId", undefined, {
-        shouldValidate: true,
-        shouldTouch: true,
-      });
-      setZones([]);
-      return;
-    }
-
-    const fetch = async () => {
-      setLoadingZones(true);
-      setValue("zoneId", undefined, {
-        shouldValidate: true,
-        shouldTouch: true,
-      });
-      try {
-        const res = await LocationConfigurationService.getZones(selectedCityId);
-        setZones(res.data ?? []);
-      } finally {
-        setLoadingZones(false);
-      }
-    };
-
-    fetch();
-  }, [selectedCityId]);
+    fetchStreets();
+    fetchPropertyOwners();
+  }, []);
 
   const fetchStreets = async () => {
     setLoadingStreets(true);
@@ -204,24 +103,17 @@ const PropertyForm = () => {
     }
   };
 
-  useEffect(() => {
-    fetchStreets();
-  }, []);
+  console.log(getValues(), "GALUE");
 
   const fetchPropertyOwners = async () => {
-    setLoadingZones(true);
-    // setValue("", undefined);
+    setLoadingContacts(true);
     try {
       const res = await LocationConfigurationService.getPropertyOwners();
       setPropertyOwners(res.data ?? []);
     } finally {
-      setLoadingZones(false);
+      setLoadingContacts(false);
     }
   };
-
-  useEffect(() => {
-    fetchPropertyOwners();
-  }, []);
 
   const lat = useWatch({ control, name: "latitude" });
   const lng = useWatch({ control, name: "longitude" });
@@ -277,7 +169,7 @@ const PropertyForm = () => {
 
             <Controller
               control={control}
-              name="images"
+              name="imageUrls"
               render={({ field }) => (
                 <ImageUploader
                   value={field.value ?? []}
@@ -290,7 +182,7 @@ const PropertyForm = () => {
             {user?.role == "Agent" && (
               <Controller
                 control={control}
-                name="privateImages"
+                name="privateImageUrls"
                 render={({ field }) => (
                   <ImageUploader
                     value={field.value ?? []}
@@ -401,7 +293,7 @@ const PropertyForm = () => {
                     <input
                       type="checkbox"
                       checked={field.value ?? false}
-                      onChange={(e) => field.onChange(e.target.checked)}
+                      onChange={(e) => console.log("clicked", e.target.checked)}
                       className={checkboxClass}
                     />
                   )}
@@ -492,33 +384,38 @@ const PropertyForm = () => {
                 control={control}
                 name="portalsToPublish"
                 render={({ field }) => {
-                  const values: string[] = field.value ?? [];
+                  const values: string[] = field.value
+                    ? field.value.split(",").filter(Boolean)
+                    : [];
+
                   const addValue = (val: string) => {
                     const trimmed = val.trim();
                     if (!trimmed || values.includes(trimmed)) return;
-                    field.onChange([...values, trimmed]);
+                    field.onChange([...values, trimmed].join(","));
                   };
+
                   const removeValue = (val: string) => {
-                    field.onChange(values.filter((v) => v !== val));
+                    field.onChange(values.filter((v) => v !== val).join(","));
                   };
                   return (
                     <div className="border rounded-md p-2 min-h-[40px]">
                       <div className="flex flex-wrap gap-2 ">
-                        {values.map((v) => (
-                          <span
-                            key={v}
-                            className="flex items-center gap-1 px-2 py-1 text-sm bg-slate-100 rounded-md"
-                          >
-                            {v}
-                            <button
-                              type="button"
-                              onClick={() => removeValue(v)}
-                              className="text-slate-500 hover:text-red-500"
+                        {values &&
+                          values.map((v) => (
+                            <span
+                              key={v}
+                              className="flex items-center gap-1 px-2 py-1 text-sm bg-slate-100 rounded-md"
                             >
-                              ×
-                            </button>
-                          </span>
-                        ))}
+                              {v}
+                              <button
+                                type="button"
+                                onClick={() => removeValue(v)}
+                                className="text-slate-500 hover:text-red-500"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
                       </div>
                       <input
                         type="text"
@@ -559,98 +456,7 @@ const PropertyForm = () => {
       <Section title="Property Location">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Country */}
-          <div>
-            <Controller
-              control={control}
-              name="country"
-              render={({ field }) => (
-                <>
-                  <Label>Country</Label>
-                  <SingleSelect
-                    options={COUNTRY_OPTIONS}
-                    onChange={field.onChange}
-                    value={field.value}
-                  />
-                </>
-              )}
-            />
-          </div>
-
-          {/* Division */}
-          <div>
-            <Controller
-              control={control}
-              name="divisionId"
-              render={({ field }) => (
-                <>
-                  <Label>Division</Label>
-                  <SingleSelect
-                    value={field.value}
-                    disabled={!selectedCountry || loadingDivisions}
-                    loading={loadingDivisions}
-                    options={divisions}
-                    onChange={(value) =>
-                      field.onChange(value ? Number(value) : undefined)
-                    }
-                    placeholder="— Select —"
-                  />
-                </>
-              )}
-            />
-          </div>
-
-          {/* City */}
-          <div>
-            <Controller
-              control={control}
-              name="cityId"
-              render={({ field }) => (
-                <>
-                  <Label>City</Label>
-
-                  <SingleSelect
-                    value={field.value}
-                    disabled={!selectedDivisionId || loadingCities}
-                    loading={loadingCities}
-                    options={cities}
-                    onChange={(value) =>
-                      field.onChange(value ? Number(value) : undefined)
-                    }
-                    placeholder="— Select —"
-                  />
-                </>
-              )}
-            />
-          </div>
-
-          {/* Zone */}
-          <div>
-            <Controller
-              control={control}
-              name="zoneId"
-              render={({ field, fieldState: { error } }) => (
-                <div>
-                  <Label>Zone *</Label>
-                  <div
-                    className={error ? "rounded-xl ring-2 ring-red-500" : ""}
-                  >
-                    <SingleSelect
-                      value={field.value}
-                      disabled={!selectedCityId || loadingZones}
-                      loading={loadingZones}
-                      options={zones}
-                      onChange={(value) =>
-                        field.onChange(value ? Number(value) : undefined)
-                      }
-                      placeholder="— Select —"
-                    />
-                  </div>
-                  <ErrorMessage message={error?.message} />
-                </div>
-              )}
-            />
-          </div>
-
+          <LocationCascadeFields />
           <div className="flex justify-between gap-3 items-end">
             <Controller
               control={control}
@@ -828,7 +634,8 @@ const PropertyForm = () => {
                   <input
                     type="date"
                     {...field}
-                    value={field.value ?? ""}
+                    value={field.value ? field.value.substring(0, 10) : ""}
+                    onChange={(e) => field.onChange(e.target.value)}
                     className={inputClass}
                   />
                 </>
@@ -987,6 +794,8 @@ const PropertyForm = () => {
                   <SingleSelect<number>
                     value={field.value}
                     options={propertyOwners}
+                    disabled={loadingContacts}
+                    loading={loadingContacts}
                     onChange={field.onChange}
                   />
                 </div>
@@ -1017,23 +826,6 @@ const PropertyForm = () => {
               )}
             />
           </div>
-
-          {/* <div>
-            <Controller
-              control={control}
-              name="ownersPhoneNumber"
-              render={({ field }) => (
-                <>
-                  <Label>Owner's Phone Number</Label>
-                  <input
-                    {...field}
-                    placeholder="Owner phone number"
-                    className={inputClass}
-                  />
-                </>
-              )}
-            />
-          </div> */}
         </div>
       </Section>
 
@@ -1131,7 +923,13 @@ const PropertyForm = () => {
                 <Label>View To</Label>
                 <MultiSelect
                   options={PROPERTY_VIEW_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
@@ -1145,7 +943,13 @@ const PropertyForm = () => {
                 <Label>Equipment</Label>
                 <MultiSelect
                   options={PROPERTY_EQUIPMENT_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
@@ -1159,7 +963,13 @@ const PropertyForm = () => {
                 <Label>Infrastructures</Label>
                 <MultiSelect
                   options={PROPERTY_INFRASTRUCTURE_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
@@ -1173,7 +983,13 @@ const PropertyForm = () => {
                 <Label>Surroundings</Label>
                 <MultiSelect
                   options={PROPERTY_SURROUNDINGS_OPTIONS}
-                  value={field.value}
+                  value={
+                    Array.isArray(field.value)
+                      ? field.value
+                      : field.value
+                        ? field.value.split(",")
+                        : []
+                  }
                   onChange={field.onChange}
                 />
               </div>
