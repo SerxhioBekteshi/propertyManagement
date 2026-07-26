@@ -40,9 +40,10 @@ export type AddUpdatePropertyDTO = Omit<
   | "zoneId" //because it will be required
 > & {
   zoneId: number;
-  imageUrls?: File[];
-  privateImageUrls?: File[];
-  fileUrls?: File[];
+  mainImage: File | string;
+  imageUrls?: (File | string)[];
+  privateImageUrls?: (File | string)[];
+  fileUrls?: (File | string)[];
 };
 
 export type PropertyResponseDTO = BaseAuditableDTO & {
@@ -131,7 +132,7 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   privateImageUrls?: string[];
   fileUrls?: string[];
 
-  mainImage: File;
+  mainImage: string;
   opportunityCount?: number;
 
   expirationDate?: Date;

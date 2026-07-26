@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X } from "lucide-react";
 
@@ -14,6 +14,7 @@ interface ImageUploaderProps {
   maxFiles?: number;
   label?: string;
   className?: string;
+  onConvertingChange?: (isConverting: boolean) => void;
 }
 
 interface SingleImageUploaderProps {
@@ -22,6 +23,7 @@ interface SingleImageUploaderProps {
   label?: string;
   className?: string;
   error?: boolean;
+  onConvertingChange?: (isConverting: boolean) => void;
 }
 
 const resolveImageUrl = (url: string) =>
@@ -48,6 +50,7 @@ export const ImageUploader = ({
   maxFiles = 20,
   label,
   className = "",
+  onConvertingChange,
 }: ImageUploaderProps) => {
   // normalize: turn any raw string entries into PreviewFile objects for display
   const items: PreviewFile[] = value.map((item) =>
@@ -56,9 +59,23 @@ export const ImageUploader = ({
       : item,
   );
 
+  // always holds the LATEST items array, so async .then() callbacks never
+  // operate on a stale snapshot captured when the effect first ran
+  const itemsRef = useRef<PreviewFile[]>(items);
+  useEffect(() => {
+    itemsRef.current = items;
+  });
+
   // track which string items we've already kicked off a conversion for,
   // so we don't re-fetch on every render/effect run
   const convertingIds = useRef<Set<string>>(new Set());
+
+  // notify parent whenever the in-flight conversion count changes, so the
+  // form can disable submit until every string-backed image is a real File
+  const notifyConverting = useCallback(() => {
+    onConvertingChange?.(convertingIds.current.size > 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // silently convert any existing string-backed items into real Files,
   // so by the time the form is submitted, every item.file is a File
@@ -72,16 +89,26 @@ export const ImageUploader = ({
 
     pending.forEach((item) => {
       convertingIds.current.add(item.id);
+      notifyConverting();
 
       const fileUrl = item.file as string;
       urlToFile(resolveImageUrl(fileUrl), getFileNameFromUrl(fileUrl))
         .then((file) => {
-          onChange?.(items.map((i) => (i.id === item.id ? { ...i, file } : i)));
+          // read the CURRENT items at resolve-time, never the stale closure
+          // captured when this effect run started
+          onChange?.(
+            itemsRef.current.map((i) =>
+              i.id === item.id ? { ...i, file } : i,
+            ),
+          );
         })
         .catch(() => {
           // if conversion fails (CORS, network), leave it as a string —
           // submit-side handling would still need a fallback in that case
+        })
+        .finally(() => {
           convertingIds.current.delete(item.id);
+          notifyConverting();
         });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,16 +117,16 @@ export const ImageUploader = ({
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const newFiles: PreviewFile[] = acceptedFiles
-        .slice(0, maxFiles - items.length)
+        .slice(0, maxFiles - itemsRef.current.length)
         .map((file) => ({
           id: `${file.name}-${Date.now()}-${Math.random()}`,
           file,
           url: URL.createObjectURL(file),
         }));
 
-      onChange?.([...items, ...newFiles]);
+      onChange?.([...itemsRef.current, ...newFiles]);
     },
-    [items, onChange, maxFiles],
+    [onChange, maxFiles],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -108,12 +135,13 @@ export const ImageUploader = ({
   });
 
   const remove = (id: string) => {
-    const item = items.find((f) => f.id === id);
+    const item = itemsRef.current.find((f) => f.id === id);
     if (item && item.file instanceof File) {
       URL.revokeObjectURL(item.url);
     }
     convertingIds.current.delete(id);
-    onChange?.(items.filter((f) => f.id !== id));
+    notifyConverting();
+    onChange?.(itemsRef.current.filter((f) => f.id !== id));
   };
 
   return (
@@ -177,20 +205,35 @@ export const SingleImageUploader = ({
   label,
   className = "",
   error,
+  onConvertingChange,
 }: SingleImageUploaderProps) => {
   const converting = useRef(false);
+  const valueRef = useRef(value);
+  useEffect(() => {
+    valueRef.current = value;
+  });
 
   // silently convert an existing string value into a real File,
   // so the form always holds a File by the time it's submitted
   useEffect(() => {
     if (typeof value === "string" && value && !converting.current) {
       converting.current = true;
+      onConvertingChange?.(true);
+
       urlToFile(resolveImageUrl(value), getFileNameFromUrl(value))
         .then((file) => {
-          onChange?.(file);
+          // only apply if the value hasn't changed to something else
+          // (e.g. user picked a new file) while this was in flight
+          if (valueRef.current === value) {
+            onChange?.(file);
+          }
         })
         .catch(() => {
+          // leave as string on failure
+        })
+        .finally(() => {
           converting.current = false;
+          onConvertingChange?.(false);
         });
     }
     if (value instanceof File || value === null) {
@@ -212,19 +255,21 @@ export const SingleImageUploader = ({
     maxFiles: 1,
   });
 
-  const preview = !value
-    ? null
-    : value instanceof File
-      ? URL.createObjectURL(value)
-      : resolveImageUrl(value);
+  // only create a fresh object URL when `value` (the File) actually changes
+  const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
-    return () => {
-      if (value instanceof File && preview) {
-        URL.revokeObjectURL(preview);
-      }
-    };
-  }, [value, preview]);
+    if (!value) {
+      setPreview(null);
+      return;
+    }
+    if (value instanceof File) {
+      const url = URL.createObjectURL(value);
+      setPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setPreview(resolveImageUrl(value));
+  }, [value]);
 
   return (
     <div className={`space-y-2 ${className}`}>
@@ -247,7 +292,9 @@ export const SingleImageUploader = ({
         </div>
       ) : (
         <div className="relative group rounded-lg overflow-hidden aspect-square w-32">
-          <img src={preview!} className="w-full h-full object-cover" />
+          {preview && (
+            <img src={preview} className="w-full h-full object-cover" />
+          )}
           <span className="absolute bottom-1 left-1 text-[9px] bg-black text-white px-1 rounded">
             Cover
           </span>

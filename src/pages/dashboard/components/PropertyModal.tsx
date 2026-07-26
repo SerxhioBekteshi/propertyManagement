@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 import PropertyForm, { PropertyValidationSchema } from "./PropertyForm";
 import FormProvider from "../../../components/hook-form/form-provider";
 import Modal from "../../../components/modal";
@@ -27,7 +27,9 @@ const ModalProperty = (props: IModalPropertyProp) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const methods = useForm<AddUpdatePropertyDTO>({
-    resolver: yupResolver(PropertyValidationSchema),
+    resolver: yupResolver(
+      PropertyValidationSchema,
+    ) as unknown as Resolver<AddUpdatePropertyDTO>,
     defaultValues: { ...defaultValues },
   });
 
