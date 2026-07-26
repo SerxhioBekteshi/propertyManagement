@@ -396,6 +396,12 @@ export default function PropertyDetailsPage() {
             <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
               "{property.description || "No description provided."}"
             </p>
+            {user?.role == ERoles.Admin ||
+              (property.agentId == user?.id && (
+                <p className="text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-4">
+                  "{property.description || "No description provided."}"
+                </p>
+              ))}
           </PropertyDetailsSection>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

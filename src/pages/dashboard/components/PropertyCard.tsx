@@ -75,7 +75,7 @@ export default function PropertyCard({
     e.stopPropagation();
     setIsFetchingEdit(true);
     try {
-      const res = await PropertiesService.getPropertyById(property.id);
+      const res = await PropertiesService.getPropertyById(property.id, false);
       if (res.data) {
         setEditModel(res.data);
         setModalOpen(true);

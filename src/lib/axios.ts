@@ -154,7 +154,8 @@ export const ENDPOINTS = {
     update(id: number) {
       return `Property/${id}`;
     },
-    getById: (id: number) => `Property/${id}`,
+    getById: (id: number, mainImageIntoImageUrls?: boolean) =>
+      `Property/${id}?mainImageIntoImageUrls=${mainImageIntoImageUrls}`,
     createOwner: "Property/create/owner",
     updateOwner(id: number) {
       return `Property/owners/${id}`;

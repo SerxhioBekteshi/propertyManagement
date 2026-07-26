@@ -1,16 +1,16 @@
-import { useCallback } from "react";
-import { useDropzone } from "react-dropzone";
 import { FileText, Upload, X } from "lucide-react";
+import { useCallback, useEffect, useRef } from "react";
+import { useDropzone } from "react-dropzone";
 
 interface PreviewFile {
   id: string;
-  file: File;
+  file: File | string; // 👈 string = already uploaded, File = new
   name: string;
   size: string;
 }
 
 interface FileUploaderProps {
-  value?: PreviewFile[];
+  value?: (PreviewFile | string)[]; // 👈 accept raw strings from the server too
   onChange?: (files: PreviewFile[]) => void;
   maxFiles?: number;
   label?: string;
@@ -22,6 +22,24 @@ const formatBytes = (bytes: number) => {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+const getFileNameFromUrl = (url: string) => {
+  const parts = url.split("/");
+  return parts[parts.length - 1] || url;
+};
+
+const resolveFileUrl = (url: string) =>
+  url.startsWith("http")
+    ? url
+    : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${url}`;
+
+const urlToFile = async (url: string, filename: string): Promise<File> => {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new File([blob], filename, {
+    type: blob.type || "application/octet-stream",
+  });
 };
 
 export const FileUploader = ({
@@ -43,10 +61,59 @@ export const FileUploader = ({
     "image/*": [],
   },
 }: FileUploaderProps) => {
+  // normalize: turn any raw string entries into PreviewFile objects
+  const items: PreviewFile[] = value.map((item) =>
+    typeof item === "string"
+      ? {
+          id: item,
+          file: item,
+          name: getFileNameFromUrl(item),
+          size: "—", // no size available for already-uploaded files
+        }
+      : item,
+  );
+
+  // track which string items we've already kicked off a conversion for,
+  // so we don't re-fetch on every render/effect run
+  const convertingIds = useRef<Set<string>>(new Set());
+
+  // silently convert any existing string-backed items into real Files,
+  // so by the time the form is submitted, every item.file is a File
+  useEffect(() => {
+    const pending = items.filter(
+      (item) =>
+        typeof item.file === "string" && !convertingIds.current.has(item.id),
+    );
+
+    if (pending.length === 0) return;
+
+    pending.forEach((item) => {
+      convertingIds.current.add(item.id);
+
+      const fileUrl = item.file as string;
+      urlToFile(resolveFileUrl(fileUrl), getFileNameFromUrl(fileUrl))
+        .then((file) => {
+          onChange?.(
+            items.map((i) =>
+              i.id === item.id
+                ? { ...i, file, size: formatBytes(file.size) }
+                : i,
+            ),
+          );
+        })
+        .catch(() => {
+          // if conversion fails (CORS, network), leave it as a string —
+          // submit-side handling would still need a fallback in that case
+          convertingIds.current.delete(item.id);
+        });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.map((i) => i.id).join(",")]);
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const newFiles: PreviewFile[] = acceptedFiles
-        .slice(0, maxFiles - value.length)
+        .slice(0, maxFiles - items.length)
         .map((file) => ({
           id: `${file.name}-${Date.now()}-${Math.random()}`,
           file,
@@ -54,9 +121,9 @@ export const FileUploader = ({
           size: formatBytes(file.size),
         }));
 
-      onChange?.([...value, ...newFiles]);
+      onChange?.([...items, ...newFiles]);
     },
-    [value, onChange, maxFiles],
+    [items, onChange, maxFiles],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -65,7 +132,8 @@ export const FileUploader = ({
   });
 
   const remove = (id: string) => {
-    onChange?.(value.filter((f) => f.id !== id));
+    convertingIds.current.delete(id);
+    onChange?.(items.filter((f) => f.id !== id));
   };
 
   return (
@@ -76,7 +144,7 @@ export const FileUploader = ({
         {...getRootProps()}
         className={`flex items-center justify-center gap-2 w-full h-24 rounded-xl border border-dashed transition cursor-pointer text-xs
         ${isDragActive ? "border-slate-900 bg-slate-100" : "border-slate-300 hover:bg-slate-50"}
-        ${value.length >= maxFiles ? "opacity-50 pointer-events-none" : ""}
+        ${items.length >= maxFiles ? "opacity-50 pointer-events-none" : ""}
       `}
       >
         <input {...getInputProps()} />
@@ -85,13 +153,13 @@ export const FileUploader = ({
           {isDragActive ? "Drop..." : "Upload Files"}
         </span>
         <span className="text-slate-400">
-          {value.length}/{maxFiles}
+          {items.length}/{maxFiles}
         </span>
       </div>
 
-      {value.length > 0 && (
+      {items.length > 0 && (
         <div className="grid grid-cols-3 gap-1.5">
-          {value.map((item) => (
+          {items.map((item) => (
             <div
               key={item.id}
               className="flex flex-col gap-1 px-2 py-2 rounded-lg border border-slate-200 bg-slate-50 group relative"

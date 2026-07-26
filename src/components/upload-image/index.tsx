@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X } from "lucide-react";
 
@@ -21,7 +21,7 @@ interface SingleImageUploaderProps {
   onChange?: (file: File | null) => void;
   label?: string;
   className?: string;
-  error?: boolean; // 👈 add this
+  error?: boolean;
 }
 
 const resolveImageUrl = (url: string) =>
@@ -31,6 +31,17 @@ const resolveImageUrl = (url: string) =>
       ? url
       : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${url}`;
 
+const urlToFile = async (url: string, filename: string): Promise<File> => {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new File([blob], filename, { type: blob.type || "image/jpeg" });
+};
+
+const getFileNameFromUrl = (url: string) => {
+  const parts = url.split("/");
+  return parts[parts.length - 1] || "image.jpg";
+};
+
 export const ImageUploader = ({
   value = [],
   onChange,
@@ -38,12 +49,43 @@ export const ImageUploader = ({
   label,
   className = "",
 }: ImageUploaderProps) => {
-  // normalize: turn any raw string entries into PreviewFile objects
+  // normalize: turn any raw string entries into PreviewFile objects for display
   const items: PreviewFile[] = value.map((item) =>
     typeof item === "string"
       ? { id: item, file: item, url: resolveImageUrl(item) }
       : item,
   );
+
+  // track which string items we've already kicked off a conversion for,
+  // so we don't re-fetch on every render/effect run
+  const convertingIds = useRef<Set<string>>(new Set());
+
+  // silently convert any existing string-backed items into real Files,
+  // so by the time the form is submitted, every item.file is a File
+  useEffect(() => {
+    const pending = items.filter(
+      (item) =>
+        typeof item.file === "string" && !convertingIds.current.has(item.id),
+    );
+
+    if (pending.length === 0) return;
+
+    pending.forEach((item) => {
+      convertingIds.current.add(item.id);
+
+      const fileUrl = item.file as string;
+      urlToFile(resolveImageUrl(fileUrl), getFileNameFromUrl(fileUrl))
+        .then((file) => {
+          onChange?.(items.map((i) => (i.id === item.id ? { ...i, file } : i)));
+        })
+        .catch(() => {
+          // if conversion fails (CORS, network), leave it as a string —
+          // submit-side handling would still need a fallback in that case
+          convertingIds.current.delete(item.id);
+        });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.map((i) => i.id).join(",")]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -68,8 +110,9 @@ export const ImageUploader = ({
   const remove = (id: string) => {
     const item = items.find((f) => f.id === id);
     if (item && item.file instanceof File) {
-      URL.revokeObjectURL(item.url); // only revoke blob URLs we actually created
+      URL.revokeObjectURL(item.url);
     }
+    convertingIds.current.delete(id);
     onChange?.(items.filter((f) => f.id !== id));
   };
 
@@ -127,13 +170,35 @@ export const ImageUploader = ({
     </div>
   );
 };
+
 export const SingleImageUploader = ({
   value,
   onChange,
   label,
   className = "",
-  error, // 👈 add this
+  error,
 }: SingleImageUploaderProps) => {
+  const converting = useRef(false);
+
+  // silently convert an existing string value into a real File,
+  // so the form always holds a File by the time it's submitted
+  useEffect(() => {
+    if (typeof value === "string" && value && !converting.current) {
+      converting.current = true;
+      urlToFile(resolveImageUrl(value), getFileNameFromUrl(value))
+        .then((file) => {
+          onChange?.(file);
+        })
+        .catch(() => {
+          converting.current = false;
+        });
+    }
+    if (value instanceof File || value === null) {
+      converting.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       onChange?.(acceptedFiles[0] ?? null);
@@ -151,11 +216,7 @@ export const SingleImageUploader = ({
     ? null
     : value instanceof File
       ? URL.createObjectURL(value)
-      : import.meta.env.VITE_APP_BACKEND_API_URL?.includes("localhost")
-        ? "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg"
-        : value.startsWith("http")
-          ? value
-          : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${value}`;
+      : resolveImageUrl(value);
 
   useEffect(() => {
     return () => {
@@ -174,7 +235,7 @@ export const SingleImageUploader = ({
           {...getRootProps()}
           className={`flex items-center justify-center gap-2 w-full h-24 rounded-xl border border-dashed transition cursor-pointer text-xs
           ${isDragActive ? "border-slate-900 bg-slate-100" : ""}
-          ${error ? "border-red-500 bg-red-50 hover:bg-red-50" : "border-slate-300 hover:bg-slate-50"}`} // 👈 error styles
+          ${error ? "border-red-500 bg-red-50 hover:bg-red-50" : "border-slate-300 hover:bg-slate-50"}`}
         >
           <input {...getInputProps()} />
           <Upload

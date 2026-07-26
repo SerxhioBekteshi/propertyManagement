@@ -42,7 +42,7 @@ export type AddUpdatePropertyDTO = Omit<
   zoneId: number;
   imageUrls?: File[];
   privateImageUrls?: File[];
-  files?: File[];
+  fileUrls?: File[];
 };
 
 export type PropertyResponseDTO = BaseAuditableDTO & {

@@ -38,7 +38,7 @@ import MapPicker from "../../../components/MapPicker";
 import "leaflet/dist/leaflet.css";
 import * as yup from "yup";
 import ErrorMessage from "../../../components/hook-form/error-message";
-import { EFormMode } from "../../../assets/enums";
+import { EFormMode, ERoles } from "../../../assets/enums";
 import LocationCascadeFields from "./LocationCascadeFields";
 
 const inputClass =
@@ -76,7 +76,7 @@ export const PropertyValidationSchema = yup.object({
 export type PropertyFormValues = yup.InferType<typeof PropertyValidationSchema>;
 
 const PropertyForm = () => {
-  const { control, setValue, getValues } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   const { user } = useAuth();
 
@@ -102,8 +102,6 @@ const PropertyForm = () => {
       setLoadingStreets(false);
     }
   };
-
-  console.log(getValues(), "GALUE");
 
   const fetchPropertyOwners = async () => {
     setLoadingContacts(true);
@@ -148,6 +146,19 @@ const PropertyForm = () => {
               </div>
             )}
           />
+          {user?.role == ERoles.Agent && (
+            <Controller
+              control={control}
+              name="agentDescription"
+              render={({ field }) => (
+                <div>
+                  <Label>Description</Label>
+                  <textarea {...field} rows={3} className={inputClass} />
+                </div>
+              )}
+            />
+          )}
+
           <div
             className={`grid ${user?.role === "Agent" ? "grid-cols-3" : "grid-cols-2"} gap-4`}
           >
@@ -211,7 +222,7 @@ const PropertyForm = () => {
       <div className="grid cols-1">
         <Controller
           control={control}
-          name="files"
+          name="fileUrls"
           render={({ field }) => (
             <FileUploader
               value={field.value ?? []}

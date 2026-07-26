@@ -26,8 +26,11 @@ export const PropertiesService = {
 
   async getPropertyById(
     id: number,
+    mainImageIntoImageUrls?: boolean,
   ): Promise<TBaseResponse<PropertyResponseDTO>> {
-    return axiosInstance.get(ENDPOINTS.properties.getById(id));
+    return axiosInstance.get(
+      ENDPOINTS.properties.getById(id, mainImageIntoImageUrls),
+    );
   },
 
   async createProperty(
@@ -60,8 +63,8 @@ export const PropertiesService = {
     row.privateImageUrls?.forEach((item: any) => {
       formData.append("privateImageUrls", item.file);
     });
-    row.files?.forEach((item: any) => {
-      formData.append("files", item.file);
+    row.fileUrls?.forEach((item: any) => {
+      formData.append("fileUrls", item.file);
     });
     return axiosInstance.post(ENDPOINTS.properties.create, formData, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -90,6 +93,7 @@ export const PropertiesService = {
         formData.append(key, String(value));
       }
     });
+
     if (row.mainImage) {
       formData.append("mainImage", row.mainImage);
     }
@@ -99,8 +103,8 @@ export const PropertiesService = {
     row.privateImageUrls?.forEach((item: any) => {
       formData.append("privateImageUrls", item.file);
     });
-    row.files?.forEach((item: any) => {
-      formData.append("files", item.file);
+    row.fileUrls?.forEach((item: any) => {
+      formData.append("fileUrls", item.file);
     });
     return axiosInstance.put(ENDPOINTS.properties.update(id), formData, {
       headers: { "Content-Type": "multipart/form-data" },
