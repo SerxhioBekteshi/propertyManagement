@@ -77,14 +77,18 @@ export const PropertiesService = {
   ): Promise<TBaseResponse<boolean>> {
     const formData = new FormData();
 
+    const fileFields = new Set([
+      "imageUrls",
+      "privateImageUrls",
+      "fileUrls",
+      "existingImageUrls",
+      "existingPrivateImageUrls",
+      "existingFileUrls",
+      "mainImage",
+    ]);
+
     Object.entries(row).forEach(([key, value]) => {
-      if (
-        key === "imageUrls" ||
-        key === "privateImageUrls" ||
-        key === "files" ||
-        key === "mainImage"
-      )
-        return;
+      if (fileFields.has(key)) return;
       if (value === undefined || value === null) return;
 
       if (typeof value === "boolean") {
@@ -94,18 +98,31 @@ export const PropertiesService = {
       }
     });
 
-    if (row.mainImage) {
-      formData.append("mainImage", row.mainImage);
+    if (row.mainImage && typeof row.mainImage !== "string") {
+      formData.append("mainImage", row.mainImage as File);
     }
-    row.imageUrls?.forEach((item: any) => {
-      formData.append("imageUrls", item.file);
+    // new uploads — plain File[] now, no wrapper
+    row.imageUrls?.forEach((file: File) => {
+      formData.append("imageUrls", file);
     });
-    row.privateImageUrls?.forEach((item: any) => {
-      formData.append("privateImageUrls", item.file);
+    row.privateImageUrls?.forEach((file: File) => {
+      formData.append("privateImageUrls", file);
     });
-    row.fileUrls?.forEach((item: any) => {
-      formData.append("fileUrls", item.file);
+    row.fileUrls?.forEach((file: File) => {
+      formData.append("fileUrls", file);
     });
+
+    // existing URLs to keep — repeated keys, binds to List<string> on the backend
+    row.existingImageUrls?.forEach((url: string) => {
+      formData.append("existingImageUrls", url);
+    });
+    row.existingPrivateImageUrls?.forEach((url: string) => {
+      formData.append("existingPrivateImageUrls", url);
+    });
+    row.existingFileUrls?.forEach((url: string) => {
+      formData.append("existingFileUrls", url);
+    });
+
     return axiosInstance.put(ENDPOINTS.properties.update(id), formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });

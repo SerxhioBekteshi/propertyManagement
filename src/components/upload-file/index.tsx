@@ -1,18 +1,12 @@
 import { FileText, Upload, X } from "lucide-react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
-interface PreviewFile {
-  id: string;
-  file: File | string; // 👈 string = already uploaded, File = new
-  name: string;
-  size: string;
-}
-
 interface FileUploaderProps {
-  value?: (PreviewFile | string)[]; // 👈 accept raw strings from the server too
-  onChange?: (files: PreviewFile[]) => void;
-  maxFiles?: number;
+  existingValue?: string[]; // URLs already saved server-side
+  newValue?: File[]; // freshly picked files, not uploaded yet
+  onExistingChange?: (urls: string[]) => void; // fired when an existing file is removed
+  onNewChange?: (files: File[]) => void; // fired when new files are added/removed
   label?: string;
   className?: string;
   accept?: Record<string, string[]>;
@@ -34,18 +28,11 @@ const resolveFileUrl = (url: string) =>
     ? url
     : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${url}`;
 
-const urlToFile = async (url: string, filename: string): Promise<File> => {
-  const res = await fetch(url);
-  const blob = await res.blob();
-  return new File([blob], filename, {
-    type: blob.type || "application/octet-stream",
-  });
-};
-
 export const FileUploader = ({
-  value = [],
-  onChange,
-  maxFiles = 10,
+  existingValue = [],
+  newValue = [],
+  onExistingChange,
+  onNewChange,
   label,
   className = "",
   accept = {
@@ -61,69 +48,15 @@ export const FileUploader = ({
     "image/*": [],
   },
 }: FileUploaderProps) => {
-  // normalize: turn any raw string entries into PreviewFile objects
-  const items: PreviewFile[] = value.map((item) =>
-    typeof item === "string"
-      ? {
-          id: item,
-          file: item,
-          name: getFileNameFromUrl(item),
-          size: "—", // no size available for already-uploaded files
-        }
-      : item,
-  );
+  const totalCount = existingValue.length + newValue.length;
 
-  // track which string items we've already kicked off a conversion for,
-  // so we don't re-fetch on every render/effect run
-  const convertingIds = useRef<Set<string>>(new Set());
-
-  // silently convert any existing string-backed items into real Files,
-  // so by the time the form is submitted, every item.file is a File
-  useEffect(() => {
-    const pending = items.filter(
-      (item) =>
-        typeof item.file === "string" && !convertingIds.current.has(item.id),
-    );
-
-    if (pending.length === 0) return;
-
-    pending.forEach((item) => {
-      convertingIds.current.add(item.id);
-
-      const fileUrl = item.file as string;
-      urlToFile(resolveFileUrl(fileUrl), getFileNameFromUrl(fileUrl))
-        .then((file) => {
-          onChange?.(
-            items.map((i) =>
-              i.id === item.id
-                ? { ...i, file, size: formatBytes(file.size) }
-                : i,
-            ),
-          );
-        })
-        .catch(() => {
-          // if conversion fails (CORS, network), leave it as a string —
-          // submit-side handling would still need a fallback in that case
-          convertingIds.current.delete(item.id);
-        });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items.map((i) => i.id).join(",")]);
-
+  // no maxFiles enforcement here — caller decides limits and can choose
+  // not to call onNewChange (or to trim) based on its own logic
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const newFiles: PreviewFile[] = acceptedFiles
-        .slice(0, maxFiles - items.length)
-        .map((file) => ({
-          id: `${file.name}-${Date.now()}-${Math.random()}`,
-          file,
-          name: file.name,
-          size: formatBytes(file.size),
-        }));
-
-      onChange?.([...items, ...newFiles]);
+      onNewChange?.([...newValue, ...acceptedFiles]);
     },
-    [items, onChange, maxFiles],
+    [newValue, onNewChange],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -131,9 +64,12 @@ export const FileUploader = ({
     accept,
   });
 
-  const remove = (id: string) => {
-    convertingIds.current.delete(id);
-    onChange?.(items.filter((f) => f.id !== id));
+  const removeExisting = (url: string) => {
+    onExistingChange?.(existingValue.filter((u) => u !== url));
+  };
+
+  const removeNew = (file: File) => {
+    onNewChange?.(newValue.filter((f) => f !== file));
   };
 
   return (
@@ -144,7 +80,6 @@ export const FileUploader = ({
         {...getRootProps()}
         className={`flex items-center justify-center gap-2 w-full h-24 rounded-xl border border-dashed transition cursor-pointer text-xs
         ${isDragActive ? "border-slate-900 bg-slate-100" : "border-slate-300 hover:bg-slate-50"}
-        ${items.length >= maxFiles ? "opacity-50 pointer-events-none" : ""}
       `}
       >
         <input {...getInputProps()} />
@@ -152,27 +87,55 @@ export const FileUploader = ({
         <span className="text-slate-600">
           {isDragActive ? "Drop..." : "Upload Files"}
         </span>
-        <span className="text-slate-400">
-          {items.length}/{maxFiles}
-        </span>
+        <span className="text-slate-400">{totalCount}</span>
       </div>
 
-      {items.length > 0 && (
+      {totalCount > 0 && (
         <div className="grid grid-cols-3 gap-1.5">
-          {items.map((item) => (
+          {existingValue.map((url) => (
             <div
-              key={item.id}
+              key={url}
               className="flex flex-col gap-1 px-2 py-2 rounded-lg border border-slate-200 bg-slate-50 group relative"
             >
               <FileText className="w-4 h-4 text-slate-400 shrink-0" />
               <p className="text-[10px] font-medium text-slate-700 truncate w-full">
-                {item.name}
+                {getFileNameFromUrl(url)}
               </p>
-              <p className="text-[9px] text-slate-400">{item.size}</p>
+              <a
+                href={resolveFileUrl(url)}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[9px] text-slate-400 hover:underline"
+              >
+                View
+              </a>
 
               <button
                 type="button"
-                onClick={() => remove(item.id)}
+                onClick={() => removeExisting(url)}
+                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-white/80 rounded p-0.5 transition"
+              >
+                <X className="w-3 h-3 text-slate-500" />
+              </button>
+            </div>
+          ))}
+
+          {newValue.map((file, index) => (
+            <div
+              key={`${file.name}-${index}`}
+              className="flex flex-col gap-1 px-2 py-2 rounded-lg border border-slate-200 bg-slate-50 group relative"
+            >
+              <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+              <p className="text-[10px] font-medium text-slate-700 truncate w-full">
+                {file.name}
+              </p>
+              <p className="text-[9px] text-emerald-600">
+                New · {formatBytes(file.size)}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => removeNew(file)}
                 className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-white/80 rounded p-0.5 transition"
               >
                 <X className="w-3 h-3 text-slate-500" />

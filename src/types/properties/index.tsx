@@ -32,18 +32,18 @@ export type AddUpdatePropertyDTO = Omit<
   | "divisionName"
   | "cityName"
   | "streetName"
-  | "imageUrls"
-  | "privateImageUrls"
-  | "fileUrls"
+  // | "existingImageUrls"
+  // | "existingPrivateImageUrls"
+  // | "existingFileUrls"
   | "properyOwner"
   | "opportunityCount"
   | "zoneId" //because it will be required
 > & {
   zoneId: number;
   mainImage: File | string;
-  imageUrls?: (File | string)[];
-  privateImageUrls?: (File | string)[];
-  fileUrls?: (File | string)[];
+  imageUrls?: File[];
+  privateImageUrls?: File[];
+  fileUrls?: File[];
 };
 
 export type PropertyResponseDTO = BaseAuditableDTO & {
@@ -128,9 +128,9 @@ export type PropertyResponseDTO = BaseAuditableDTO & {
   infrastructures?: string;
   surroundings?: string;
 
-  imageUrls?: string[];
-  privateImageUrls?: string[];
-  fileUrls?: string[];
+  existingImageUrls?: string[];
+  existingPrivateImageUrls?: string[];
+  existingFileUrls?: string[];
 
   mainImage: string;
   opportunityCount?: number;

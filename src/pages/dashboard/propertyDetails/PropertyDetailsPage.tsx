@@ -79,11 +79,11 @@ export default function PropertyDetailsPage() {
   const [imgIndex, setImgIndex] = useState(0);
 
   const publicImages: { url: string; private: boolean }[] = (
-    property?.imageUrls ?? []
+    property?.existingImageUrls ?? []
   ).map((u) => ({ url: u, private: false }));
 
   const privateImages: { url: string; private: boolean }[] = (
-    property?.privateImageUrls ?? []
+    property?.existingPrivateImageUrls ?? []
   ).map((u) => ({ url: u, private: true }));
 
   const images: { url: string; private: boolean }[] =
@@ -689,39 +689,43 @@ export default function PropertyDetailsPage() {
                   </div>
 
                   {/* DOCUMENTS PropertyDetailsSection */}
-                  {property.fileUrls && property.fileUrls.length > 0 && (
-                    <div className="flex flex-col gap-2">
-                      {property.fileUrls.map((fileUrl: string, i: number) => {
-                        const src = fileUrl?.startsWith("http")
-                          ? fileUrl
-                          : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${fileUrl.replace(/^\//, "")}`;
+                  {property.existingFileUrls &&
+                    property.existingFileUrls.length > 0 && (
+                      <div className="flex flex-col gap-2">
+                        {property.existingFileUrls.map(
+                          (fileUrl: string, i: number) => {
+                            const src = fileUrl?.startsWith("http")
+                              ? fileUrl
+                              : `${import.meta.env.VITE_APP_BACKEND_API_URL}/${fileUrl.replace(/^\//, "")}`;
 
-                        const fileName =
-                          decodeURIComponent(fileUrl.split("/").pop() ?? "") ||
-                          `Document ${i + 1}`;
+                            const fileName =
+                              decodeURIComponent(
+                                fileUrl.split("/").pop() ?? "",
+                              ) || `Document ${i + 1}`;
 
-                        return (
-                          <a
-                            key={fileUrl}
-                            href={src}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-orange-50 hover:border-orange-200 transition group"
-                          >
-                            <div className="p-1.5 bg-orange-100 rounded-lg shrink-0 group-hover:bg-orange-200 transition">
-                              <FileText className="w-3.5 h-3.5 text-orange-600" />
-                            </div>
-                            <span className="text-xs font-medium text-slate-700 truncate flex-1">
-                              {fileName}
-                            </span>
-                            <span className="text-[10px] text-orange-500 font-bold shrink-0">
-                              ↗
-                            </span>
-                          </a>
-                        );
-                      })}
-                    </div>
-                  )}
+                            return (
+                              <a
+                                key={fileUrl}
+                                href={src}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-orange-50 hover:border-orange-200 transition group"
+                              >
+                                <div className="p-1.5 bg-orange-100 rounded-lg shrink-0 group-hover:bg-orange-200 transition">
+                                  <FileText className="w-3.5 h-3.5 text-orange-600" />
+                                </div>
+                                <span className="text-xs font-medium text-slate-700 truncate flex-1">
+                                  {fileName}
+                                </span>
+                                <span className="text-[10px] text-orange-500 font-bold shrink-0">
+                                  ↗
+                                </span>
+                              </a>
+                            );
+                          },
+                        )}
+                      </div>
+                    )}
                 </div>
               </div>
             </div>

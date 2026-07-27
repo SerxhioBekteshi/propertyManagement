@@ -20,10 +20,7 @@ import {
   PROPERTY_VIEW_OPTIONS,
 } from "../../../assets/enums/constants/property";
 import { MultiSelect } from "../../../components/multi-select";
-import {
-  ImageUploader,
-  SingleImageUploader,
-} from "../../../components/upload-image";
+import { SingleImageUploader } from "../../../components/upload-image";
 import { useEffect, useState } from "react";
 import { LocationConfigurationService } from "../../../lib/ListConfiguration";
 import BooleanSelect from "../../../components/boolean-select";
@@ -33,13 +30,14 @@ import { Plus } from "lucide-react";
 import PropertyOwnerDrawer from "./PropertyOwnerDrawer";
 import StreetDrawer from "./StreetDrawer";
 import { useAuth } from "../../../contexts/AuthContext";
-import { FileUploader } from "../../../components/upload-file";
 import MapPicker from "../../../components/MapPicker";
 import "leaflet/dist/leaflet.css";
 import * as yup from "yup";
 import ErrorMessage from "../../../components/hook-form/error-message";
-import { EFormMode, ERoles } from "../../../assets/enums";
+import { EFormMode } from "../../../assets/enums";
 import LocationCascadeFields from "./LocationCascadeFields";
+import { ImagesField } from "./ImagesField";
+import { FilesField } from "./FilesField";
 
 const inputClass =
   "w-full px-3 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent placeholder-slate-400 transition-all";
@@ -74,6 +72,10 @@ export const PropertyValidationSchema = yup.object({
 });
 
 export type PropertyFormValues = yup.InferType<typeof PropertyValidationSchema>;
+
+// interface PropertyFormProps {
+//   formMode?: EFormMode | null;
+// }
 
 const PropertyForm = () => {
   const { control, setValue } = useFormContext();
@@ -142,25 +144,37 @@ const PropertyForm = () => {
             render={({ field }) => (
               <div>
                 <Label>Description</Label>
-                <textarea {...field} rows={3} className={inputClass} />
+                <textarea
+                  {...field}
+                  value={field.value ?? ""}
+                  rows={3}
+                  className={inputClass}
+                />
               </div>
             )}
           />
-          {user?.role == ERoles.Agent && (
-            <Controller
-              control={control}
-              name="agentDescription"
-              render={({ field }) => (
-                <div>
-                  <Label>
-                    Your Description (This is visible only to you and
-                    Administrator)*{" "}
-                  </Label>
-                  <textarea {...field} rows={3} className={inputClass} />
-                </div>
-              )}
-            />
-          )}
+          {/* {user?.role == ERoles.Agent &&
+            user?.id == getValues("agentId") &&
+            formMode == EFormMode.Edit && ( */}
+          <Controller
+            control={control}
+            name="agentDescription"
+            render={({ field }) => (
+              <div>
+                <Label>
+                  Your Description (This is visible only to you and
+                  Administrator)
+                </Label>
+                <textarea
+                  {...field}
+                  value={field.value ?? ""}
+                  rows={3}
+                  className={inputClass}
+                />
+              </div>
+            )}
+          />
+          {/* )} */}
 
           <div
             className={`grid ${user?.role === "Agent" ? "grid-cols-3" : "grid-cols-2"} gap-4`}
@@ -181,32 +195,18 @@ const PropertyForm = () => {
               )}
             />
 
-            <Controller
-              control={control}
-              name="imageUrls"
-              render={({ field }) => (
-                <ImageUploader
-                  value={field.value ?? []}
-                  onChange={field.onChange}
-                  label="Public Images"
-                />
-              )}
+            <ImagesField
+              existingName="existingImageUrls"
+              newName="imageUrls"
+              label="Public Images"
             />
 
-            {user?.role == "Agent" && (
-              <Controller
-                control={control}
-                name="privateImageUrls"
-                render={({ field }) => (
-                  <ImageUploader
-                    value={field.value ?? []}
-                    onChange={field.onChange}
-                    label="Private Images"
-                    maxFiles={5}
-                  />
-                )}
-              />
-            )}
+            <ImagesField
+              existingName="existingPrivateImageUrls"
+              newName="privateImageUrls"
+              label="Private Images"
+              maxFiles={5}
+            />
           </div>
 
           <Controller
@@ -223,16 +223,10 @@ const PropertyForm = () => {
       </Section>
 
       <div className="grid cols-1">
-        <Controller
-          control={control}
-          name="fileUrls"
-          render={({ field }) => (
-            <FileUploader
-              value={field.value ?? []}
-              onChange={field.onChange}
-              label="Files"
-            />
-          )}
+        <FilesField
+          existingName="existingFileUrls"
+          newName="fileUrls"
+          label="Files"
         />
       </div>
 
