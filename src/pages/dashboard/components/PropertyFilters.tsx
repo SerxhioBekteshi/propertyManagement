@@ -256,7 +256,7 @@ export default function PropertyFilters({
   );
 
   return (
-    <div className="bg-white/95 backdrop-blur-md p-2 shadow-sm border-b border-slate-200 rounded-2xl border">
+    <div className="relative z-10 bg-white/95 backdrop-blur-md p-2 shadow-sm border-b border-slate-200 rounded-2xl border">
       <div className="max-w-screen p-4 mx-auto">
         {/* MOBILE FILTER + CLEAR BUTTONS */}
         <div className="md:hidden flex items-center gap-2 mb-3 ">

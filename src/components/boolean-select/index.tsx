@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect } from "react";
+import { Search } from "lucide-react";
 
 const baseClass =
   "w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all";
@@ -16,7 +17,9 @@ const BooleanSelect = ({
   disabled?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const ref = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const selected = options.find((o) => o.value === field.value);
 
@@ -24,11 +27,20 @@ const BooleanSelect = ({
     const handler = (e: MouseEvent) => {
       if (!ref.current?.contains(e.target as Node)) {
         setOpen(false);
+        setSearch("");
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => searchRef.current?.focus(), 0);
+    } else {
+      setSearch("");
+    }
+  }, [open]);
 
   return (
     <div ref={ref} className="relative w-full">
@@ -59,29 +71,48 @@ const BooleanSelect = ({
         </svg>
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div className="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-md overflow-hidden">
-          <ul className="py-1">
-            {options.length === 0 ? (
-              <li className="px-3 py-2 text-sm text-slate-400">No options</li>
+          <div className="px-2 pt-2 pb-1 border-b border-slate-100">
+            <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-50 rounded-lg">
+              <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <input
+                ref={searchRef}
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search..."
+                className="flex-1 text-sm bg-transparent outline-none text-slate-700 placeholder:text-slate-400"
+              />
+            </div>
+          </div>
+          <ul className="max-h-48 overflow-y-auto py-1">
+            {options.filter((o) =>
+              o.label.toLowerCase().includes(search.toLowerCase()),
+            ).length === 0 ? (
+              <li className="px-3 py-2 text-sm text-slate-400">No results</li>
             ) : (
-              options.map((o, i) => (
-                <li
-                  key={i}
-                  onMouseDown={() => {
-                    field.onChange(o.value);
-                    setOpen(false);
-                  }}
-                  className={`px-3 py-2 text-sm cursor-pointer hover:bg-slate-50 ${
-                    o.value === field.value
-                      ? "text-slate-900 font-medium bg-slate-50"
-                      : "text-slate-700"
-                  }`}
-                >
-                  {o.label}
-                </li>
-              ))
+              options
+                .filter((o) =>
+                  o.label.toLowerCase().includes(search.toLowerCase()),
+                )
+                .map((o, i) => (
+                  <li
+                    key={i}
+                    onMouseDown={() => {
+                      field.onChange(o.value);
+                      setOpen(false);
+                      setSearch("");
+                    }}
+                    className={`px-3 py-2 text-sm cursor-pointer hover:bg-slate-50 ${
+                      o.value === field.value
+                        ? "text-slate-900 font-medium bg-slate-50"
+                        : "text-slate-700"
+                    }`}
+                  >
+                    {o.label}
+                  </li>
+                ))
             )}
           </ul>
         </div>
