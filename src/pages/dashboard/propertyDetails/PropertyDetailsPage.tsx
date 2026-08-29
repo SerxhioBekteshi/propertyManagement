@@ -36,7 +36,7 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import PropertyDetailsItem from "../components/PropertyDetailsItem";
 import { formatDate, getPhoneWithPrefix, parseList } from "../helpers";
-import PropertyDetailsFeatureGroup from "../components/PropertyDetailsFeatureGroup";
+// import PropertyDetailsFeatureGroup from "../components/PropertyDetailsFeatureGroup";
 import PropertyDetailsSection from "../components/PropertyDetailsSection";
 import PropertyDetailsStat from "../components/PropertyDetailsStat";
 import { STATUS_COLORS } from "../../../utils/styles";
@@ -786,7 +786,7 @@ export default function PropertyDetailsPage() {
             </div>
           </PropertyDetailsSection>
 
-          <PropertyDetailsSection
+          {/* <PropertyDetailsSection
             icon={<Layers className="w-5 h-5 text-purple-500" />}
             title="More Features"
           >
@@ -812,7 +812,7 @@ export default function PropertyDetailsPage() {
                 color="indigo"
               />
             </div>
-          </PropertyDetailsSection>
+          </PropertyDetailsSection> */}
         </div>
       </div>
     </div>

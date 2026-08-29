@@ -7,19 +7,19 @@ import {
   PROPERTY_BUSINESS_TYPE_OPTIONS,
   PROPERTY_DOCUMENTATION_OPTIONS,
   PROPERTY_ELEVATOR_OPTIONS,
-  PROPERTY_EQUIPMENT_OPTIONS,
+  // PROPERTY_EQUIPMENT_OPTIONS,
   PROPERTY_FURNISHED_OPTIONS,
-  PROPERTY_INFRASTRUCTURE_OPTIONS,
+  // PROPERTY_INFRASTRUCTURE_OPTIONS,
   PROPERTY_MAIN_TYPE_OPTIONS,
   PROPERTY_ORIENTATION_OPTIONS,
   PROPERTY_OWNER_TYPOLOGY_OPTIONS,
   PROPERTY_PARKING_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
-  PROPERTY_SURROUNDINGS_OPTIONS,
+  // PROPERTY_SURROUNDINGS_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
-  PROPERTY_VIEW_OPTIONS,
+  // PROPERTY_VIEW_OPTIONS,
 } from "../../../assets/enums/constants/property";
-import { MultiSelect } from "../../../components/multi-select";
+// import { MultiSelect } from "../../../components/multi-select";
 import { SingleImageUploader } from "../../../components/upload-image";
 import { useEffect, useState } from "react";
 import { LocationConfigurationService } from "../../../lib/ListConfiguration";
@@ -923,7 +923,7 @@ const PropertyForm = () => {
       </Section>
 
       {/* More Features */}
-      <Section title="More Features">
+      {/* <Section title="More Features">
         <div className="grid lg:grid-cols-2 gap-6">
           <Controller
             control={control}
@@ -1006,7 +1006,7 @@ const PropertyForm = () => {
             )}
           />
         </div>
-      </Section>
+      </Section> */}
 
       <PropertyOwnerDrawer
         key={"createOwner"}

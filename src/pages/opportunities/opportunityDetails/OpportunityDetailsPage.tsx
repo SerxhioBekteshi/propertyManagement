@@ -6,7 +6,7 @@ import {
   ArrowLeft,
   MapPin,
   User,
-  Layers,
+  // Layers,
   Info,
   CheckCircle2,
   XCircle,
@@ -20,12 +20,12 @@ import {
   fmt,
   fmtDate,
   fmtMoney,
-  parseList,
+  // parseList,
   renderLeadSource,
 } from "../helpers";
 import OpportunityMetricTitle from "../components/OpportunityMetricTitle";
 import OpportunityCard from "../components/OpportynityCard";
-import OpportunityTagCloud from "../components/OpportunityTagCloud";
+// import OpportunityTagCloud from "../components/OpportunityTagCloud";
 import OpportunityRow from "../components/OpportunityRow";
 import OpportunityBadge from "../components/OpportunityBadge";
 import {
@@ -390,7 +390,7 @@ const OpportunityDetails = () => {
             <OpportunityRow label="Zone">{o.zoneName ?? "—"}</OpportunityRow>
           </OpportunityCard>
           {/* More Features */}
-          <OpportunityCard
+          {/* <OpportunityCard
             icon={<Layers className="w-4 h-4" />}
             title="More Features"
             accent="bg-indigo-50 text-indigo-700"
@@ -433,7 +433,7 @@ const OpportunityDetails = () => {
                 />
               </div>
             </div>
-          </OpportunityCard>
+          </OpportunityCard> */}
         </div>
       </div>
     </div>

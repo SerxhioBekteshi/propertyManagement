@@ -9,14 +9,14 @@ import {
   PROPERTY_BUSINESS_TYPE_OPTIONS,
   PROPERTY_DOCUMENTATION_OPTIONS,
   PROPERTY_ELEVATOR_OPTIONS,
-  PROPERTY_EQUIPMENT_OPTIONS,
+  // PROPERTY_EQUIPMENT_OPTIONS,
   PROPERTY_FURNISHED_OPTIONS,
-  PROPERTY_INFRASTRUCTURE_OPTIONS,
+  // PROPERTY_INFRASTRUCTURE_OPTIONS,
   PROPERTY_MAIN_LEAD_SOURCE_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
-  PROPERTY_SURROUNDINGS_OPTIONS,
+  // PROPERTY_SURROUNDINGS_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
-  PROPERTY_VIEW_OPTIONS,
+  // PROPERTY_VIEW_OPTIONS,
 } from "../../../assets/enums/constants/property";
 import {
   LEAD_SOURCE_OPTIONS,
@@ -25,7 +25,7 @@ import {
   SALES_STAGE_OPTIONS,
 } from "../../../assets/enums/constants/opportunity";
 import { IOption } from "../../../types";
-import { MultiSelect } from "../../../components/multi-select";
+// import { MultiSelect } from "../../../components/multi-select";
 import BooleanSelect from "../../../components/boolean-select";
 import Label from "../../../components/label";
 
@@ -605,7 +605,7 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
       </Section>
 
       {/* More Features */}
-      <Section title="More Features">
+      {/* <Section title="More Features">
         <div className="grid lg:grid-cols-2 gap-6">
           <Controller
             control={control}
@@ -691,7 +691,7 @@ const OpportunityForm = (props: IOpportunityFormProps) => {
             )}
           />
         </div>
-      </Section>
+      </Section> */}
 
       {/* More Features */}
       <Section title="Description Details">
